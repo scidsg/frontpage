@@ -53,6 +53,24 @@ def article(article_id):
     return render_template("article.html", article=article)
 
 
+@app.route("/publish", methods=["GET", "POST"])
+def publish():
+    if request.method == "POST":
+        article_title = request.form["title"]
+        article_content = request.form["content"]
+        article_author = request.form["author"]
+
+        new_article = Article(
+            title=article_title, content=article_content, author=article_author
+        )
+        db.session.add(new_article)
+        db.session.commit()
+
+        return redirect(url_for("home"))
+
+    return render_template("publish.html")
+
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
