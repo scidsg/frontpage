@@ -1,11 +1,28 @@
 #!/bin/bash
 
+#Run as root
+if [[ $EUID -ne 0 ]]; then
+  echo "Script needs to run as root. Elevating permissions now."
+  exec sudo /bin/bash "$0" "$@"
+fi
+
+# Function to display error message and exit
+error_exit() {
+    echo "An error occurred during installation. Please check the output above for more details."
+    exit 1
+}
+
+# Trap any errors and call the error_exit function
+trap error_exit ERR
+
 # Update and upgrade the system
-sudo apt update && sudo apt upgrade -y
+export DEBIAN_FRONTEND=noninteractive
+sudo apt update && sudo apt -y dist-upgrade
 
 # Install Python and pip
-sudo apt install python3 python3-pip git -y
+sudo apt install -y python3 python3-pip git python3-venv nginx
 
+cd /var/www/html
 git clone https://github.com/glenn-sorrentino/frontpage
 cd frontpage
 
@@ -14,14 +31,15 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Install Flask
-pip3 install Flask Flask-SQLAlchemy
+pip3 install Flask Flask-SQLAlchemy gunicorn flash-login python-dotenv
+
+# Generate and export Flask secret key
+FLASK_SECRET_KEY=$(openssl rand -hex 32)
+export FLASK_SECRET_KEY
+echo "FLASK_SECRET_KEY=$FLASK_SECRET_KEY" > /var/www/html/frontpage/.env
 
 # Install Nginx
 sudo apt install nginx -y
-
-# Create a basic Flask app
-mkdir ~/frontpage
-cd ~/frontpage
 
 # Set up Nginx to proxy requests to Flask
 sudo tee /etc/nginx/sites-available/frontpage <<EOF
@@ -49,7 +67,7 @@ After=network.target
 User=$USER
 Group=www-data
 WorkingDirectory=/var/www/html/frontpage/
-ExecStart=/var/www/html/frontpage/python/venv/bin/gunicorn -w 1 -b 127.0.0.1:5000 app:app
+ExecStart=/var/www/html/frontpage/venv/bin/gunicorn -w 1 -b 127.0.0.1:5000 app:app
 
 [Install]
 WantedBy=multi-user.target
@@ -58,5 +76,5 @@ EOF
 sudo ln -s /etc/nginx/sites-available/frontpage /etc/nginx/sites-enabled
 sudo systemctl restart nginx
 
-# Start the Flask app
-python3 ~/frontpage/app.py
+sudo systemctl enable frontpage.service
+sudo systemctl start frontpage.service
