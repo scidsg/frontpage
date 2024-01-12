@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
     <h2>Login</h2>
     <form method="post">
         <label for="username">Username:</label>
@@ -12,5 +8,4 @@
         <input type="password" id="password" name="password" required>
         <button type="submit">Login</button>
     </form>
-</body>
-</html>
+{% endblock %}

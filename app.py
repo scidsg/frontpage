@@ -8,18 +8,26 @@ from flask_login import (
     logout_user,
     current_user,
 )
+from flask_migrate import Migrate
+from flask_wtf import FlaskForm
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
-import os
 from dotenv import load_dotenv
+from datetime import datetime
+from logging.handlers import RotatingFileHandler
+import logging
+import os
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, EqualTo, ValidationError
 
-load_dotenv()
+load_dotenv()  # Load environment variables from .env file
 
 # Initialize Flask app and database
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///blog.db"
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
+
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 # Initialize Flask-Login
 login_manager = LoginManager()
@@ -51,9 +59,48 @@ class Article(db.Model):
         return "<Article %r>" % self.title
 
 
+class RegistrationForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    confirm_password = PasswordField(
+        "Confirm Password", validators=[DataRequired(), EqualTo("password")]
+    )
+    submit = SubmitField("Register")
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user:
+            raise ValidationError(
+                "That username is already taken. Please choose a different one."
+            )
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    # Flash a message to inform the user
+    flash("You need to be logged in to view that page.")
+    return redirect(url_for("home"))
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for("home"))
+
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data)
+        user = User(username=form.username.data, password_hash=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        flash("Your account has been created! You are now able to log in", "success")
+        return redirect(url_for("login"))
+    return render_template("register.html", title="Register", form=form)
 
 
 # Login route

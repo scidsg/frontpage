@@ -1,19 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ article.title }}</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
+    <h1>{{ article.title }}</h1>
+    <p><strong>Published on:</strong> {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+    <p><strong>Author:</strong> {{ article.author }}</p>
     <div>
-        <h1>{{ article.title }}</h1>
-        <p><strong>Published on:</strong> {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-        <p><strong>Author:</strong> {{ article.author }}</p>
-        <div>
-            {{ article.content }}
-        </div>
-        <a href="/">Back to Home</a>
+        {{ article.content }}
     </div>
-</body>
-</html>
+    <a href="/">Back to Home</a>
+{% endblock %}
