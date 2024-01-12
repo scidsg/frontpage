@@ -47,5 +47,13 @@ def publish():
     return render_template("publish.html")
 
 
+@app.route("/article/<int:article_id>")
+def article(article_id):
+    article = Article.query.get_or_404(article_id)
+    return render_template("article.html", article=article)
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True, host="0.0.0.0", port=5000)
