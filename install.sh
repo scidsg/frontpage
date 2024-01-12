@@ -31,7 +31,7 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Install Flask
-pip3 install Flask Flask-SQLAlchemy gunicorn Flask-Login python-dotenv Flask-Migrate
+pip3 install Flask Flask-SQLAlchemy gunicorn Flask-Login python-dotenv Flask-Migrate Flask-WTF markdown pycountry
 
 # Generate and export Flask secret key
 FLASK_SECRET_KEY=$(openssl rand -hex 32)

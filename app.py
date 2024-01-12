@@ -16,6 +16,8 @@ from datetime import datetime
 from logging.handlers import RotatingFileHandler
 import logging
 import os
+import markdown
+import pycountry
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo, ValidationError
 
@@ -47,6 +49,24 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=True)
+
+    def __repr__(self):
+        return "<Category %r>" % self.name
+
+
+# Association table for the many-to-many relationship
+article_categories = db.Table(
+    "article_categories",
+    db.Column("article_id", db.Integer, db.ForeignKey("article.id"), primary_key=True),
+    db.Column(
+        "category_id", db.Integer, db.ForeignKey("category.id"), primary_key=True
+    ),
+)
+
+
 # Define the Article model
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -54,6 +74,15 @@ class Article(db.Model):
     content = db.Column(db.Text, nullable=False)
     author = db.Column(db.String(50), nullable=False)
     publish_date = db.Column(db.DateTime, default=datetime.utcnow)
+    country = db.Column(db.String(50))  # Store the selected country
+    download_link = db.Column(db.String(255))  # URL to the download link
+    article_type = db.Column(db.String(50))
+    categories = db.relationship(
+        "Category",
+        secondary=article_categories,
+        lazy="subquery",
+        backref=db.backref("articles", lazy=True),
+    )
 
     def __repr__(self):
         return "<Article %r>" % self.title
@@ -131,6 +160,9 @@ def logout():
 @app.route("/")
 def home():
     articles = Article.query.order_by(Article.publish_date.desc()).all()
+    # Convert Markdown to HTML for each article
+    for article in articles:
+        article.content_html = markdown.markdown(article.content)
     return render_template("home.html", articles=articles)
 
 
@@ -138,27 +170,91 @@ def home():
 @app.route("/publish", methods=["GET", "POST"])
 @login_required
 def publish():
+    categories = Category.query.all()
+    countries = [country.name for country in pycountry.countries]
+    article_types = ["News", "Blog", "Opinion", "Review", "Other"]
+
     if request.method == "POST":
         article_title = request.form["title"]
         article_content = request.form["content"]
-        article_author = request.form["author"]
+        article_countries = request.form.getlist(
+            "countries"
+        )  # List of selected countries
+        article_country = ", ".join(article_countries)  # Convert list to string
+        article_type = request.form["type"]
+        article_download_link = request.form["download_link"]
+
+        article_author = current_user.username
 
         new_article = Article(
-            title=article_title, content=article_content, author=article_author
+            title=article_title,
+            content=article_content,
+            author=article_author,
+            country=article_country,
+            article_type=article_type,
+            download_link=article_download_link,
         )
+        selected_category_ids = request.form.getlist("categories")
+        selected_categories = Category.query.filter(
+            Category.id.in_(selected_category_ids)
+        ).all()
+        new_article.categories = selected_categories
         db.session.add(new_article)
         db.session.commit()
 
+        flash("Article published successfully.")
         return redirect(url_for("home"))
 
-    return render_template("publish.html")
+    return render_template(
+        "publish.html",
+        categories=categories,
+        countries=countries,
+        article_types=article_types,
+    )
 
 
 # Article route
 @app.route("/article/<int:article_id>")
 def article(article_id):
     article = Article.query.get_or_404(article_id)
-    return render_template("article.html", article=article)
+    content_html = markdown.markdown(article.content)
+    return render_template("article.html", article=article, content_html=content_html)
+
+
+@app.route("/edit/<int:article_id>", methods=["GET", "POST"])
+@login_required
+def edit_article(article_id):
+    article = Article.query.get_or_404(article_id)
+    countries = [country.name for country in pycountry.countries]
+    article_types = ["News", "Blog", "Opinion", "Review", "Other"]
+
+    # Check if the current user is the author or an admin
+    if not (current_user.username == article.author or current_user.is_admin):
+        flash("You do not have permission to edit this article.")
+        return redirect(url_for("home"))
+
+    if request.method == "POST":
+        article.title = request.form["title"]
+        article.content = request.form["content"]
+        article_countries = request.form.getlist(
+            "countries"
+        )  # Get list of selected countries
+        article.country = ", ".join(article_countries)  # Join countries into a string
+        article.article_type = request.form["type"]
+        article.download_link = request.form["download_link"]
+        db.session.commit()
+        flash("Article updated successfully.")
+        return redirect(url_for("article", article_id=article_id))
+    else:
+        selected_countries = article.country.split(", ") if article.country else []
+
+    return render_template(
+        "edit_article.html",
+        article=article,
+        countries=countries,
+        selected_countries=selected_countries,
+        article_types=article_types,
+    )
 
 
 # Error handler

@@ -1,10 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>{{ article.title }}</h1>
+    {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
+        <a href="{{ url_for('edit_article', article_id=article.id) }}">Edit this article</a>
+    {% endif %}
     <p><strong>Published on:</strong> {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
     <p><strong>Author:</strong> {{ article.author }}</p>
-    <div>
-        {{ article.content }}
+    <div class="metadata">
+        <p>Country: {{ article.country }}</p>
+        <p>Type: {{ article.article_type }}</p>
+        {% if article.download_link %}
+            <a href="{{ article.download_link }}">Download</a>
+        {% endif %}
+    </div>
+    <div class="article-content">
+        {{ content_html | safe }}
     </div>
     <a href="/">Back to Home</a>
 {% endblock %}

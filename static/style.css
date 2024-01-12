@@ -1,0 +1,20 @@
+header {
+	display: flex;
+	justify-content: space-between;
+}
+
+header nav {
+	display: flex;
+	align-items: center;
+}
+
+header nav ul {
+	display: flex;
+	list-style: none;
+	gap: 1rem;
+}
+
+.country-list {
+	max-height: 240px;	
+	overflow: scroll;
+}
