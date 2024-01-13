@@ -72,6 +72,10 @@ p {
 	margin: .5rem 0;
 }
 
+h1 + form {
+	margin-top: 1rem;
+}
+
 .content h2 {
 	margin-bottom: 1rem;
 	margin-top: 2rem;

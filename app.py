@@ -105,6 +105,15 @@ class RegistrationForm(FlaskForm):
             )
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # Flash a message to the user
+    flash("⛔️ That page doesn't exist", "warning")
+
+    # Redirect to home page
+    return redirect(url_for("home"))
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -113,7 +122,7 @@ def load_user(user_id):
 @login_manager.unauthorized_handler
 def unauthorized():
     # Flash a message to inform the user
-    flash("You need to be logged in to view that page.")
+    flash("⛔️ You need to be logged in to view that page.")
     return redirect(url_for("home"))
 
 
@@ -128,7 +137,7 @@ def register():
         user = User(username=form.username.data, password_hash=hashed_password)
         db.session.add(user)
         db.session.commit()
-        flash("Your account has been created! You are now able to log in", "success")
+        flash("🙌 Your account has been created! Please log in.", "success")
         return redirect(url_for("login"))
     return render_template("register.html", title="Register", form=form)
 
@@ -144,7 +153,7 @@ def login():
         if user and user.check_password(password):
             login_user(user)
             return redirect(url_for("home"))
-        flash("Invalid username or password")
+        flash("⛔️ Invalid username or password")
 
     return render_template("login.html")
 
@@ -204,7 +213,7 @@ def publish():
         db.session.add(new_article)
         db.session.commit()
 
-        flash("Article published successfully.")
+        flash("👍 Article published successfully.")
         return redirect(url_for("home"))
 
     return render_template(
@@ -232,7 +241,7 @@ def edit_article(article_id):
 
     # Check if the current user is the author or an admin
     if not (current_user.username == article.author or current_user.is_admin):
-        flash("You do not have permission to edit this article.")
+        flash("⛔️ You do not have permission to edit this article.")
         return redirect(url_for("home"))
 
     if request.method == "POST":
@@ -245,7 +254,7 @@ def edit_article(article_id):
         article.article_type = request.form["type"]
         article.download_link = request.form["download_link"]
         db.session.commit()
-        flash("Article updated successfully.")
+        flash("👍 Article updated successfully.")
         return redirect(url_for("article", article_id=article_id))
     else:
         selected_countries = article.country.split(", ") if article.country else []
@@ -289,7 +298,7 @@ def delete_article(article_id):
 
     db.session.delete(article)
     db.session.commit()
-    flash("Article deleted successfully.")
+    flash("🗑️ Article deleted successfully.")
     return redirect(url_for("home"))
 
 
