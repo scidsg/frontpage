@@ -79,6 +79,7 @@ class Article(db.Model):
     download_link = db.Column(db.String(255))  # URL to the download link
     article_type = db.Column(db.String(50))
     source = db.Column(db.String(255))
+    last_edited = db.Column(db.DateTime)
     categories = db.relationship(
         "Category",
         secondary=article_categories,
@@ -174,12 +175,22 @@ def logout():
 # Home route
 @app.route("/")
 def home():
-    articles = Article.query.order_by(Article.publish_date.desc()).all()
-    article_count = len(articles)  # Get the count of all articles
+    # Fetch main articles
+    main_articles = Article.query.order_by(Article.publish_date.desc()).limit(5).all()
+
+    # Fetch recently edited articles
+    recently_edited_articles = (
+        Article.query.filter(Article.last_edited != None)
+        .order_by(Article.last_edited.desc())
+        .limit(5)
+        .all()
+    )
+
+    article_count = len(main_articles)  # Count of main articles
 
     # Create a counter for each type, country, and source
     counter = Counter()
-    for article in articles:
+    for article in main_articles:
         if article.article_type:
             counter[("type", article.article_type)] += 1
         if article.country:
@@ -192,12 +203,15 @@ def home():
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
 
-    for article in articles:
-        article.content_html = markdown.markdown(article.content)
+    # Convert Markdown to HTML for both sets of articles
+    for article_set in [main_articles, recently_edited_articles]:
+        for article in article_set:
+            article.content_html = markdown.markdown(article.content)
 
     return render_template(
         "home.html",
-        articles=articles,
+        main_articles=main_articles,
+        recently_edited_articles=recently_edited_articles,
         article_count=article_count,
         all_scopes=all_scopes,
         show_categories=True,
@@ -281,6 +295,8 @@ def edit_article(article_id):
         article.country = ", ".join(article_countries)  # Join countries into a string
         article.article_type = request.form["type"]
         article.download_link = request.form["download_link"]
+        article.last_edited = datetime.utcnow()
+
         db.session.commit()
         flash("👍 Article updated successfully.")
         return redirect(url_for("article", article_id=article_id))

@@ -1,14 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="content">
-            <p class="meta">Total Articles: {{ article_count }}</p>
-                {% for article in articles %}
-                    <div class="article">
-                        <h2><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h2>
-                        <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                        <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
-                        <a href="{{ url_for('article', article_id=article.id) }}">Read more</a>
-                    </div>
+    <div class="content home">
+        <!-- Column 1: Recent Articles -->
+        <div class="column recent-articles">
+            <h2>Recent Articles</h2>
+            {% for article in main_articles %}
+                <div class="article">
+                    <h3><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h3>
+                    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
+                    <a href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                </div>
+            {% endfor %}
+        </div>
+        <!-- Column 2: Recently Edited Articles -->
+        <div class="column recently-edited-articles">
+            <h2>Recently Edited Articles</h2>
+            {% for article in recently_edited_articles %}
+                <div class="article">
+                    <h3><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h3>
+                    {% if article.last_edited %}
+                        <p class="meta">Edited on {{ article.last_edited.strftime('%Y-%m-%d %H:%M') }}</p>
+                    {% else %}
+                        <p class="meta">Edited date not available</p>
+                    {% endif %}
+                    <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
+                    <a href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                </div>
         {% endfor %}
+
+        </div>
     </div>
 {% endblock %}

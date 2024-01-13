@@ -18,12 +18,13 @@
 
 body {
 	font-family: 'Atkinson Hyperlegible', sans-serif;
-	padding-top: 5rem;
+	padding: 5rem 1rem 1rem 1rem;
+	margin: 0;
 }
 
 .content {
 	border: 1px solid rgba(0,0,0,0.1);
-	max-width: 768px;
+	max-width: 1024px;
 	width: 100%;
 	padding: 2rem;
 	box-sizing: border-box;
@@ -151,23 +152,6 @@ h1 + form {
 	font-family: 'IBM Plex Mono', monospace;
 }
 
-.flashes {
-	position: fixed;
-	background-color: white;
-	border: 1px solid rgba(0,0,0,.1);
-	padding: 1rem;
-	border-radius: .25rem;
-	top: 1rem;
-	right: 50%;
-	transform: translateX(50%);
-	box-shadow: 0 4px 12px -6px rgba(0,0,0,0.1);
-  z-index: 99;
-}
-
-.flashes li {
-	list-style: none;
-}
-
 header {
 	display: flex;
 	justify-content: space-between;
@@ -182,7 +166,7 @@ header {
 }
 
 header h1 {
-	font-size: 1.125rem
+	font-size: 1.25rem
 }
 
 header nav {
@@ -230,6 +214,7 @@ button {
 
 input[type="checkbox"] + label {
 	font-size: 1rem;
+	font-family: 'Atkinson Hyperlegible', sans-serif;
 }
 
 input[type="checkbox"] {
@@ -260,7 +245,7 @@ textarea {
 .article {
 	display: flex;
 	flex-direction: column;
-	margin: 1rem 0;
+	margin: 1.5rem 0;
 	gap: .625rem;
 }
 
@@ -302,6 +287,8 @@ textarea {
 	border: none;
 	background-color: transparent;
 	color: #595959;
+	font-weight: normal;
+	font-family: 'Atkinson Hyperlegible', sans-serif;
 }
 
 button.destruct {
@@ -329,7 +316,7 @@ button.destruct {
 }
 
 .article-content p:first-of-type {
-	margin-top: 0;
+	margin-top: .5rem;
 }
 
 .article-content ul {
@@ -345,4 +332,94 @@ button.destruct {
 
 .content.login {
 	max-width: 540px;
+}
+
+.content.login img {
+	max-width: 72px;
+	margin-bottom: 1rem;
+}
+
+.content.home .meta {
+	margin: 0;
+}
+
+.content.home h2 {
+	margin-top: 0;
+	font-size: 1.25rem;
+	padding-bottom: 1.25rem;
+	border-bottom: 1px solid rgba(0,0,0,0.15);
+}
+
+.content.home {
+	display: flex;
+	flex-direction: row;
+	gap: 2rem;
+}
+
+.content.home .column {
+	gap: 1.75rem;
+	display: flex;
+	flex-direction: column;
+}
+
+.content.home .column .article {
+	margin: 0;
+}
+
+.flashes {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(50%);
+    z-index: 999;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    padding: 1rem;
+    border-radius: .25rem;
+    outline: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.1);
+    width: max-content;
+    list-style: none;
+    max-width: 80vw;
+    opacity: 1;
+    animation: fadeInMoveDown .5s ease forwards;
+}
+
+@keyframes fadeInMoveDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes fadeOutMoveUp {
+    from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+}
+
+.flashes {
+    animation: fadeInMoveDown .3s ease forwards;
+}
+
+.flashes.fadeOut {
+    animation: fadeOutMoveUp .3s ease forwards;
+}
+
+.user-info a {
+    align-items: center;
+    display: flex;
+    gap: .5rem;
 }
