@@ -30,13 +30,20 @@ cd frontpage
 python3 -m venv venv
 source venv/bin/activate
 
-# Install Flask
+# Install Flask and other dependencies
 pip3 install Flask Flask-SQLAlchemy gunicorn Flask-Login python-dotenv Flask-Migrate Flask-WTF markdown pycountry
 
 # Generate and export Flask secret key
 FLASK_SECRET_KEY=$(openssl rand -hex 32)
 export FLASK_SECRET_KEY
 echo "FLASK_SECRET_KEY=$FLASK_SECRET_KEY" > /var/www/html/frontpage/.env
+
+# Initialize the Flask app and create the database
+python /var/www/html/frontpage/init_db.py
+
+# Change owner and permissions of the SQLite database file
+sudo chown www-data:www-data /var/www/html/frontpage/blog.db
+sudo chmod 664 /var/www/html/frontpage/blog.db
 
 # Install Nginx
 sudo apt install nginx -y
