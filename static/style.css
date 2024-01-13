@@ -18,11 +18,79 @@
 
 body {
 	font-family: 'Atkinson Hyperlegible', sans-serif;
+	padding-top: 6rem;
+}
+
+.content {
+	border: 1px solid rgba(0,0,0,0.1);
+	max-width: 768px;
+	width: 100%;
+	padding: 2rem;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction:  column;
+	margin: 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: normal;
+	font-family: 'Atkinson Bold', sans-serif;
+	margin: 0;
+}
+
+h1 {
+	font-size: 2.5rem;
+}
+
+h2 {
+	font-size: 2rem;
+}
+
+h3 {
+	font-size: 1.5rem;
+}
+
+h4 {
+	font-size: 1.25rem;
+}
+
+h5 {
+	font-size: 1.125rem;
+}
+
+.content h2 {
+	margin-bottom: 1.5rem;
+}
+
+.flashes {
+	position: fixed;
+	background-color: white;
+	border: 1px solid rgba(0,0,0,.1);
+	padding: 1rem;
+	border-radius: .25rem;
+	top: 1rem;
+	right: 50%;
+	transform: translateX(50%);
+	box-shadow: 0 4px 12px -6px rgba(0,0,0,0.1);
+}
+
+.flashes li {
+	list-style: none;
 }
 
 header {
 	display: flex;
 	justify-content: space-between;
+	position: fixed;
+	top: 0;
+	right: 0;
+	left: 0;
+	padding: 1rem;
+	background-color: white;
+}
+
+header h1 {
+	font-size: 1.125rem
 }
 
 header nav {
@@ -34,9 +102,48 @@ header nav ul {
 	display: flex;
 	list-style: none;
 	gap: 1rem;
+	font-size: .875rem;
+}
+
+label {
+	font-size: .825rem;
+}
+
+input[type="checkbox"] + label {
+	font-size: 1rem;
+}
+
+input[type="checkbox"] {
+	margin-bottom: .5rem;
+}
+
+input:not(input[type="checkbox"]), textarea, select {
+	width: 100%;
+	box-sizing: border-box;
+	padding: .5rem;
+	margin-bottom: 1rem;
+	margin-top: .25rem;
+	border-radius: .25rem;
+	border: 1px solid rgba(0,0,0,0.25);
+}
+
+textarea {
+	width: 100%;
 }
 
 .country-list {
-	max-height: 240px;	
 	overflow: scroll;
+	max-height: 240px;
+	margin-bottom: 1rem;
+}
+
+.article {
+	display: flex;
+	flex-direction: column;
+	margin: 1rem 0;
+}
+
+.article h2,
+.article p {
+	margin: 0;
 }

@@ -77,6 +77,7 @@ class Article(db.Model):
     country = db.Column(db.String(50))  # Store the selected country
     download_link = db.Column(db.String(255))  # URL to the download link
     article_type = db.Column(db.String(50))
+    source = db.Column(db.String(255))
     categories = db.relationship(
         "Category",
         secondary=article_categories,
@@ -172,7 +173,7 @@ def home():
 def publish():
     categories = Category.query.all()
     countries = [country.name for country in pycountry.countries]
-    article_types = ["News", "Blog", "Opinion", "Review", "Other"]
+    article_types = ["Hack", "Leak", "News", "Opinion", "Other"]
 
     if request.method == "POST":
         article_title = request.form["title"]
@@ -199,6 +200,7 @@ def publish():
             Category.id.in_(selected_category_ids)
         ).all()
         new_article.categories = selected_categories
+        new_article.source = request.form["source"]
         db.session.add(new_article)
         db.session.commit()
 
@@ -226,7 +228,7 @@ def article(article_id):
 def edit_article(article_id):
     article = Article.query.get_or_404(article_id)
     countries = [country.name for country in pycountry.countries]
-    article_types = ["News", "Blog", "Opinion", "Review", "Other"]
+    article_types = ["Hack", "Leak", "News", "Opinion", "Other"]
 
     # Check if the current user is the author or an admin
     if not (current_user.username == article.author or current_user.is_admin):
@@ -255,6 +257,28 @@ def edit_article(article_id):
         selected_countries=selected_countries,
         article_types=article_types,
     )
+
+
+@app.route("/source/<source>")
+def articles_by_source(source):
+    articles = Article.query.filter_by(source=source).all()
+    return render_template("source_articles.html", articles=articles, source=source)
+
+
+@app.route("/delete_article/<int:article_id>", methods=["POST"])
+@login_required
+def delete_article(article_id):
+    article = Article.query.get_or_404(article_id)
+
+    # Check if the current user is the author or an admin
+    if not (current_user.username == article.author or current_user.is_admin):
+        flash("You do not have permission to delete this article.")
+        return redirect(url_for("home"))
+
+    db.session.delete(article)
+    db.session.commit()
+    flash("Article deleted successfully.")
+    return redirect(url_for("home"))
 
 
 # Error handler

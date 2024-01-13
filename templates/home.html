@@ -1,16 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Welcome to My Blog</h1>
-    <a href="/publish" class="publish-link">Publish New Article</a>
     {% for article in articles %}
     <div class="article">
-        <!-- Article Title as a Link -->
         <h2><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h2>
-        <div class="article-content">
-            {{ article.content_html | safe }}
-        </div>
-        <!-- Optional: Read More Link -->
-        <a href="{{ url_for('article', article_id=article.id) }}">Read more...</a>
+        <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
+        <a href="{{ url_for('article', article_id=article.id) }}">Read more</a>
     </div>
 {% endfor %}
+
 {% endblock %}

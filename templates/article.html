@@ -1,13 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>{{ article.title }}</h1>
-    {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
-        <a href="{{ url_for('edit_article', article_id=article.id) }}">Edit this article</a>
-    {% endif %}
-    <p><strong>Published on:</strong> {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-    <p><strong>Author:</strong> {{ article.author }}</p>
+    <div class="article-actions">
+        {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
+            <a href="{{ url_for('edit_article', article_id=article.id) }}">Edit this article</a>
+        {% endif %}
+        {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
+            <form action="{{ url_for('delete_article', article_id=article.id) }}" method="post">
+                <button type="submit">Delete Article</button>
+            </form>
+        {% endif %}
+    </div>
+    <p>Published by {{ article.author }} on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
     <div class="metadata">
-        <p>Country: {{ article.country }}</p>
+        {% if article.source %}
+            <p><strong>Source:</strong> <a href="{{ url_for('articles_by_source', source=article.source) }}">{{ article.source }}</a></p>
+        {% endif %}
+        {% if article.country %}  <!-- Check if there is at least one country -->
+            <p>Country: {{ article.country }}</p>
+        {% endif %}
         <p>Type: {{ article.article_type }}</p>
         {% if article.download_link %}
             <a href="{{ article.download_link }}">Download</a>
