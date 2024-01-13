@@ -11,15 +11,16 @@
             </form>
         {% endif %}
     </div>
-    <p>Published by {{ article.author }} on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+    <p class="meta">Published by {{ article.author }} on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
     <div class="metadata">
+        <h2>Article Details</h2>
         {% if article.source %}
-            <p><strong>Source:</strong> <a href="{{ url_for('articles_by_source', source=article.source) }}">{{ article.source }}</a></p>
+            <p><span class="label">Source:</span> <a href="{{ url_for('articles_by_source', source=article.source) }}">{{ article.source }}</a></p>
         {% endif %}
         {% if article.country %}  <!-- Check if there is at least one country -->
-            <p>Country: {{ article.country }}</p>
+            <p><span class="label">Country:</span> {{ article.country }}</p>
         {% endif %}
-        <p>Type: {{ article.article_type }}</p>
+        <p><span class="label">Type:</span> {{ article.article_type }}</p>
         {% if article.download_link %}
             <a href="{{ article.download_link }}">Download</a>
         {% endif %}
