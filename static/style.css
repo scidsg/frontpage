@@ -106,6 +106,18 @@ p {
 	max-width: 640px;
 }
 
+.btn {
+	padding: .625rem .825rem;
+	border: 1px solid rgba(51,51,51,1);
+	border-radius: .25rem;
+}
+
+.btn-primary {
+	background-color: #333;
+	color: white;
+	font-family: 'Atkinson Bold', sans-serif;
+}
+
 .content h2 {
 	margin-bottom: 1rem;
 }
@@ -330,11 +342,13 @@ button.destruct {
 	font-size: 1rem;
 }
 
-.content.login {
+.content.login,
+.content.register {
 	max-width: 540px;
 }
 
-.content.login img {
+.content.login img,
+.content.register img {
 	max-width: 72px;
 	margin-bottom: 1rem;
 }
@@ -411,11 +425,11 @@ button.destruct {
 }
 
 .flashes {
-    animation: fadeInMoveDown .3s ease forwards;
+    animation: fadeInMoveDown .5s ease forwards;
 }
 
 .flashes.fadeOut {
-    animation: fadeOutMoveUp .3s ease forwards;
+    animation: fadeOutMoveUp .5s ease forwards;
 }
 
 .user-info a {
