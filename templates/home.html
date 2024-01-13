@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
+<p class="meta">Total Articles: {{ article_count }}</p>
     {% for article in articles %}
         <div class="article">
             <h2><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h2>

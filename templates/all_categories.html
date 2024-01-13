@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>All Categories</h2>
+    <h1>All Categories</h1>
 
     <!-- Types List -->
-    <h3>Types</h3>
+    <h2>Types</h2>
     <ul>
         {% for type in types %}
             <li><a href="{{ url_for('articles_by_type', article_type=type) }}">{{ type }}</a></li>
@@ -12,7 +12,7 @@
     </ul>
 
     <!-- Countries List -->
-    <h3>Countries</h3>
+    <h2>Countries</h2>
     <ul>
         {% for country in countries %}
             <li><a href="{{ url_for('articles_by_country', country=country) }}">{{ country }}</a></li>
@@ -20,7 +20,7 @@
     </ul>
 
     <!-- Sources List -->
-    <h3>Sources</h3>
+    <h2>Sources</h2>
     <ul>
         {% for source in sources %}
             <li><a href="{{ url_for('articles_by_source', source=source) }}">{{ source }}</a></li>

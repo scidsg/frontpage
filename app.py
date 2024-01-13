@@ -171,6 +171,7 @@ def logout():
 @app.route("/")
 def home():
     articles = Article.query.order_by(Article.publish_date.desc()).all()
+    article_count = len(articles)  # Get the count of all articles
 
     # Create a counter for each type, country, and source
     counter = Counter()
@@ -193,6 +194,7 @@ def home():
     return render_template(
         "home.html",
         articles=articles,
+        article_count=article_count,
         all_scopes=all_scopes,
         show_categories=True,
     )
@@ -293,19 +295,40 @@ def edit_article(article_id):
 @app.route("/source/<source>")
 def articles_by_source(source):
     articles = Article.query.filter_by(source=source).all()
-    return render_template("source_articles.html", articles=articles, source=source)
+    article_count = len(articles)  # Get the count of articles
+
+    return render_template(
+        "source_articles.html",
+        articles=articles,
+        source=source,
+        article_count=article_count,  # Pass the article count to the template
+    )
 
 
 @app.route("/country/<country>")
 def articles_by_country(country):
     articles = Article.query.filter(Article.country.like(f"%{country}%")).all()
-    return render_template("country_articles.html", articles=articles, country=country)
+    article_count = len(articles)  # Get the count of articles
+
+    return render_template(
+        "country_articles.html",
+        articles=articles,
+        country=country,
+        article_count=article_count,  # Pass the article count to the template
+    )
 
 
 @app.route("/author/<author>")
 def articles_by_author(author):
     articles = Article.query.filter_by(author=author).all()
-    return render_template("author_articles.html", articles=articles, author=author)
+    article_count = len(articles)  # Get the count of articles
+
+    return render_template(
+        "author_articles.html",
+        articles=articles,
+        author=author,
+        article_count=article_count,  # Pass the article count to the template
+    )
 
 
 @app.route("/type/<article_type>")
@@ -314,8 +337,14 @@ def articles_by_type(article_type):
         articles = Article.query.all()
     else:
         articles = Article.query.filter_by(article_type=article_type).all()
+
+    article_count = len(articles)  # Get the count of articles
+
     return render_template(
-        "type_articles.html", articles=articles, article_type=article_type
+        "type_articles.html",
+        articles=articles,
+        article_type=article_type,
+        article_count=article_count,  # Pass the article count to the template
     )
 
 
