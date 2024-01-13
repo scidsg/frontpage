@@ -82,6 +82,8 @@ WantedBy=multi-user.target
 EOF
 
 sudo ln -s /etc/nginx/sites-available/frontpage /etc/nginx/sites-enabled
+rm /etc/nginx/sites-available/default
+rm /etc/nginx/sites-enabled/default
 sudo systemctl restart nginx
 
 sudo systemctl enable frontpage.service
