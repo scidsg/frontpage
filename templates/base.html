@@ -33,17 +33,21 @@
           {% endif %}
         {% endwith %}
         
+        <!-- Categories List -->
         {% if show_categories %}
             <ul class="categories-list">
-                {% for type in types %}
-                    <li><a href="{{ url_for('articles_by_type', article_type=type) }}">{{ type }}</a></li>
+                {% for scope in all_scopes %}
+                    <li>
+                        {% if scope.type == 'type' %}
+                            <a href="{{ url_for('articles_by_type', article_type=scope.name) }}">{{ scope.name }}</a>
+                        {% elif scope.type == 'country' %}
+                            <a href="{{ url_for('articles_by_country', country=scope.name) }}">{{ scope.name }}</a>
+                        {% elif scope.type == 'source' %}
+                            <a href="{{ url_for('articles_by_source', source=scope.name) }}">{{ scope.name }}</a>
+                        {% endif %}
+                    </li>
                 {% endfor %}
-                {% for country in countries %}
-                    <li><a href="{{ url_for('articles_by_country', country=country) }}">{{ country }}</a></li>
-                {% endfor %}
-                {% for source in sources %}
-                    <li><a href="{{ url_for('articles_by_source', source=source) }}">{{ source }}</a></li>
-                {% endfor %}
+                <li><a href="{{ url_for('all_categories') }}">All</a></li>
             </ul>
         {% endif %}
 

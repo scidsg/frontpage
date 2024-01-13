@@ -20,6 +20,7 @@ import markdown
 import pycountry
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo, ValidationError
+from collections import Counter
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -170,16 +171,21 @@ def logout():
 @app.route("/")
 def home():
     articles = Article.query.order_by(Article.publish_date.desc()).all()
-    types = set([article.article_type for article in articles if article.article_type])
-    countries = set(
-        [
-            country
-            for article in articles
-            for country in article.country.split(", ")
-            if article.country
-        ]
-    )
-    sources = set([article.source for article in articles if article.source])
+
+    # Create a counter for each type, country, and source
+    counter = Counter()
+    for article in articles:
+        if article.article_type:
+            counter[("type", article.article_type)] += 1
+        if article.country:
+            for country in article.country.split(", "):
+                counter[("country", country)] += 1
+        if article.source:
+            counter[("source", article.source)] += 1
+
+    # Get the top 5 scopes
+    top_scopes = counter.most_common(5)
+    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
 
     for article in articles:
         article.content_html = markdown.markdown(article.content)
@@ -187,9 +193,7 @@ def home():
     return render_template(
         "home.html",
         articles=articles,
-        types=types,
-        countries=countries,
-        sources=sources,
+        all_scopes=all_scopes,
         show_categories=True,
     )
 
@@ -306,9 +310,34 @@ def articles_by_author(author):
 
 @app.route("/type/<article_type>")
 def articles_by_type(article_type):
-    articles = Article.query.filter_by(article_type=article_type).all()
+    if article_type.lower() == "all":
+        articles = Article.query.all()
+    else:
+        articles = Article.query.filter_by(article_type=article_type).all()
     return render_template(
         "type_articles.html", articles=articles, article_type=article_type
+    )
+
+
+@app.route("/all_categories")
+def all_categories():
+    articles = Article.query.order_by(Article.publish_date.desc()).all()
+
+    types = sorted(
+        set(article.article_type for article in articles if article.article_type)
+    )
+    countries = sorted(
+        set(
+            country
+            for article in articles
+            for country in article.country.split(", ")
+            if article.country
+        )
+    )
+    sources = sorted(set(article.source for article in articles if article.source))
+
+    return render_template(
+        "all_categories.html", types=types, countries=countries, sources=sources
     )
 
 
