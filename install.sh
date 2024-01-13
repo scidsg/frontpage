@@ -45,7 +45,6 @@ python /var/www/html/frontpage/init_db.py
 sudo chown -R www-data:www-data /var/www/html/frontpage
 sudo chown www-data:www-data /var/www/html/frontpage/blog.db
 sudo chmod 664 /var/www/html/frontpage/blog.db
-sudo systemctl restart frontpage.service
 
 # Install Nginx
 sudo apt install nginx -y
@@ -87,3 +86,4 @@ sudo systemctl restart nginx
 
 sudo systemctl enable frontpage.service
 sudo systemctl start frontpage.service
+sudo systemctl restart frontpage.service
