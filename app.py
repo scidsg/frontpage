@@ -265,6 +265,18 @@ def articles_by_source(source):
     return render_template("source_articles.html", articles=articles, source=source)
 
 
+@app.route("/country/<country>")
+def articles_by_country(country):
+    articles = Article.query.filter(Article.country.like(f"%{country}%")).all()
+    return render_template("country_articles.html", articles=articles, country=country)
+
+
+@app.route("/author/<author>")
+def articles_by_author(author):
+    articles = Article.query.filter_by(author=author).all()
+    return render_template("author_articles.html", articles=articles, author=author)
+
+
 @app.route("/delete_article/<int:article_id>", methods=["POST"])
 @login_required
 def delete_article(article_id):

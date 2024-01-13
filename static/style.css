@@ -31,6 +31,7 @@ body {
 	flex-direction:  column;
 	margin: 0 auto;
 	position: relative;
+	border-radius: .5rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -94,7 +95,7 @@ p {
 
 .metadata p {
 	margin: .325rem 0;
-	font-size: .875rem;
+	font-size: .8125rem;
 	font-family: 'IBM Plex Mono', monospace;
 }
 

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Articles from {{ country }}</h1>
+    <ul>
+        {% for article in articles %}
+            <li><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}

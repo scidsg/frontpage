@@ -1,24 +1,30 @@
 {% extends "base.html" %}
 {% block content %}
     <h1>{{ article.title }}</h1>
-    <div class="article-actions">
-        {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
+    {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
+        <div class="article-actions">
             <a href="{{ url_for('edit_article', article_id=article.id) }}">Edit this article</a>
-        {% endif %}
-        {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
-            <form action="{{ url_for('delete_article', article_id=article.id) }}" method="post">
-                <button type="submit">Delete Article</button>
-            </form>
-        {% endif %}
-    </div>
-    <p class="meta">Published by {{ article.author }} on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+            {% endif %}
+            {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
+                <form action="{{ url_for('delete_article', article_id=article.id) }}" method="post">
+                    <button type="submit">Delete Article</button>
+                </form>
+        </div>
+    {% endif %}
+    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+
     <div class="metadata">
         <h2>Article Details</h2>
         {% if article.source %}
             <p><span class="label">Source:</span> <a href="{{ url_for('articles_by_source', source=article.source) }}">{{ article.source }}</a></p>
         {% endif %}
-        {% if article.country %}  <!-- Check if there is at least one country -->
-            <p><span class="label">Country:</span> {{ article.country }}</p>
+        {% if article.country %}
+            <p><span class="label">Country:</span>
+            {% set countries = article.country.split(", ") %}
+            {% for country in countries %}
+                <a href="{{ url_for('articles_by_country', country=country) }}">{{ country }}</a>{% if not loop.last %}, {% endif %}
+            {% endfor %}
+            </p>
         {% endif %}
         <p><span class="label">Type:</span> {{ article.article_type }}</p>
         {% if article.download_link %}

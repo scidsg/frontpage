@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Articles by {{ author }}</h1>
+    {% for article in articles %}
+        <div>
+            <h2><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h2>
+            <!-- Include other article details as needed -->
+        </div>
+    {% else %}
+        <p>No articles found for this author.</p>
+    {% endfor %}
+{% endblock %}
