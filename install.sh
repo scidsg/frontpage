@@ -38,7 +38,7 @@ FLASK_SECRET_KEY=$(openssl rand -hex 32)
 export FLASK_SECRET_KEY
 echo "FLASK_SECRET_KEY=$FLASK_SECRET_KEY" > /var/www/html/frontpage/.env
 
-# Initialize the Flask app and create the database
+# Initialize the Flask app and create the database within application context
 python /var/www/html/frontpage/init_db.py
 
 # Change owner and permissions of the SQLite database file
