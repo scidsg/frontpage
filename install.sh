@@ -42,8 +42,10 @@ echo "FLASK_SECRET_KEY=$FLASK_SECRET_KEY" > /var/www/html/frontpage/.env
 python /var/www/html/frontpage/init_db.py
 
 # Change owner and permissions of the SQLite database file
+sudo chown -R www-data:www-data /var/www/html/frontpage
 sudo chown www-data:www-data /var/www/html/frontpage/blog.db
 sudo chmod 664 /var/www/html/frontpage/blog.db
+sudo systemctl restart frontpage.service
 
 # Install Nginx
 sudo apt install nginx -y
@@ -71,7 +73,7 @@ Description=My Flask App
 After=network.target
 
 [Service]
-User=$USER
+User=www-data
 Group=www-data
 WorkingDirectory=/var/www/html/frontpage/
 ExecStart=/var/www/html/frontpage/venv/bin/gunicorn -w 1 -b 127.0.0.1:5000 app:app
