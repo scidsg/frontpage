@@ -33,10 +33,18 @@ body {
 	position: relative;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6,
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 	font-weight: normal;
 	font-family: 'Atkinson Bold', sans-serif;
 	margin: 0;
+	color: #333;
+}
+
+p, a {
+	font-weight: normal;
+	font-family: 'Atkinson Hyperlegible', sans-serif;
+	color: #333;
 }
 
 h1 {
@@ -72,6 +80,10 @@ p {
 	margin: .5rem 0;
 }
 
+.meta a {
+	font-family: 'IBM Plex Mono', monospace;
+}
+
 h1 + form {
 	margin-top: 1rem;
 }
@@ -96,7 +108,8 @@ h1 + form {
 	margin-top: 0;
 }
 
-.metadata p {
+.metadata p,
+.metadata a {
 	margin: .325rem 0;
 	font-size: .8125rem;
 	font-family: 'IBM Plex Mono', monospace;
@@ -196,6 +209,7 @@ textarea {
 	display: flex;
 	flex-direction: column;
 	margin: 1rem 0;
+	gap: .625rem;
 }
 
 .article h2,
@@ -243,6 +257,10 @@ textarea {
 {
 	cursor: pointer;
 	text-decoration: underline;
+}
+
+.article-content p:first-of-type {
+	margin-top: 0;
 }
 
 .article-content ul {

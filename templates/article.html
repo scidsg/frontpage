@@ -26,7 +26,7 @@
             {% endfor %}
             </p>
         {% endif %}
-        <p><span class="label">Type:</span> {{ article.article_type }}</p>
+        <p><span class="label">Type:</span> <a href="{{ url_for('articles_by_type', article_type=article.article_type) }}">{{ article.article_type }}</a></p>
         {% if article.download_link %}
             <a href="{{ article.download_link }}">Download</a>
         {% endif %}

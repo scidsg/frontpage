@@ -286,6 +286,14 @@ def articles_by_author(author):
     return render_template("author_articles.html", articles=articles, author=author)
 
 
+@app.route("/type/<article_type>")
+def articles_by_type(article_type):
+    articles = Article.query.filter_by(article_type=article_type).all()
+    return render_template(
+        "type_articles.html", articles=articles, article_type=article_type
+    )
+
+
 @app.route("/delete_article/<int:article_id>", methods=["POST"])
 @login_required
 def delete_article(article_id):
