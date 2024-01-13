@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
+
+    <!-- Articles -->
     {% for article in articles %}
     <div class="article">
         <h2><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h2>
@@ -7,6 +9,5 @@
         <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
         <a href="{{ url_for('article', article_id=article.id) }}">Read more</a>
     </div>
-{% endfor %}
-
+    {% endfor %}
 {% endblock %}

@@ -32,6 +32,21 @@
             {% endfor %}
           {% endif %}
         {% endwith %}
+        
+        {% if show_categories %}
+            <ul class="categories-list">
+                {% for type in types %}
+                    <li><a href="{{ url_for('articles_by_type', article_type=type) }}">{{ type }}</a></li>
+                {% endfor %}
+                {% for country in countries %}
+                    <li><a href="{{ url_for('articles_by_country', country=country) }}">{{ country }}</a></li>
+                {% endfor %}
+                {% for source in sources %}
+                    <li><a href="{{ url_for('articles_by_source', source=source) }}">{{ source }}</a></li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         <div class="content">
             {% block content %}
             {% endblock %}

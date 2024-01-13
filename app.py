@@ -170,10 +170,28 @@ def logout():
 @app.route("/")
 def home():
     articles = Article.query.order_by(Article.publish_date.desc()).all()
-    # Convert Markdown to HTML for each article
+    types = set([article.article_type for article in articles if article.article_type])
+    countries = set(
+        [
+            country
+            for article in articles
+            for country in article.country.split(", ")
+            if article.country
+        ]
+    )
+    sources = set([article.source for article in articles if article.source])
+
     for article in articles:
         article.content_html = markdown.markdown(article.content)
-    return render_template("home.html", articles=articles)
+
+    return render_template(
+        "home.html",
+        articles=articles,
+        types=types,
+        countries=countries,
+        sources=sources,
+        show_categories=True,
+    )
 
 
 # Protect the publish route
