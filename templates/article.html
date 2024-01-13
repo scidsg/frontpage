@@ -1,38 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>{{ article.title }}</h1>
-    {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
-        <div class="article-actions">
-            <a href="{{ url_for('edit_article', article_id=article.id) }}">Edit</a>
-            {% endif %}
-            {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
-                <form action="{{ url_for('delete_article', article_id=article.id) }}" method="post">
-                    <button type="submit" class="destruct">Delete</button>
-                </form>
-        </div>
-    {% endif %}
-    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+    <div class="content">
+        <h1>{{ article.title }}</h1>
+        {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
+            <div class="article-actions">
+                <a href="{{ url_for('edit_article', article_id=article.id) }}">Edit</a>
+                {% endif %}
+                {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
+                    <form action="{{ url_for('delete_article', article_id=article.id) }}" method="post">
+                        <button type="submit" class="destruct">Delete</button>
+                    </form>
+            </div>
+        {% endif %}
+        <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
 
-    <div class="metadata">
-        <h2>Article Details</h2>
-        {% if article.source %}
-            <p><span class="label">Source:</span> <a href="{{ url_for('articles_by_source', source=article.source) }}">{{ article.source }}</a></p>
-        {% endif %}
-        {% if article.country %}
-            <p><span class="label">Country:</span>
-            {% set countries = article.country.split(", ") %}
-            {% for country in countries %}
-                <a href="{{ url_for('articles_by_country', country=country) }}">{{ country }}</a>{% if not loop.last %}, {% endif %}
-            {% endfor %}
-            </p>
-        {% endif %}
-        <p><span class="label">Type:</span> <a href="{{ url_for('articles_by_type', article_type=article.article_type) }}">{{ article.article_type }}</a></p>
-        {% if article.download_link %}
-            <a href="{{ article.download_link }}">Download</a>
-        {% endif %}
+        <div class="metadata">
+            <h2>Article Details</h2>
+            {% if article.source %}
+                <p><span class="label">Source:</span> <a href="{{ url_for('articles_by_source', source=article.source) }}">{{ article.source }}</a></p>
+            {% endif %}
+            {% if article.country %}
+                <p><span class="label">Country:</span>
+                {% set countries = article.country.split(", ") %}
+                {% for country in countries %}
+                    <a href="{{ url_for('articles_by_country', country=country) }}">{{ country }}</a>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+                </p>
+            {% endif %}
+            <p><span class="label">Type:</span> <a href="{{ url_for('articles_by_type', article_type=article.article_type) }}">{{ article.article_type }}</a></p>
+            {% if article.download_link %}
+                <a href="{{ article.download_link }}">Download</a>
+            {% endif %}
+        </div>
+        <div class="article-content">
+            {{ content_html | safe }}
+        </div>
+        <a href="/">Back to Home</a>
     </div>
-    <div class="article-content">
-        {{ content_html | safe }}
-    </div>
-    <a href="/">Back to Home</a>
 {% endblock %}

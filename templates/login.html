@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Login</h2>
-    <form method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Login</button>
-    </form>
+    <div class="content login">
+        <img src="{{ url_for('static', filename='ddos-logo.png') }}" alt="Logo for Distributed Denial of Secrets">
+        <h1>Login</h1>
+        <form method="post" class="login-form">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
 {% endblock %}

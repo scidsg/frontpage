@@ -34,7 +34,7 @@
         {% endwith %}
         
         <!-- Categories List -->
-        {% if show_categories %}
+        {% if request.endpoint not in ['login', 'register', 'article'] %}
             <ul class="categories-list">
                 {% for scope in all_scopes %}
                     <li>
@@ -51,10 +51,8 @@
             </ul>
         {% endif %}
 
-        <div class="content">
-            {% block content %}
-            {% endblock %}
-        </div>
+        {% block content %}
+        {% endblock %}
     </main>
 
     <footer>

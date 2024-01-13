@@ -108,11 +108,15 @@ class RegistrationForm(FlaskForm):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    # Flash a message to the user
-    flash("⛔️ That page doesn't exist", "warning")
-
-    # Redirect to home page
-    return redirect(url_for("home"))
+    path = request.path
+    # Check if the missing resource is not a static file
+    if not path.startswith("/static/"):
+        # Flash a message to the user
+        flash("⛔️ That page doesn't exist", "warning")
+        # Redirect to home page
+        return redirect(url_for("home"))
+    # If it's a static file, just return the default 404 response
+    return e
 
 
 @login_manager.user_loader
@@ -297,11 +301,28 @@ def articles_by_source(source):
     articles = Article.query.filter_by(source=source).all()
     article_count = len(articles)  # Get the count of articles
 
+    # Collect all articles to determine top scopes
+    all_articles = Article.query.all()
+    counter = Counter()
+    for article in all_articles:
+        if article.article_type:
+            counter[("type", article.article_type)] += 1
+        if article.country:
+            for country in article.country.split(", "):
+                counter[("country", country)] += 1
+        if article.source:
+            counter[("source", article.source)] += 1
+
+    # Get the top 5 scopes
+    top_scopes = counter.most_common(5)
+    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+
     return render_template(
         "source_articles.html",
         articles=articles,
         source=source,
-        article_count=article_count,  # Pass the article count to the template
+        article_count=article_count,
+        all_scopes=all_scopes,  # Pass the all_scopes to the template
     )
 
 
@@ -310,11 +331,28 @@ def articles_by_country(country):
     articles = Article.query.filter(Article.country.like(f"%{country}%")).all()
     article_count = len(articles)  # Get the count of articles
 
+    # Collect all articles to determine top scopes
+    all_articles = Article.query.all()
+    counter = Counter()
+    for article in all_articles:
+        if article.article_type:
+            counter[("type", article.article_type)] += 1
+        if article.country:
+            for c in article.country.split(", "):
+                counter[("country", c)] += 1
+        if article.source:
+            counter[("source", article.source)] += 1
+
+    # Get the top 5 scopes
+    top_scopes = counter.most_common(5)
+    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+
     return render_template(
         "country_articles.html",
         articles=articles,
         country=country,
-        article_count=article_count,  # Pass the article count to the template
+        article_count=article_count,
+        all_scopes=all_scopes,  # Pass the all_scopes to the template
     )
 
 
@@ -323,11 +361,28 @@ def articles_by_author(author):
     articles = Article.query.filter_by(author=author).all()
     article_count = len(articles)  # Get the count of articles
 
+    # Collect all articles to determine top scopes
+    all_articles = Article.query.all()
+    counter = Counter()
+    for article in all_articles:
+        if article.article_type:
+            counter[("type", article.article_type)] += 1
+        if article.country:
+            for c in article.country.split(", "):
+                counter[("country", c)] += 1
+        if article.source:
+            counter[("source", article.source)] += 1
+
+    # Get the top 5 scopes
+    top_scopes = counter.most_common(5)
+    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+
     return render_template(
         "author_articles.html",
         articles=articles,
         author=author,
-        article_count=article_count,  # Pass the article count to the template
+        article_count=article_count,
+        all_scopes=all_scopes,  # Pass the all_scopes to the template
     )
 
 
@@ -340,11 +395,28 @@ def articles_by_type(article_type):
 
     article_count = len(articles)  # Get the count of articles
 
+    # Collect all articles to determine top scopes
+    all_articles = Article.query.all()
+    counter = Counter()
+    for article in all_articles:
+        if article.article_type:
+            counter[("type", article.article_type)] += 1
+        if article.country:
+            for c in article.country.split(", "):
+                counter[("country", c)] += 1
+        if article.source:
+            counter[("source", article.source)] += 1
+
+    # Get the top 5 scopes
+    top_scopes = counter.most_common(5)
+    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+
     return render_template(
         "type_articles.html",
         articles=articles,
         article_type=article_type,
-        article_count=article_count,  # Pass the article count to the template
+        article_count=article_count,
+        all_scopes=all_scopes,  # Pass the all_scopes to the template
     )
 
 
@@ -365,8 +437,27 @@ def all_categories():
     )
     sources = sorted(set(article.source for article in articles if article.source))
 
+    # Collect all articles to determine top scopes
+    counter = Counter()
+    for article in articles:
+        if article.article_type:
+            counter[("type", article.article_type)] += 1
+        if article.country:
+            for c in article.country.split(", "):
+                counter[("country", c)] += 1
+        if article.source:
+            counter[("source", article.source)] += 1
+
+    # Get the top 5 scopes
+    top_scopes = counter.most_common(5)
+    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+
     return render_template(
-        "all_categories.html", types=types, countries=countries, sources=sources
+        "all_categories.html",
+        types=types,
+        countries=countries,
+        sources=sources,
+        all_scopes=all_scopes,  # Pass the all_scopes to the template
     )
 
 

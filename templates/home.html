@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<p class="meta">Total Articles: {{ article_count }}</p>
-    {% for article in articles %}
-        <div class="article">
-            <h2><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h2>
-            <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-            <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
-            <a href="{{ url_for('article', article_id=article.id) }}">Read more</a>
-        </div>
-    {% endfor %}
+    <div class="content">
+            <p class="meta">Total Articles: {{ article_count }}</p>
+                {% for article in articles %}
+                    <div class="article">
+                        <h2><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h2>
+                        <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
+                        <a href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                    </div>
+        {% endfor %}
+    </div>
 {% endblock %}
