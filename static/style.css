@@ -282,6 +282,10 @@ textarea {
 	color: #595959;
 }
 
+button.destruct {
+	color: darkred;
+}
+
 .article-actions a:hover,
 .article-actions button:hover
 {

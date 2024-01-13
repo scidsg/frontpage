@@ -7,7 +7,7 @@
             {% endif %}
             {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
                 <form action="{{ url_for('delete_article', article_id=article.id) }}" method="post">
-                    <button type="submit">Delete</button>
+                    <button type="submit" class="destruct">Delete</button>
                 </form>
         </div>
     {% endif %}
