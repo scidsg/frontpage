@@ -31,7 +31,6 @@ body {
 	flex-direction:  column;
 	margin: 0 auto;
 	position: relative;
-	border-radius: .5rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -138,6 +137,15 @@ header nav {
 	align-items: center;
 }
 
+header nav a {
+	text-decoration: none;
+	color: #595959;
+}
+
+header nav a:hover {
+	text-decoration: underline;
+}
+
 header nav ul {
 	display: flex;
 	list-style: none;
@@ -231,4 +239,15 @@ textarea {
 {
 	cursor: pointer;
 	text-decoration: underline;
+}
+
+.article-content ul {
+	padding: 0 0 0 1rem;
+}
+
+.article-content li {
+	max-width: 640px;
+	margin-bottom: .5rem;
+	line-height: 1.5;
+	font-size: 1rem;
 }

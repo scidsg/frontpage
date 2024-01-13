@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Articles of Type "{{ article_type }}"</h1>
+    {% for article in articles %}
+        <div>
+            <h2><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h2>
+            <!-- Other article details -->
+        </div>
+    {% else %}
+        <p>No articles found for this type.</p>
+    {% endfor %}
+{% endblock %}
