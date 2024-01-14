@@ -79,6 +79,7 @@ class Article(db.Model):
     download_link = db.Column(db.String(255))
     magnet_link = db.Column(db.String(255))
     torrent_link = db.Column(db.String(255))
+    external_collaboration = db.Column(db.String(255))
     article_type = db.Column(db.String(50))
     source = db.Column(db.String(255))
     last_edited = db.Column(db.DateTime)
@@ -245,6 +246,14 @@ def home():
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
 
+    # Fetch articles with external collaboration links
+    external_collaboration_articles = (
+        Article.query.filter(Article.external_collaboration != None)
+        .order_by(Article.publish_date.desc())
+        .limit(5)
+        .all()
+    )
+
     # Convert Markdown to HTML for both sets of articles
     for article_set in [main_articles, recently_edited_articles]:
         for article in article_set:
@@ -254,6 +263,7 @@ def home():
         "home.html",
         main_articles=main_articles,
         recently_edited_articles=recently_edited_articles,
+        external_collaboration_articles=external_collaboration_articles,
         article_count=article_count,
         all_scopes=all_scopes,
         show_categories=True,
@@ -275,8 +285,9 @@ def publish():
         article_country = ", ".join(article_countries)
         article_type = request.form["type"]
         article_download_link = request.form["download_link"]
-        article_magnet_link = request.form.get("magnet_link")  # Add this line
-        article_torrent_link = request.form.get("torrent_link")  # Add this line
+        article_magnet_link = request.form.get("magnet_link")
+        article_torrent_link = request.form.get("torrent_link")
+        article_external_collaboration = request.form.get("external_collaboration")
 
         article_author = current_user.username
 
@@ -287,8 +298,9 @@ def publish():
             country=article_country,
             article_type=article_type,
             download_link=article_download_link,
-            magnet_link=article_magnet_link,  # Add this line
-            torrent_link=article_torrent_link,  # Add this line
+            magnet_link=article_magnet_link,
+            torrent_link=article_torrent_link,
+            external_collaboration=article_external_collaboration,
         )
         selected_category_ids = request.form.getlist("categories")
         selected_categories = Category.query.filter(
@@ -363,6 +375,10 @@ def edit_article(article_id):
         article.download_link = request.form["download_link"]
         article.magnet_link = request.form["magnet_link"]
         article.torrent_link = request.form["torrent_link"]
+
+        # Update external collaboration URL
+        article.external_collaboration = request.form.get("external_collaboration")
+
         article.last_edited = datetime.utcnow()
 
         db.session.commit()

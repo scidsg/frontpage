@@ -45,6 +45,14 @@ body {
 	background-position-x: right;
 }
 
+.promo-home {
+	max-width: 1440px;
+}
+
+.content.home {
+	max-width: 1440px;
+}
+
 .content.promo p {
 	width: 60%;
 }

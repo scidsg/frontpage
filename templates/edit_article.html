@@ -4,15 +4,15 @@
         <h1>Edit Article</h1>
         <form action="{{ url_for('edit_article', article_id=article.id) }}" method="post">
             <div>
-                <label for="title">Title:</label>
+                <label for="title">Title</label>
                 <input type="text" id="title" name="title" value="{{ article.title }}" required>
             </div>
             <div>
-                <label for="content">Content:</label>
+                <label for="content">Content</label>
                 <textarea id="content" name="content" required>{{ article.content }}</textarea>
             </div>
             <div class="country-list">
-                <label>Countries:</label>
+                <label>Countries</label>
                 {% for country in countries %}
                 <div>
                     <input type="checkbox" id="country-{{ country }}" name="countries" value="{{ country }}" {% if country in selected_countries %}checked{% endif %}>
@@ -21,7 +21,7 @@
                 {% endfor %}
             </div>
             <div>
-                <label for="type">Type:</label>
+                <label for="type">Type</label>
                 <select id="type" name="type">
                     {% for type in article_types %}
                     <option value="{{ type }}" {% if article.article_type == type %}selected{% endif %}>{{ type }}</option>
@@ -29,20 +29,27 @@
                 </select>
             </div>
             <div>
-                <label for="download_link">Download Link:</label>
+                <label for="download_link">Download Link</label>
                 <input type="text" id="download_link" name="download_link" value="{{ article.download_link }}">
             </div>
             <!-- Magnet Link -->
             <div>
-                <label for="magnet_link">Magnet Link:</label>
+                <label for="magnet_link">Magnet Link</label>
                 <input type="text" id="magnet_link" name="magnet_link" value="{{ article.magnet_link }}">
             </div>
 
             <!-- Torrent Link -->
             <div>
-                <label for="torrent_link">Torrent Link:</label>
+                <label for="torrent_link">Torrent Link</label>
                 <input type="text" id="torrent_link" name="torrent_link" value="{{ article.torrent_link }}">
             </div>
+
+            <!-- External Collaboration URL -->
+            <div>
+                <label for="external_collaboration">External Collaboration URL</label>
+                <input type="text" id="external_collaboration" name="external_collaboration" value="{{ article.external_collaboration }}">
+            </div>
+
             <button type="submit">Update Article</button>
         </form>
         <a href="{{ url_for('article', article_id=article.id) }}">Cancel</a>

@@ -1,9 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
+    <div class="content promo promo-home" id="promo">
+        <h2>We need your help!</h2>
+        <p>We are the most important and most active public library of hacked and leaked datasets in the world today, but we're completely out of money. If we don't raise $150,000 by January 31, 2024, we might be forced to suspend operations.</p>
+        <div class="btn-container">
+            <a class="btn btn-primary" href="https://we.charity" target="_blank" rel="noopener noreferrer">❤️ Donate Now</a>
+            <a href="#" id="close_promo">Close</a>
+        </div>
+    </div>
     <div class="content home">
         <!-- Column 1: Recent Articles -->
         <div class="column recent-articles">
-            <h2>Recent Articles</h2>
+            <h2>Recently Published</h2>
             {% for article in main_articles %}
                 <div class="article">
                     <h3><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h3>
@@ -15,7 +23,7 @@
         </div>
         <!-- Column 2: Recently Edited Articles -->
         <div class="column recently-edited-articles">
-            <h2>Recently Edited Articles</h2>
+            <h2>Recently Edited</h2>
             {% for article in recently_edited_articles %}
                 <div class="article">
                     <h3><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h3>
@@ -28,7 +36,24 @@
                     <a href="{{ url_for('article', article_id=article.id) }}">Read more</a>
                 </div>
         {% endfor %}
-
         </div>
+
+        <!-- Column 3: Articles with External Collaboration -->
+        <div class="column external-collaboration-articles">
+            <h2>External Collaboration</h2>
+            {% for article in external_collaboration_articles %}
+                <div class="article">
+                    <h3><a href="{{ article.external_collaboration }}">{{ article.title }}</a></h3>
+                    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                    
+                    <!-- Render content if it is not empty -->
+                    {% if article.content_html|length > 0 %}
+                        {{ article.content_html[:200] | safe }}{% if article.content_html|length > 200 %}...{% endif %}
+                    {% endif %}
+
+                    <a href="{{ article.external_collaboration }}">Read more</a>
+            </div>
+        {% endfor %}
+    </div>
     </div>
 {% endblock %}
