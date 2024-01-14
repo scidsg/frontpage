@@ -246,9 +246,10 @@ def home():
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
 
-    # Fetch articles with external collaboration links
+    # Fetch articles with non-empty, non-null external collaboration links
     external_collaboration_articles = (
         Article.query.filter(Article.external_collaboration != None)
+        .filter(Article.external_collaboration != "")  # Add this line
         .order_by(Article.publish_date.desc())
         .limit(5)
         .all()
