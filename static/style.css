@@ -424,6 +424,7 @@ button.destruct {
 	gap: 1.75rem;
 	display: flex;
 	flex-direction: column;
+	width: 50%;
 }
 
 .content.home .column .article {
@@ -539,6 +540,10 @@ button.destruct {
 @media only screen and (max-width: 640px) { 
 	.content.home {
 		flex-direction: column;
+	}
+
+	.content.home .column {
+		width: 100%;
 	}
 
 	body {
