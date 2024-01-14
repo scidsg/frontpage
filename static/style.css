@@ -18,7 +18,7 @@
 
 body {
 	font-family: 'Atkinson Hyperlegible', sans-serif;
-	padding: 5.5rem 1rem 1rem 1rem;
+	padding: 8.25rem 1rem 1rem 1rem;
 	margin: 0;
 }
 
@@ -38,8 +38,15 @@ body {
 
 .content.promo {
 	margin-bottom: 1rem;
-	margin-top: 3rem;
 	background-image: url('banner-bg.png');
+	background-repeat: no-repeat;
+	background-size: 240px;
+	background-position-y: bottom -2rem;
+	background-position-x: right;
+}
+
+.content.promo p {
+	width: 60%;
 }
 
 .content.promo .btn {
@@ -82,14 +89,6 @@ ul.categories-list a {
 
 ul.categories-list a:hover {
 	text-decoration: underline;
-}
-
-.categories-list + .content {
-	margin-top: 3rem;
-}
-
-.promo ~ .content {
-	margin-top: 1rem;
 }
 
 h1, h2, h3, h4, h5, h6,
@@ -525,7 +524,7 @@ button.destruct {
 
 @media only screen and (max-width: 768px) {
 	body {
-		padding-top: 4.5rem;
+		padding-top: 7.5rem;
 	}
 	
 	.btnIcon {
@@ -569,6 +568,7 @@ button.destruct {
         flex-direction: column;
         align-items: start;
     }
+	
 }
 
 @media only screen and (max-width: 640px) { 
@@ -599,6 +599,14 @@ button.destruct {
 	h5 {
 		font-size: 1rem;
 	}
+	
+	.content.promo {
+		background-image: none;
+	}
+
+	.content.promo p {
+		width: 100%;
+	}
 }
 
 @media only screen and (max-width: 469px) { 
@@ -607,8 +615,9 @@ button.destruct {
 	}
 
 	body {
-		padding-top: 5.5rem;
+		padding-top: 8.5rem;
 	}
+
 }
 
 @media only screen and (max-width: 420px) { 
