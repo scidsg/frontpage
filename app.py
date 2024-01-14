@@ -138,6 +138,41 @@ class RegistrationForm(FlaskForm):
             raise ValidationError("Invalid or expired invite code.")
 
 
+class UserSettingsForm(FlaskForm):
+    # Fields for password change
+    current_password = PasswordField(
+        "Current Password",
+        validators=[DataRequired()],
+        render_kw={"placeholder": "Current Password"},
+    )
+    new_password = PasswordField(
+        "New Password",
+        validators=[
+            DataRequired(),
+            Length(min=8, message="Password must be at least 8 characters long."),
+            Regexp(r"(?=.*[A-Za-z])", message="Password must contain letters."),
+            Regexp(r"(?=.*[0-9])", message="Password must contain numbers."),
+            Regexp(
+                r"(?=.*[-!@#$%^&*()_+])",
+                message="Password must contain at least one special character (-!@#$%^&*()_+).",
+            ),
+        ],
+        render_kw={"placeholder": "New Password"},
+    )
+    confirm_new_password = PasswordField(
+        "Confirm New Password",
+        validators=[
+            DataRequired(),
+            EqualTo("new_password", message="Passwords must match."),
+        ],
+        render_kw={"placeholder": "Confirm New Password"},
+    )
+
+    # Add more fields here as your application grows
+
+    submit = SubmitField("Update Settings")
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     path = request.path
@@ -576,6 +611,29 @@ def delete_article(article_id):
     db.session.commit()
     flash("🗑️ Article deleted successfully.")
     return redirect(url_for("home"))
+
+
+@app.route("/settings", methods=["GET", "POST"])
+@login_required
+def user_settings():
+    form = UserSettingsForm()
+    if form.validate_on_submit():
+        user = current_user
+        if not user.check_password(form.current_password.data):
+            flash("Current password is incorrect.", "danger")
+            return redirect(url_for("user_settings"))
+
+        user.set_password(form.new_password.data)
+        db.session.commit()
+        flash("Your password has been updated. Please log in again.", "success")
+
+        # Log the user out
+        logout_user()
+
+        # Redirect to the login page
+        return redirect(url_for("login"))
+
+    return render_template("settings.html", form=form)
 
 
 # Error handler

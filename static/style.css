@@ -45,6 +45,10 @@ body {
 	background-position-x: right;
 }
 
+.content.promo .btn-primary {
+	padding: .75rem .875rem;
+}
+
 .promo-home {
 	max-width: 1440px;
 }
@@ -161,6 +165,7 @@ p {
 	border: 1px solid rgba(51,51,51,1);
 	border-radius: .25rem;
 	white-space: nowrap;
+	display: flex;
 }
 
 .btn:hover {
@@ -279,6 +284,12 @@ header nav ul {
 
 header .btn {
 	font-size: .875rem;
+	font-family: 'Atkinson Bold', sans-serif;
+}
+
+.btn-emoji {
+	transform: scale(.75);
+	margin-right: .125rem;
 }
 
 label {
@@ -510,6 +521,10 @@ button.destruct {
     max-width: 80vw;
     opacity: 1;
     animation: fadeInMoveDown .5s ease forwards;
+}
+
+.content.settings h2 {
+	margin-bottom: 1rem;
 }
 
 .cancel-edit {

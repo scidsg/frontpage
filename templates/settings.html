@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content settings">
+    <h1>Settings</h1>
+    <section>
+        <h2>Change Password</h2>
+        <form action="{{ url_for('user_settings') }}" method="post">
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.current_password.label }}
+                {{ form.current_password() }}
+                {% for error in form.current_password.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                {{ form.new_password.label }}
+                {{ form.new_password() }}
+                {% for error in form.new_password.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                {{ form.confirm_new_password.label }}
+                {{ form.confirm_new_password() }}
+                {% for error in form.confirm_new_password.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                <button type="submit">Update Password</button>
+            </div>
+        </form>
+    </section>
+    <!-- Future settings sections can be added here -->
+</div>
+{% endblock %}
