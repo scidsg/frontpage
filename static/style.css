@@ -38,11 +38,15 @@ body {
 
 .categories-list {
 	position: fixed;
-	top: 3rem;
+	top: 3.125rem;
 	left: 0;
 	background-color: white;
 	right: 0;
 	z-index: 9;
+}
+
+header {
+	background-color: blue !importnt;
 }
 
 ul.categories-list {
@@ -53,6 +57,8 @@ ul.categories-list {
 	gap: 1.5rem;
 	font-size: .875rem;
 	z-index: 99;
+	overflow-y: scroll;
+	white-space: nowrap;
 }
 
 ul.categories-list a {
@@ -111,7 +117,7 @@ p {
 	padding: .625rem .825rem;
 	border: 1px solid rgba(51,51,51,1);
 	border-radius: .25rem;
-
+	white-space: nowrap;
 }
 
 .btn:hover {
@@ -483,6 +489,10 @@ button.destruct {
 }
 
 @media only screen and (max-width: 768px) {
+	body {
+		padding-top: 4.5rem;
+	}
+	
 	.btnIcon {
 		font-size: .875rem;
 		font-family: 'Atkinson Bold',sans-serif;
@@ -496,6 +506,19 @@ button.destruct {
 
 	header nav {
 		gap: .5rem;
+	}
+	
+	header {
+		padding-top: .75rem;
+		padding-bottom: .75rem;
+	}
+	
+	.categories-list {
+		top: 2.5rem;
+	}
+	
+	header h1 {
+		font-size: 1.125rem
 	}
 
 	header nav ul {
@@ -511,4 +534,24 @@ button.destruct {
         flex-direction: column;
         align-items: start;
     }
+}
+
+@media only screen and (max-width: 640px) { 
+	.content.home {
+		flex-direction: column;
+	}
+
+	body {
+		padding-top: 5.5rem;
+	}
+}
+
+@media only screen and (max-width: 469px) { 
+	.categories-list {
+		top: 3.5rem;
+	}
+
+	body {
+		padding-top: 5.5rem;
+	}
 }
