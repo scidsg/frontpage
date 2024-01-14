@@ -248,6 +248,12 @@ input:not(input[type="checkbox"]), textarea, select {
 	border: 1px solid rgba(0,0,0,0.2);
 }
 
+select {
+	width: initial;
+	display: flex;
+	background-color: white;
+}
+
 .content.register input ~ span {
 	position: relative;
 	top: -8px;

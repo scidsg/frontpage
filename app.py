@@ -19,7 +19,7 @@ import os
 import markdown
 import pycountry
 from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, EqualTo, ValidationError
+from wtforms.validators import DataRequired, EqualTo, ValidationError, Length, Regexp
 from collections import Counter
 
 load_dotenv()  # Load environment variables from .env file
@@ -103,7 +103,19 @@ class InvitationCode(db.Model):
 
 class RegistrationForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[DataRequired()])
+    password = PasswordField(
+        "Password",
+        validators=[
+            DataRequired(),
+            Length(min=8, message="Password must be at least 8 characters long."),
+            Regexp(r"(?=.*[A-Za-z])", message="Password must contain letters."),
+            Regexp(r"(?=.*[0-9])", message="Password must contain numbers."),
+            Regexp(
+                r"(?=.*[-!@#$%^&*()_+])",
+                message="Password must contain at least one special character (-!@#$%^&*()_+).",
+            ),
+        ],
+    )
     confirm_password = PasswordField(
         "Confirm Password", validators=[DataRequired(), EqualTo("password")]
     )
@@ -155,24 +167,23 @@ def register():
 
     form = RegistrationForm()
     if form.validate_on_submit():
-        # Check if the invite code is valid and not used
         invite_code = InvitationCode.query.filter_by(
             code=form.invite_code.data, used=False
         ).first()
-        if invite_code:
-            # Mark the invite code as used
-            invite_code.used = True
-            db.session.commit()
-
-            # Create the new user
-            hashed_password = generate_password_hash(form.password.data)
-            user = User(username=form.username.data, password_hash=hashed_password)
-            db.session.add(user)
-            db.session.commit()
-            flash("🙌 Your account has been created! Please log in.", "success")
-            return redirect(url_for("login"))
-        else:
+        if not invite_code:
             flash("Invalid or expired invite code.", "danger")
+            return render_template("register.html", title="Register", form=form)
+
+        hashed_password = generate_password_hash(form.password.data)
+        user = User(username=form.username.data, password_hash=hashed_password)
+        db.session.add(user)
+
+        # Mark invite code as used
+        invite_code.used = True
+        db.session.commit()
+
+        flash("Your account has been created! Please log in.", "success")
+        return redirect(url_for("login"))
 
     return render_template("register.html", title="Register", form=form)
 
