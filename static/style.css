@@ -512,6 +512,10 @@ button.destruct {
     animation: fadeInMoveDown .5s ease forwards;
 }
 
+.cancel-edit {
+	margin-top: 1rem;
+}
+
 @keyframes fadeInMoveDown {
     from {
         opacity: 0;
