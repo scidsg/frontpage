@@ -23,7 +23,7 @@ sudo apt update && sudo apt -y dist-upgrade
 sudo apt install -y python3 python3-pip git python3-venv nginx
 
 cd /var/www/html
-git clone https://github.com/glenn-sorrentino/frontpage
+git clone https://github.com/scidsg/frontpage
 cd frontpage
 
 # Create and activate Python virtual environment

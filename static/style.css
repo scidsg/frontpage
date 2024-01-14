@@ -576,6 +576,18 @@ button.destruct {
 	}
 }
 
+@media only screen and (max-width: 420px) { 
+	body {
+		padding-left: 0;
+		padding-right: 0;
+	}
+	
+	.content {
+		padding: 1rem;
+		border: none;
+	}
+}
+
 @media only screen and (max-width: 395px) { 
 	header h1 {
 		font-size: 1.125rem;
