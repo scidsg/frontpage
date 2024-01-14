@@ -10,17 +10,19 @@
     <header>
         <h1>Distributed Denial of Secrets</h1>
         <nav>
+            <a class="mobileNav btnIcon" aria-label="Navigation menu">Menu</a>
             <ul>
                 <li><a href="{{ url_for('home') }}">Home</a></li>
                 {% if current_user.is_authenticated %}
                     <li><a href="{{ url_for('publish') }}">Publish</a></li>
                     <li><a href="{{ url_for('logout') }}">Logout</a></li>
                 {% else %}
+                    <li><a href="https://shop.scidsg.org/collections/ddos">Shop</a></li>
                     <li><a href="{{ url_for('login') }}">Login</a></li>
                     <li><a href="{{ url_for('register') }}">Register</a></li>
                 {% endif %}
-                <li><a class="btn btn-primary" href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer">❤️ Donate</a></li>
             </ul>
+            <a class="btn btn-primary" href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer">❤️ Donate</a>
         </nav>
     </header>
 

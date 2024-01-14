@@ -28,8 +28,16 @@
                 </p>
             {% endif %}
             <p><span class="label">Type:</span> <a href="{{ url_for('articles_by_type', article_type=article.article_type) }}">{{ article.article_type }}</a></p>
+            
+            <!-- Download Links -->
             {% if article.download_link %}
-                <a href="{{ article.download_link }}">Download</a>
+                <p><span class="label">Download:</span> <a href="{{ article.download_link }}" target="_blank">Link</a></p>
+            {% endif %}
+            {% if article.magnet_link %}
+                <p><span class="label">Magnet:</span> <a href="{{ article.magnet_link }}" target="_blank">Link</a></p>
+            {% endif %}
+            {% if article.torrent_link %}
+                <p><span class="label">Torrent:</span> <a href="{{ article.torrent_link }}" target="_blank">Link</a></p>
             {% endif %}
         </div>
         <div class="article-content">

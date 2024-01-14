@@ -75,8 +75,10 @@ class Article(db.Model):
     content = db.Column(db.Text, nullable=False)
     author = db.Column(db.String(50), nullable=False)
     publish_date = db.Column(db.DateTime, default=datetime.utcnow)
-    country = db.Column(db.String(50))  # Store the selected country
-    download_link = db.Column(db.String(255))  # URL to the download link
+    country = db.Column(db.String(50))
+    download_link = db.Column(db.String(255))
+    magnet_link = db.Column(db.String(255))
+    torrent_link = db.Column(db.String(255))
     article_type = db.Column(db.String(50))
     source = db.Column(db.String(255))
     last_edited = db.Column(db.DateTime)
@@ -269,12 +271,12 @@ def publish():
     if request.method == "POST":
         article_title = request.form["title"]
         article_content = request.form["content"]
-        article_countries = request.form.getlist(
-            "countries"
-        )  # List of selected countries
-        article_country = ", ".join(article_countries)  # Convert list to string
+        article_countries = request.form.getlist("countries")
+        article_country = ", ".join(article_countries)
         article_type = request.form["type"]
         article_download_link = request.form["download_link"]
+        article_magnet_link = request.form.get("magnet_link")  # Add this line
+        article_torrent_link = request.form.get("torrent_link")  # Add this line
 
         article_author = current_user.username
 
@@ -285,6 +287,8 @@ def publish():
             country=article_country,
             article_type=article_type,
             download_link=article_download_link,
+            magnet_link=article_magnet_link,  # Add this line
+            torrent_link=article_torrent_link,  # Add this line
         )
         selected_category_ids = request.form.getlist("categories")
         selected_categories = Category.query.filter(
@@ -335,6 +339,8 @@ def edit_article(article_id):
         article.country = ", ".join(article_countries)  # Join countries into a string
         article.article_type = request.form["type"]
         article.download_link = request.form["download_link"]
+        article.magnet_link = request.form["magnet_link"]
+        article.torrent_link = request.form["torrent_link"]
         article.last_edited = datetime.utcnow()
 
         db.session.commit()

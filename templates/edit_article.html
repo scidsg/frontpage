@@ -32,6 +32,17 @@
                 <label for="download_link">Download Link:</label>
                 <input type="text" id="download_link" name="download_link" value="{{ article.download_link }}">
             </div>
+            <!-- Magnet Link -->
+            <div>
+                <label for="magnet_link">Magnet Link:</label>
+                <input type="text" id="magnet_link" name="magnet_link" value="{{ article.magnet_link }}">
+            </div>
+
+            <!-- Torrent Link -->
+            <div>
+                <label for="torrent_link">Torrent Link:</label>
+                <input type="text" id="torrent_link" name="torrent_link" value="{{ article.torrent_link }}">
+            </div>
             <button type="submit">Update Article</button>
         </form>
         <a href="{{ url_for('article', article_id=article.id) }}">Cancel</a>
