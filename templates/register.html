@@ -6,24 +6,31 @@
         <form method="POST" action="">
             {{ form.hidden_tag() }}
             <div>
-                {{ form.username.label }}<br>
-                {{ form.username(size=32) }}<br>
+                {{ form.username.label }}
+                {{ form.username(size=32) }}
                 {% for error in form.username.errors %}
-                    <span style="color: red;">[{{ error }}]</span><br>
+                    <span>{{ error }}</span>
                 {% endfor %}
             </div>
             <div>
-                {{ form.password.label }}<br>
-                {{ form.password(size=32) }}<br>
+                {{ form.password.label }}
+                {{ form.password(size=32) }}
                 {% for error in form.password.errors %}
-                    <span style="color: red;">[{{ error }}]</span><br>
+                    <span>{{ error }}</span>
                 {% endfor %}
             </div>
             <div>
-                {{ form.confirm_password.label }}<br>
-                {{ form.confirm_password(size=32) }}<br>
+                {{ form.confirm_password.label }}
+                {{ form.confirm_password(size=32) }}
                 {% for error in form.confirm_password.errors %}
-                    <span style="color: red;">[{{ error }}]</span><br>
+                    <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                {{ form.invite_code.label }}
+                {{ form.invite_code(size=32) }}
+                {% for error in form.invite_code.errors %}
+                    <span>{{ error }}</span>
                 {% endfor %}
             </div>
             <div>

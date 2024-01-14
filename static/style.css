@@ -110,6 +110,11 @@ p {
 	padding: .625rem .825rem;
 	border: 1px solid rgba(51,51,51,1);
 	border-radius: .25rem;
+
+}
+
+.btn:hover {
+	text-decoration: none;	
 }
 
 .btn-primary {
@@ -241,6 +246,15 @@ input:not(input[type="checkbox"]), textarea, select {
 	margin-top: .25rem;
 	border-radius: .25rem;
 	border: 1px solid rgba(0,0,0,0.2);
+}
+
+.content.register input ~ span {
+	position: relative;
+	top: -8px;
+	font-size: .825rem;
+	display: flex;
+	color: darkred;
+	margin-bottom: .5rem;
 }
 
 textarea {

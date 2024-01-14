@@ -91,12 +91,23 @@ class Article(db.Model):
         return "<Article %r>" % self.title
 
 
+class InvitationCode(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(50), nullable=False, unique=True)
+    used = db.Column(db.Boolean, default=False, nullable=False)
+    expiration_date = db.Column(db.DateTime, nullable=False)  # Add this line
+
+    def __repr__(self):
+        return f"<InvitationCode {self.code}>"
+
+
 class RegistrationForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     confirm_password = PasswordField(
         "Confirm Password", validators=[DataRequired(), EqualTo("password")]
     )
+    invite_code = StringField("Invite Code", validators=[DataRequired()])
     submit = SubmitField("Register")
 
     def validate_username(self, username):
@@ -105,6 +116,11 @@ class RegistrationForm(FlaskForm):
             raise ValidationError(
                 "That username is already taken. Please choose a different one."
             )
+
+    def validate_invite_code(self, invite_code):
+        code = InvitationCode.query.filter_by(code=invite_code.data, used=False).first()
+        if not code:
+            raise ValidationError("Invalid or expired invite code.")
 
 
 @app.errorhandler(404)
@@ -139,12 +155,25 @@ def register():
 
     form = RegistrationForm()
     if form.validate_on_submit():
-        hashed_password = generate_password_hash(form.password.data)
-        user = User(username=form.username.data, password_hash=hashed_password)
-        db.session.add(user)
-        db.session.commit()
-        flash("🙌 Your account has been created! Please log in.", "success")
-        return redirect(url_for("login"))
+        # Check if the invite code is valid and not used
+        invite_code = InvitationCode.query.filter_by(
+            code=form.invite_code.data, used=False
+        ).first()
+        if invite_code:
+            # Mark the invite code as used
+            invite_code.used = True
+            db.session.commit()
+
+            # Create the new user
+            hashed_password = generate_password_hash(form.password.data)
+            user = User(username=form.username.data, password_hash=hashed_password)
+            db.session.add(user)
+            db.session.commit()
+            flash("🙌 Your account has been created! Please log in.", "success")
+            return redirect(url_for("login"))
+        else:
+            flash("Invalid or expired invite code.", "danger")
+
     return render_template("register.html", title="Register", form=form)
 
 
