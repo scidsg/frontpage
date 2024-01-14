@@ -73,6 +73,12 @@ body {
 	background-color: white;
 	right: 0;
 	z-index: 9;
+	-ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.categories-list::-webkit-scrollbar {
+    display: none;
 }
 
 header {
