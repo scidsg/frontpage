@@ -19,4 +19,13 @@ document.addEventListener('DOMContentLoaded', function() {
         this.setAttribute('aria-expanded', !isExpanded);
         navMenu.classList.toggle('show');
     });
+
+    // Handle closing the promo block
+    const closePromoButton = document.getElementById('close_promo');
+    const promoBlock = document.getElementById('promo');
+
+    closePromoButton.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent default anchor action
+        promoBlock.classList.toggle('hide');
+    });
 });

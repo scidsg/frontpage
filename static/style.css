@@ -36,6 +36,21 @@ body {
 	box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
 }
 
+.content.promo {
+	margin-bottom: 1rem;
+	margin-top: 3rem;
+	background-image: url('banner-bg.png');
+}
+
+.content.promo .btn {
+	width: fit-content;
+	text-decoration: none;
+}
+
+.content.promo h2 {
+	margin-top: 0;
+}
+
 .categories-list {
 	position: fixed;
 	top: 3.125rem;
@@ -71,6 +86,10 @@ ul.categories-list a:hover {
 
 .categories-list + .content {
 	margin-top: 3rem;
+}
+
+.promo ~ .content {
+	margin-top: 1rem;
 }
 
 h1, h2, h3, h4, h5, h6,
@@ -111,6 +130,17 @@ p {
 	line-height: 1.5;
 	font-size: 1rem;
 	max-width: 640px;
+}
+
+.btn-container {
+	display: flex;
+	gap: 1rem;
+	align-items: center;
+	margin-top: 1rem;
+}
+
+.btn-container #close_promo {
+	font-size: .875rem;
 }
 
 .btn {
@@ -355,6 +385,10 @@ textarea {
 
 button.destruct {
 	color: darkred;
+}
+
+.hide {
+	display: none;
 }
 
 .content ul {
