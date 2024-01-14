@@ -353,6 +353,18 @@ textarea {
 	margin: 0;
 }
 
+.article .drill-in {
+	font-size: .825rem;
+}
+
+.article .emoji-meta {
+	transform: scale(.75);
+	display: inline-flex;
+	margin-left: .25rem;
+	position: relative;
+	top: 2px;
+}
+
 .article-actions {
 	display: flex;
 	align-items: baseline;
