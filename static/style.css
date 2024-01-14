@@ -52,6 +52,7 @@ ul.categories-list {
 	list-style: none;
 	gap: 1.5rem;
 	font-size: .875rem;
+	z-index: 99;
 }
 
 ul.categories-list a {
@@ -179,7 +180,7 @@ header {
 	padding: 1.25rem 1rem;
 	background-color: white;
 	align-items: center;
-	z-index: 9;
+	z-index: 999;
 }
 
 .btnIcon {
@@ -225,6 +226,10 @@ header nav ul {
 	font-size: .875rem;
 	margin: 0;
 	padding: 0;
+}
+
+header .btn {
+	font-size: .875rem;
 }
 
 label {
@@ -479,11 +484,18 @@ button.destruct {
 
 @media only screen and (max-width: 768px) {
 	.btnIcon {
+		font-size: .875rem;
+		font-family: 'Atkinson Bold',sans-serif;
 		display: flex;
 	}
 
-	nav {
-		gap: 1.5rem;
+	.show {
+		display: flex;
+		z-index: 999999;
+	}
+
+	header nav {
+		gap: .5rem;
 	}
 
 	header nav ul {
