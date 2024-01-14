@@ -135,7 +135,7 @@ p {
 	display: flex;
 	gap: 1rem;
 	align-items: center;
-	margin-top: 1rem;
+	margin-top: .25rem;
 }
 
 .btn-container #close_promo {
@@ -624,6 +624,12 @@ button.destruct {
 	body {
 		padding-left: 0;
 		padding-right: 0;
+	}
+
+	.content.promo {
+		padding: 1.5rem 1.25rem;
+		border: 1px solid rgba(0,0,0,0.1);
+		width: 92vw;
 	}
 	
 	.content {
