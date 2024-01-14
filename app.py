@@ -315,7 +315,29 @@ def publish():
 def article(article_id):
     article = Article.query.get_or_404(article_id)
     content_html = markdown.markdown(article.content)
-    return render_template("article.html", article=article, content_html=content_html)
+
+    # Collect all articles to determine top scopes
+    all_articles = Article.query.all()
+    counter = Counter()
+    for a in all_articles:
+        if a.article_type:
+            counter[("type", a.article_type)] += 1
+        if a.country:
+            for country in a.country.split(", "):
+                counter[("country", country)] += 1
+        if a.source:
+            counter[("source", a.source)] += 1
+
+    # Get the top 5 scopes
+    top_scopes = counter.most_common(5)
+    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+
+    return render_template(
+        "article.html",
+        article=article,
+        content_html=content_html,
+        all_scopes=all_scopes,
+    )
 
 
 @app.route("/edit/<int:article_id>", methods=["GET", "POST"])
