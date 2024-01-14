@@ -11,6 +11,7 @@ A self-hosted, privacy-focused publishing platform built for censorship resilien
   - Torrent
 - Multi-user
 - Article types
+- Source attribution
 - Compose in markdown or plaintext
 - Tor integration
 - Mobile-ready
