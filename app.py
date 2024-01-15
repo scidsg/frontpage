@@ -21,6 +21,8 @@ import pycountry
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, EqualTo, ValidationError, Length, Regexp
 from collections import Counter
+from itertools import groupby
+
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -364,6 +366,46 @@ def article(article_id):
     article = Article.query.get_or_404(article_id)
     content_html = markdown.markdown(article.content)
 
+    # Fetch related articles and group them
+    related_by_type = Article.query.filter(
+        Article.article_type == article.article_type, Article.id != article_id
+    ).all()
+    related_by_type_grouped = {
+        k: list(g)
+        for k, g in groupby(
+            sorted(related_by_type, key=lambda x: x.article_type),
+            key=lambda x: x.article_type,
+        )
+    }
+
+    related_by_source = Article.query.filter(
+        Article.source == article.source, Article.id != article_id
+    ).all()
+    related_by_source_grouped = {
+        k: list(g)
+        for k, g in groupby(
+            sorted(related_by_source, key=lambda x: x.source), key=lambda x: x.source
+        )
+    }
+
+    # Related articles by country with handling for multiple countries
+    related_by_country_dict = {}
+    if article.country:
+        countries = article.country.split(", ")
+        print("Countries in the current article:", countries)  # Debugging print
+        for country in countries:
+            related_articles = Article.query.filter(
+                Article.country.like(f"%{country}%"), Article.id != article_id
+            ).all()
+            print(
+                f"Related articles for {country}:", related_articles
+            )  # Debugging print
+
+            for rel_article in related_articles:
+                if country not in related_by_country_dict:
+                    related_by_country_dict[country] = []
+                related_by_country_dict[country].append(rel_article)
+
     # Collect all articles to determine top scopes
     all_articles = Article.query.all()
     counter = Counter()
@@ -384,6 +426,9 @@ def article(article_id):
         "article.html",
         article=article,
         content_html=content_html,
+        related_by_type_grouped=related_by_type_grouped,
+        related_by_source_grouped=related_by_source_grouped,
+        related_by_country_grouped=related_by_country_dict,
         all_scopes=all_scopes,
     )
 

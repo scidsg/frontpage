@@ -78,7 +78,7 @@ body {
 	right: 0;
 	z-index: 9;
 	-ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .categories-list::-webkit-scrollbar {
@@ -252,7 +252,7 @@ header {
     min-width: 48px;
     display: none;
     padding: 0 0 0 2.5rem;
-	align-content: center;
+	 align-content: center;
 }
 
 header h1 {
@@ -267,7 +267,7 @@ header nav {
 
 header nav a {
 	text-decoration: none;
-	color: #595959;
+	color: #333;
 }
 
 header nav a:hover {
@@ -430,7 +430,6 @@ button.destruct {
 
 .content ul {
 	padding: 0;
-	list-style: none;
 	margin: .25rem 0;
 	line-height: 1.5;
 	margin-top: .5rem;
@@ -440,6 +439,10 @@ button.destruct {
 	margin: .25rem 0;
 }
 
+.content h3:not(.related-articles-group h3) {
+	margin-top: 2rem;
+	margin-bottom: 1rem;
+}
 
 .article-actions a:hover,
 .article-actions button:hover
@@ -568,6 +571,48 @@ button.destruct {
     gap: .5rem;
 }
 
+.related-articles-group {
+	padding: 2rem 0;
+}
+
+.related-articles-group h2 {
+	margin-bottom: 1.5rem;
+}
+
+.related-articles .article-row {
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 3rem;
+	margin-top: 1rem;
+}
+
+.article-row .article {
+	flex: 1 0 0;
+	border: 1px solid rgba(0,0,0,0.1);
+	padding: 1.5rem 1.25rem;
+	border-radius: .25rem;
+	max-width: 50%;
+	box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
+	margin: 0;
+}
+
+.related-articles-group.content {
+	border: none;
+	box-shadow: none;
+}
+
+.related-articles:last-of-type .article:last-of-type,
+.related-articles:last-of-type .article-row {
+	margin-bottom: 0;
+}
+
+@media only screen and (max-width: 1056px) {
+
+	.related-articles-group {
+		padding: 2rem .75rem;
+	}
+}
+
 @media only screen and (max-width: 768px) {
 	body {
 		padding-top: 7.5rem;
@@ -614,6 +659,28 @@ button.destruct {
         flex-direction: column;
         align-items: start;
     }
+
+    .related-articles .article-row {
+			flex-direction: column;
+		}
+	
+	.related-articles .article {
+		max-width: 100%;
+	}
+	
+	.related-articles-group {
+		padding-left: 0;
+		padding-right: 0;
+	}
+	
+	.content {
+		padding: 1.5rem;
+	}
+	
+	.related-articles-group.content {
+		padding-right: 0;
+		padding-left: 0;
+	}
 	
 }
 
