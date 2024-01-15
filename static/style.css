@@ -371,6 +371,15 @@ textarea {
 	margin: 0;
 }
 
+.article h3:not(.related-x-group .article h3) {
+	margin-top: 0;
+	margin-bottom: .25rem;
+}
+
+.article:not(.related-articles-group .article) {
+	margin-bottom: 2rem;
+}
+
 .article .drill-in {
 	font-size: .825rem;
 }
