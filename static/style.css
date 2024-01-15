@@ -20,6 +20,7 @@ body {
 	font-family: 'Atkinson Hyperlegible', sans-serif;
 	padding: 8.25rem 1rem 1rem 1rem;
 	margin: 0;
+	background-color: rgba(25, 111, 164, 0.05);
 }
 
 .content {
@@ -35,6 +36,14 @@ body {
 	border-radius: .5rem;
 	box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
 }
+
+
+
+.content:not(.related-articles-group.content),
+.related-articles-group .article {
+	background-color: white;
+}
+
 
 .content.promo {
 	margin-bottom: 1rem;
@@ -780,3 +789,4 @@ button.destruct {
 		font-size: 1.125rem;
 	}
 }
+
