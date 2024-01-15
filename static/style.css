@@ -615,6 +615,10 @@ button.destruct {
 	margin-bottom: 0;
 }
 
+.all-categories.content ul {
+	list-style: none;
+}
+
 @media only screen and (max-width: 1056px) {
 
 	.related-articles-group {
