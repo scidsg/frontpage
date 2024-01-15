@@ -385,9 +385,9 @@ textarea {
 }
 
 .article .emoji-meta {
-	transform: scale(.75);
+	transform: scale(.625);
 	display: inline-flex;
-	margin-left: .25rem;
+	margin-left: .125rem;
 	position: relative;
 	top: 2px;
 }
