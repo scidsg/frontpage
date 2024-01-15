@@ -199,7 +199,7 @@ h1 + form {
 }
 
 .content h2 {
-	margin-bottom: .25rem;
+	margin-bottom: 0;
 	margin-top: 2rem;
 }
 
@@ -504,7 +504,7 @@ button.destruct {
 }
 
 .content.home .column {
-	gap: 1.75rem;
+	gap: 2rem;
 	display: flex;
 	flex-direction: column;
 	width: 50%;
@@ -759,6 +759,11 @@ button.destruct {
 		border: 1px solid rgba(0,0,0,0.1);
 		width: 92vw;
 		box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
+	}
+	
+	.related-articles-group.content {
+		padding-left: 1rem;
+		padding-right: 1rem;
 	}
 }
 

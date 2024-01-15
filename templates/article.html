@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ article.title | default('Article') }}{% endblock %}
+{% block title %}{{ article.title }}{% endblock %}
 
 
 {% block content %}
@@ -75,63 +75,71 @@
         <div class="article-content">
             {{ content_html | safe }}
         </div>
-        <a href="/">Back to Home</a>
     </div>
 
     <div class="related-articles-group content">
         <!-- Related Articles by Type -->
-        {% for type, articles in related_by_type_grouped.items() %}
-        <h2>Related Articles</h2>
-            <div class="related-articles">
-                <h3>{{ type }}</h3>
-                <div class="article-row">
-                    {% for article in articles[:3] %}
-                            <div class="article">
-                                <h4><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h4>
-                                <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                                <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
-                                <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
-                            </div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endfor %}
+        {% if related_by_type_grouped %}
+            <h2>Related Articles</h2>
+            {% for type, articles in related_by_type_grouped.items() %}
+                {% if articles %}
+                    <div class="related-articles">
+                        <h3>{{ type }}</h3>
+                        <div class="article-row">
+                            {% for article in articles[:3] %}
+                                <div class="article">
+                                    <h4><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h4>
+                                    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                                    <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
+                                    <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
         <!-- Related Articles by Source -->
-        {% for source, articles in related_by_source_grouped.items() %}
-            <div class="related-articles">
-                <h3>{{ source }}</h3>
-                <div class="article-row">
-                    {% for article in articles[:3] %}
-                            <div class="article">
-                                <h4><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h4>
-                                <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                                <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
-                                <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
-                            </div>
-                    {% endfor %}
-                </div>
-            </div>
-        {% endfor %}
+        {% if related_by_source_grouped %}
+            {% for source, articles in related_by_source_grouped.items() %}
+                {% if articles and source %}
+                    <div class="related-articles">
+                        <h3>{{ source }}</h3>
+                        <div class="article-row">
+                            {% for article in articles[:3] %}
+                                <div class="article">
+                                    <h4><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h4>
+                                    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H%M') }}</p>
+                                    <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
+                                    <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
         <!-- Related Articles by Country -->
         {% if related_by_country_grouped %}
             {% for country, articles in related_by_country_grouped.items() %}
-                <div class="related-articles">
-                    <h3>{{ country }}</h3>
-                    <div class="article-row">
-                        {% for article in articles[:3] %}
-                            <div class="article">
-                                <h4><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h4>
-                                <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                                <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
-                                <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
-                            </div>
-                        {% endfor %}
+                {% if articles %}
+                    <div class="related-articles">
+                        <h3>{{ country }}</h3>
+                        <div class="article-row">
+                            {% for article in articles[:3] %}
+                                <div class="article">
+                                    <h4><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h4>
+                                    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                                    <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
+                                    <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             {% endfor %}
         {% endif %}
-
     </div>
 {% endblock %}
