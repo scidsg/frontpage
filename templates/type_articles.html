@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="content">
+    <div class="content list-view">
         <h1>Articles of Type "{{ article_type }}"</h1>
         <p class="meta">Total Articles: {{ article_count }}</p>
         {% for article in articles %}
@@ -8,7 +8,7 @@
                 <h2><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h2>
                 <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
                 <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
-                <a href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
             </div>
         {% else %}
             <p>No articles found for this type.</p>
