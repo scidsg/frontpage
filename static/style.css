@@ -166,6 +166,7 @@ p {
 	border-radius: .25rem;
 	white-space: nowrap;
 	display: flex;
+	align-items: center;
 }
 
 .btn:hover {
