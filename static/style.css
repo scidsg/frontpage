@@ -782,7 +782,7 @@ blockquote {
 	}
 	
 	.content {
-		padding: 1rem;
+		padding: 1.5rem 1rem;
 		border: none;
 		box-shadow: none;
 	}
