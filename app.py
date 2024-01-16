@@ -704,10 +704,12 @@ def user_settings():
 def all_articles(category):
     articles = []
     title = ""
+    article_count = 0  # Initialize the article count
 
     if category == "recent":
         articles = Article.query.order_by(Article.publish_date.desc()).all()
         title = "All Recently Published Articles"
+        article_count = len(articles)  # Set the article count
     elif category == "edited":
         articles = (
             Article.query.filter(Article.last_edited != None)
@@ -715,6 +717,7 @@ def all_articles(category):
             .all()
         )
         title = "All Recently Edited Articles"
+        article_count = len(articles)  # Set the article count
     elif category == "external":
         articles = (
             Article.query.filter(Article.external_collaboration != None)
@@ -723,6 +726,7 @@ def all_articles(category):
             .all()
         )
         title = "All External Collaboration Articles"
+        article_count = len(articles)  # Set the article count
 
     # Collect all articles to determine top scopes
     all_articles = Article.query.all()
@@ -743,8 +747,9 @@ def all_articles(category):
     return render_template(
         "all_articles.html",
         articles=articles,
+        article_count=article_count,
         title=title,
-        all_scopes=all_scopes,  # Pass the all_scopes to the template
+        all_scopes=all_scopes,
     )
 
 

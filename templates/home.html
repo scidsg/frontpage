@@ -23,7 +23,7 @@
                 </div>
             {% endfor %}
             {% if main_articles_more %}
-                <a class="btn" href="{{ url_for('all_articles', category='recent') }}">View All Recently Published</a>
+                <a class="btn" href="{{ url_for('all_articles', category='recent') }}">View All</a>
             {% endif %}
         </div>
         <!-- Column 2: Recently Edited Articles -->
@@ -42,7 +42,7 @@
                 </div>
         {% endfor %}
         {% if recently_edited_articles_more %}
-                <a class="btn" href="{{ url_for('all_articles', category='edited') }}">View All Recently Edited</a>
+                <a class="btn" href="{{ url_for('all_articles', category='edited') }}">View All</a>
             {% endif %}
         </div>
 
@@ -58,7 +58,7 @@
                 </div>
         {% endfor %}
         {% if external_collaboration_articles_more %}
-                <a class="btn" href="{{ url_for('all_articles', category='external') }}">View All External Collaboration</a>
+                <a class="btn" href="{{ url_for('all_articles', category='external') }}">View All</a>
             {% endif %}
         </div>
     </div>
