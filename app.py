@@ -326,7 +326,7 @@ def home():
 def publish():
     categories = Category.query.all()
     countries = [country.name for country in pycountry.countries]
-    article_types = ["Hack", "Leak", "News", "Opinion", "Other", "Scrape"]
+    article_types = ["Hack", "Leak", "News", "Opinion", "Other", "Research", "Scrape"]
 
     if request.method == "POST":
         article_title = request.form["title"]
@@ -454,7 +454,7 @@ def article(article_id):
 def edit_article(article_id):
     article = Article.query.get_or_404(article_id)
     countries = [country.name for country in pycountry.countries]
-    article_types = ["Hack", "Leak", "News", "Opinion", "Other", "Scrape"]
+    article_types = ["Hack", "Leak", "News", "Opinion", "Other", "Research", "Scrape"]
 
     # Check if the current user is the author or an admin
     if not (current_user.username == article.author or current_user.is_admin):
@@ -637,13 +637,14 @@ def all_categories():
     sources = sorted(set(article.source for article in articles if article.source))
 
     # Collect all articles to determine top scopes
+    all_articles = Article.query.all()
     counter = Counter()
-    for article in articles:
+    for article in all_articles:
         if article.article_type:
             counter[("type", article.article_type)] += 1
         if article.country:
-            for c in article.country.split(", "):
-                counter[("country", c)] += 1
+            for country in article.country.split(", "):
+                counter[("country", country)] += 1
         if article.source:
             counter[("source", article.source)] += 1
 
