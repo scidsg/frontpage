@@ -20,6 +20,7 @@ body {
 	font-family: 'Atkinson Hyperlegible', sans-serif;
 	padding: 8.25rem 1rem 1rem 1rem;
 	margin: 0;
+	background-color: rgba(25, 111, 164, 0.05);
 }
 
 .content {
@@ -43,6 +44,11 @@ body {
 	background-size: 240px;
 	background-position-y: bottom -2rem;
 	background-position-x: right;
+}
+
+.content:not(.related-articles-group.content),
+.related-articles-group .article {
+	background-color: white;
 }
 
 .content.promo .btn-primary {
@@ -167,6 +173,9 @@ p {
 	white-space: nowrap;
 	display: flex;
 	align-items: center;
+	width: fit-content;
+	font-family: 'Atkinson Bold', sans-serif;
+	text-decoration: none;
 }
 
 .btn:hover {
@@ -385,9 +394,9 @@ textarea {
 }
 
 .article .emoji-meta {
-	transform: scale(.75);
+	transform: scale(.625);
 	display: inline-flex;
-	margin-left: .25rem;
+	margin-left: .125rem;
 	position: relative;
 	top: 2px;
 }
@@ -672,6 +681,22 @@ button.destruct {
         flex-direction: column;
         align-items: start;
     }
+
+    blockquote {
+	  border-left: 3px solid rgba(0,0,0,0.1);
+	  padding: .0125rem 0 .0125rem 1rem;
+	  margin-left: 1rem;
+	  font-style: italic;
+	}
+
+	.article-content blockquote p {
+		padding: 0;
+		margin: 1rem 0 !important;
+	}
+
+	.content h1 {
+		margin-top: 1rem;
+	}
 
     .related-articles .article-row {
 			flex-direction: column;

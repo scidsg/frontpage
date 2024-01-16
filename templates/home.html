@@ -22,6 +22,9 @@
                     <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
                 </div>
             {% endfor %}
+            {% if main_articles_more %}
+                <a class="btn" href="{{ url_for('all_articles', category='recent') }}">View All Recently Published</a>
+            {% endif %}
         </div>
         <!-- Column 2: Recently Edited Articles -->
         <div class="column recently-edited-articles">
@@ -38,6 +41,9 @@
                     <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
                 </div>
         {% endfor %}
+        {% if recently_edited_articles_more %}
+                <a class="btn" href="{{ url_for('all_articles', category='edited') }}">View All Recently Edited</a>
+            {% endif %}
         </div>
 
         <!-- Column 3: Articles with External Collaboration -->
@@ -51,6 +57,9 @@
                     <p><a class="drill-in" href="{{ article.external_collaboration }}">Read more</a><span class="emoji-meta">↗️</span></p>
                 </div>
         {% endfor %}
-    </div>
+        {% if external_collaboration_articles_more %}
+                <a class="btn" href="{{ url_for('all_articles', category='external') }}">View All External Collaboration</a>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}

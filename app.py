@@ -254,23 +254,43 @@ def logout():
     return redirect(url_for("home"))
 
 
-# Home route
 @app.route("/")
 def home():
+    # Define the maximum number of articles to display in each category
+    max_articles = 10
+
     # Fetch main articles
-    main_articles = Article.query.order_by(Article.publish_date.desc()).limit(999).all()
+    main_articles = (
+        Article.query.order_by(Article.publish_date.desc()).limit(max_articles).all()
+    )
+    main_articles_total = Article.query.count()
 
     # Fetch recently edited articles
     recently_edited_articles = (
         Article.query.filter(Article.last_edited != None)
         .order_by(Article.last_edited.desc())
-        .limit(999)
+        .limit(max_articles)
         .all()
     )
+    recently_edited_articles_total = Article.query.filter(
+        Article.last_edited != None
+    ).count()
 
-    article_count = len(main_articles)  # Count of main articles
+    # Fetch articles with non-empty, non-null external collaboration links
+    external_collaboration_articles = (
+        Article.query.filter(Article.external_collaboration != None)
+        .filter(Article.external_collaboration != "")
+        .order_by(Article.publish_date.desc())
+        .limit(max_articles)
+        .all()
+    )
+    external_collaboration_articles_total = (
+        Article.query.filter(Article.external_collaboration != None)
+        .filter(Article.external_collaboration != "")
+        .count()
+    )
 
-    # Create a counter for each type, country, and source
+    # Counter for types, countries, sources
     counter = Counter()
     for article in main_articles:
         if article.article_type:
@@ -281,32 +301,22 @@ def home():
         if article.source:
             counter[("source", article.source)] += 1
 
-    # Get the top 5 scopes
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
-
-    # Fetch articles with non-empty, non-null external collaboration links
-    external_collaboration_articles = (
-        Article.query.filter(Article.external_collaboration != None)
-        .filter(Article.external_collaboration != "")  # Add this line
-        .order_by(Article.publish_date.desc())
-        .limit(999)
-        .all()
-    )
-
-    # Convert Markdown to HTML for both sets of articles
-    for article_set in [main_articles, recently_edited_articles]:
-        for article in article_set:
-            article.content_html = markdown.markdown(article.content)
 
     return render_template(
         "home.html",
         main_articles=main_articles,
+        main_articles_total=main_articles_total,
+        main_articles_more=main_articles_total > max_articles,
         recently_edited_articles=recently_edited_articles,
+        recently_edited_articles_total=recently_edited_articles_total,
+        recently_edited_articles_more=recently_edited_articles_total > max_articles,
         external_collaboration_articles=external_collaboration_articles,
-        article_count=article_count,
+        external_collaboration_articles_total=external_collaboration_articles_total,
+        external_collaboration_articles_more=external_collaboration_articles_total
+        > max_articles,
         all_scopes=all_scopes,
-        show_categories=True,
     )
 
 
@@ -344,7 +354,7 @@ def publish():
             torrent_link=article_torrent_link,
             external_collaboration=article_external_collaboration,
             ipfs_link=article_ipfs_link,
-            download_size=download_size,
+            download_size=article_download_size,
         )
         selected_category_ids = request.form.getlist("categories")
         selected_categories = Category.query.filter(
@@ -687,6 +697,54 @@ def user_settings():
         return redirect(url_for("login"))
 
     return render_template("settings.html", form=form)
+
+
+@app.route("/all_articles/<category>")
+def all_articles(category):
+    articles = []
+    title = ""
+
+    if category == "recent":
+        articles = Article.query.order_by(Article.publish_date.desc()).all()
+        title = "All Recently Published Articles"
+    elif category == "edited":
+        articles = (
+            Article.query.filter(Article.last_edited != None)
+            .order_by(Article.last_edited.desc())
+            .all()
+        )
+        title = "All Recently Edited Articles"
+    elif category == "external":
+        articles = (
+            Article.query.filter(Article.external_collaboration != None)
+            .filter(Article.external_collaboration != "")
+            .order_by(Article.publish_date.desc())
+            .all()
+        )
+        title = "All External Collaboration Articles"
+
+    # Collect all articles to determine top scopes
+    all_articles = Article.query.all()
+    counter = Counter()
+    for article in all_articles:
+        if article.article_type:
+            counter[("type", article.article_type)] += 1
+        if article.country:
+            for country in article.country.split(", "):
+                counter[("country", country)] += 1
+        if article.source:
+            counter[("source", article.source)] += 1
+
+    # Get the top 5 scopes
+    top_scopes = counter.most_common(5)
+    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+
+    return render_template(
+        "all_articles.html",
+        articles=articles,
+        title=title,
+        all_scopes=all_scopes,  # Pass the all_scopes to the template
+    )
 
 
 # Error handler
