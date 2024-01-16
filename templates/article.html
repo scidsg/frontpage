@@ -62,6 +62,9 @@
             {% if article.torrent_link %}
                 <p><span class="label">Torrent:</span> <a href="{{ article.torrent_link }}" target="_blank">Link</a></p>
             {% endif %}
+            {% if article.ipfs_link %}
+                <p><span class="label">IPFS Link:</span> <a href="{{ article.ipfs_link }}" target="_blank">Link</a></p>
+            {% endif %}
 
             <!-- EXTERNAL COLLAB LINK -->
 

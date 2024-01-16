@@ -46,11 +46,16 @@
                 <input type="text" id="torrent_link" name="torrent_link" value="{{ article.torrent_link if article.torrent_link else '' }}">
             </div>
 
+            <!-- IPFS Link -->
+            <div>
+                <label for="ipfs_link">IPFS Link</label>
+                <input type="text" id="ipfs_link" name="ipfs_link" value="{{ article.ipfs_link if article.ipfs_link else '' }}">
+            </div>
+
             <!-- External Collaboration URL -->
             <div>
                 <label for="external_collaboration">External Collaboration URL</label>
                 <input type="text" id="external_collaboration" name="external_collaboration" value="{{ article.external_collaboration if article.external_collaboration else '' }}">
-
             </div>
 
             <button type="submit">Update Article</button>

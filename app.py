@@ -81,6 +81,7 @@ class Article(db.Model):
     download_link = db.Column(db.String(255))
     magnet_link = db.Column(db.String(255))
     torrent_link = db.Column(db.String(255))
+    ipfs_link = db.Column(db.String(255))
     external_collaboration = db.Column(db.String(255))
     article_type = db.Column(db.String(50))
     source = db.Column(db.String(255))
@@ -211,7 +212,7 @@ def register():
             code=form.invite_code.data, used=False
         ).first()
         if not invite_code:
-            flash("Invalid or expired invite code.", "danger")
+            flash("⛔️ Invalid or expired invite code.", "danger")
             return render_template("register.html", title="Register", form=form)
 
         hashed_password = generate_password_hash(form.password.data)
@@ -222,7 +223,7 @@ def register():
         invite_code.used = True
         db.session.commit()
 
-        flash("Your account has been created! Please log in.", "success")
+        flash("👍 Your account has been created! Please log in.", "success")
         return redirect(url_for("login"))
 
     return render_template("register.html", title="Register", form=form)
@@ -326,6 +327,7 @@ def publish():
         article_magnet_link = request.form.get("magnet_link")
         article_torrent_link = request.form.get("torrent_link")
         article_external_collaboration = request.form.get("external_collaboration")
+        article_ipfs_link = request.form.get("ipfs_link")
 
         article_author = current_user.username
 
@@ -339,6 +341,7 @@ def publish():
             magnet_link=article_magnet_link,
             torrent_link=article_torrent_link,
             external_collaboration=article_external_collaboration,
+            ipfs_link=article_ipfs_link,
         )
         selected_category_ids = request.form.getlist("categories")
         selected_categories = Category.query.filter(
@@ -456,6 +459,7 @@ def edit_article(article_id):
         article.download_link = request.form["download_link"]
         article.magnet_link = request.form["magnet_link"]
         article.torrent_link = request.form["torrent_link"]
+        article.ipfs_link = request.form["ipfs_link"]
 
         # Update external collaboration URL
         article.external_collaboration = request.form.get("external_collaboration")
@@ -649,7 +653,7 @@ def delete_article(article_id):
 
     # Check if the current user is the author or an admin
     if not (current_user.username == article.author or current_user.is_admin):
-        flash("You do not have permission to delete this article.")
+        flash("⛔️ You do not have permission to delete this article.")
         return redirect(url_for("home"))
 
     db.session.delete(article)
@@ -665,12 +669,12 @@ def user_settings():
     if form.validate_on_submit():
         user = current_user
         if not user.check_password(form.current_password.data):
-            flash("Current password is incorrect.", "danger")
+            flash("⛔️ Current password is incorrect.", "danger")
             return redirect(url_for("user_settings"))
 
         user.set_password(form.new_password.data)
         db.session.commit()
-        flash("Your password has been updated. Please log in again.", "success")
+        flash("👍 Your password has been updated. Please log in again.", "success")
 
         # Log the user out
         logout_user()
