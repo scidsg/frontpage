@@ -87,6 +87,7 @@ class Article(db.Model):
     article_type = db.Column(db.String(50))
     source = db.Column(db.String(255))
     last_edited = db.Column(db.DateTime)
+    cyberwar = db.Column(db.Boolean, default=False, nullable=False)
     categories = db.relationship(
         "Category",
         secondary=article_categories,
@@ -340,6 +341,7 @@ def publish():
         article_external_collaboration = request.form.get("external_collaboration")
         article_ipfs_link = request.form.get("ipfs_link")
         article_download_size = request.form.get("download_size")
+        article_cyberwar = "cyberwar" in request.form
 
         article_author = current_user.username
 
@@ -355,6 +357,7 @@ def publish():
             external_collaboration=article_external_collaboration,
             ipfs_link=article_ipfs_link,
             download_size=article_download_size,
+            cyberwar=article_cyberwar,
         )
         selected_category_ids = request.form.getlist("categories")
         selected_categories = Category.query.filter(
@@ -474,6 +477,7 @@ def edit_article(article_id):
         article.torrent_link = request.form["torrent_link"]
         article.ipfs_link = request.form["ipfs_link"]
         article.download_size = request.form["download_size"]
+        article.cyberwar = "cyberwar" in request.form
 
         # Update external collaboration URL
         article.external_collaboration = request.form.get("external_collaboration")

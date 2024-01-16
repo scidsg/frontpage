@@ -30,6 +30,13 @@
                     {% endfor %}
                 </select>
             </div>
+
+            <!-- Cyberwar Checkbox -->
+            <div>
+                <label for="cyberwar">Cyberwar</label>
+                <input type="checkbox" id="cyberwar" name="cyberwar" {% if article.cyberwar %}checked{% endif %}>
+            </div>
+
             <div>
                 <label for="download_link">Download Link</label>
                 <input type="text" id="download_link" name="download_link" value="{{ article.download_link if article.download_link else '' }}">
