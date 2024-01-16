@@ -48,7 +48,7 @@
                         {% if scope.type == 'type' %}
                             <a href="{{ url_for('articles_by_type', article_type=scope.name) }}">{{ scope.name }}</a>
                         {% elif scope.type == 'country' %}
-                            <a href="{{ url_for('articles_by_country', country=scope.name) }}">{{ scope.name }}</a>
+                            <a href="{{ url_for('articles_by_type', article_type=scope.name) }}">{{ scope.name }}</a>
                         {% elif scope.type == 'source' %}
                             <a href="{{ url_for('articles_by_source', source=scope.name) }}">{{ scope.name }}</a>
                         {% endif %}

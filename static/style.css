@@ -20,7 +20,6 @@ body {
 	font-family: 'Atkinson Hyperlegible', sans-serif;
 	padding: 8.25rem 1rem 1rem 1rem;
 	margin: 0;
-	background-color: rgba(25, 111, 164, 0.05);
 }
 
 .content {
@@ -36,14 +35,6 @@ body {
 	border-radius: .5rem;
 	box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
 }
-
-
-
-.content:not(.related-articles-group.content),
-.related-articles-group .article {
-	background-color: white;
-}
-
 
 .content.promo {
 	margin-bottom: 1rem;
@@ -394,9 +385,9 @@ textarea {
 }
 
 .article .emoji-meta {
-	transform: scale(.625);
+	transform: scale(.75);
 	display: inline-flex;
-	margin-left: .125rem;
+	margin-left: .25rem;
 	position: relative;
 	top: 2px;
 }
@@ -447,7 +438,7 @@ button.destruct {
 }
 
 .content ul {
-	padding: 0;
+	padding: 0 0 0 1rem;
 	margin: .25rem 0;
 	line-height: 1.5;
 	margin-top: .5rem;
@@ -632,22 +623,6 @@ button.destruct {
 	margin-bottom: 1rem;
 }
 
-blockquote {
-	border-left: 3px solid rgba(0,0,0,0.1);
-  padding: .0125rem 0 .0125rem 1rem;
-  margin-left: 1rem;
-  font-style: italic;
-}
-
-.article-content blockquote p {
-	padding: 0;
-	margin: 1rem 0 !important;
-}
-
-.content h1 {
-	margin-top: 1rem;
-}
-
 @media only screen and (max-width: 1056px) {
 
 	.related-articles-group {
@@ -689,22 +664,22 @@ blockquote {
 	}
 
 	header nav ul {
-		display: none;
-		position: absolute;
-		background-color: white;
-		top: 3.5rem;
-		padding: 1rem;
-		border: 1px solid rgba(0, 0, 0, .1);
-		box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.15);
-		border-radius: .25rem;
-		gap: 1.5rem;
-		flex-direction: column;
-		align-items: start;
-	}
+        display: none;
+        position: absolute;
+        background-color: white;
+        top: 3.5rem;
+        padding: 1rem;
+        border: 1px solid rgba(0, 0, 0, .1);
+        box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.15);
+        border-radius: .25rem;
+        gap: 1.5rem;
+        flex-direction: column;
+        align-items: start;
+    }
 
-	.related-articles .article-row {
-		flex-direction: column;
-	}
+    .related-articles .article-row {
+			flex-direction: column;
+		}
 	
 	.related-articles .article {
 		max-width: 100%;
@@ -782,7 +757,7 @@ blockquote {
 	}
 	
 	.content {
-		padding: 1.5rem 1rem;
+		padding: 1rem;
 		border: none;
 		box-shadow: none;
 	}
@@ -805,4 +780,3 @@ blockquote {
 		font-size: 1.125rem;
 	}
 }
-

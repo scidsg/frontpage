@@ -65,6 +65,9 @@
             {% if article.ipfs_link %}
                 <p><span class="label">IPFS Link:</span> <a href="{{ article.ipfs_link }}" target="_blank">Link</a></p>
             {% endif %}
+            {% if article.download_size %}
+                <p><span class="label">Download Size:</span> {{ article.download_size }}</p>
+            {% endif %}
 
             <!-- EXTERNAL COLLAB LINK -->
 

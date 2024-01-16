@@ -82,6 +82,7 @@ class Article(db.Model):
     magnet_link = db.Column(db.String(255))
     torrent_link = db.Column(db.String(255))
     ipfs_link = db.Column(db.String(255))
+    download_size = db.Column(db.String(255))
     external_collaboration = db.Column(db.String(255))
     article_type = db.Column(db.String(50))
     source = db.Column(db.String(255))
@@ -257,13 +258,13 @@ def logout():
 @app.route("/")
 def home():
     # Fetch main articles
-    main_articles = Article.query.order_by(Article.publish_date.desc()).limit(5).all()
+    main_articles = Article.query.order_by(Article.publish_date.desc()).limit(999).all()
 
     # Fetch recently edited articles
     recently_edited_articles = (
         Article.query.filter(Article.last_edited != None)
         .order_by(Article.last_edited.desc())
-        .limit(5)
+        .limit(999)
         .all()
     )
 
@@ -289,7 +290,7 @@ def home():
         Article.query.filter(Article.external_collaboration != None)
         .filter(Article.external_collaboration != "")  # Add this line
         .order_by(Article.publish_date.desc())
-        .limit(5)
+        .limit(999)
         .all()
     )
 
@@ -315,7 +316,7 @@ def home():
 def publish():
     categories = Category.query.all()
     countries = [country.name for country in pycountry.countries]
-    article_types = ["Hack", "Leak", "News", "Opinion", "Other"]
+    article_types = ["Hack", "Leak", "News", "Opinion", "Other", "Scrape"]
 
     if request.method == "POST":
         article_title = request.form["title"]
@@ -328,6 +329,7 @@ def publish():
         article_torrent_link = request.form.get("torrent_link")
         article_external_collaboration = request.form.get("external_collaboration")
         article_ipfs_link = request.form.get("ipfs_link")
+        article_download_size = request.form.get("download_size")
 
         article_author = current_user.username
 
@@ -342,6 +344,7 @@ def publish():
             torrent_link=article_torrent_link,
             external_collaboration=article_external_collaboration,
             ipfs_link=article_ipfs_link,
+            download_size=download_size,
         )
         selected_category_ids = request.form.getlist("categories")
         selected_categories = Category.query.filter(
@@ -441,7 +444,7 @@ def article(article_id):
 def edit_article(article_id):
     article = Article.query.get_or_404(article_id)
     countries = [country.name for country in pycountry.countries]
-    article_types = ["Hack", "Leak", "News", "Opinion", "Other"]
+    article_types = ["Hack", "Leak", "News", "Opinion", "Other", "Scrape"]
 
     # Check if the current user is the author or an admin
     if not (current_user.username == article.author or current_user.is_admin):
@@ -460,6 +463,7 @@ def edit_article(article_id):
         article.magnet_link = request.form["magnet_link"]
         article.torrent_link = request.form["torrent_link"]
         article.ipfs_link = request.form["ipfs_link"]
+        article.download_size = request.form["download_size"]
 
         # Update external collaboration URL
         article.external_collaboration = request.form.get("external_collaboration")
