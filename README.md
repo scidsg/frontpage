@@ -1,7 +1,7 @@
 # 📰 Frontpage
 A self-hosted, privacy-focused publishing platform built for censorship resilience.
 
-![Frame 136](https://github.com/scidsg/frontpage/assets/28545431/90e384a8-5205-4652-9d23-0dbae455cf54)
+![ddos-update](https://github.com/scidsg/frontpage/assets/28545431/dbe2bdf0-704e-4b29-9401-fd6f74528cf9)
 
 ## Features
 - Invite-only user registration
@@ -18,3 +18,7 @@ A self-hosted, privacy-focused publishing platform built for censorship resilien
 - Auto-renewing HTTPS certificates
 - Hardened CSP
 - Custom nginx logging removes IP address and country code of visitors
+- Team page
+  - User accounts
+  - Upload an avatar, set a bio, and include a personal URL
+- Easy global and contextual navigation
