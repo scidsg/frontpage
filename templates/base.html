@@ -9,25 +9,27 @@
 </head>
 <body>
     <header>
-        <h1>Distributed Denial of Secrets</h1>
+        <h1><a href="{{ url_for('home') }}">Distributed Denial of Secrets</a></h1>
         <nav>
             <a class="mobileNav btnIcon" aria-label="Navigation menu">Menu</a>
             <ul>
-                <li><a href="{{ url_for('home') }}">Home</a></li>
                 {% if show_team_link %}
                     <li><a href="{{ url_for('team') }}">Team</a></li>
                 {% endif %}
                 {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('publish') }}">Publish</a></li>
                     <li><a href="{{ url_for('logout') }}">Logout</a></li>
-                    <a href="{{ url_for('user_settings') }}">Settings</a>
+                    <li><a href="{{ url_for('user_settings') }}">Settings</a></li>
+                </ul>
+                <a class="btn btn-primary" href="{{ url_for('publish') }}" target="_blank" rel="noopener noreferrer">Publish</a>
                 {% else %}
                     <li><a href="https://shop.scidsg.org/collections/ddos">Shop</a></li>
                     <li><a href="{{ url_for('login') }}">Login</a></li>
                     <li><a href="{{ url_for('register') }}">Register</a></li>
+                </ul>
+                <a class="btn" href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer"><span class="btn-emoji">❤️</span> Donate</a>
                 {% endif %}
             </ul>
-            <a class="btn" href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer"><span class="btn-emoji">❤️</span> Donate</a>
+            
         </nav>
     </header>
 

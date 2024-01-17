@@ -105,11 +105,21 @@ class Article(db.Model):
     publish_date = db.Column(db.DateTime, default=datetime.utcnow)
     country = db.Column(db.String(50))
     download_link = db.Column(db.String(255))
+    download_link2 = db.Column(db.String(255))
+    download_link3 = db.Column(db.String(255))
     magnet_link = db.Column(db.String(255))
+    magnet_link2 = db.Column(db.String(255))
+    magnet_link3 = db.Column(db.String(255))
     torrent_link = db.Column(db.String(255))
+    torrent_link2 = db.Column(db.String(255))
+    torrent_link3 = db.Column(db.String(255))
     ipfs_link = db.Column(db.String(255))
+    ipfs_link2 = db.Column(db.String(255))
+    ipfs_link3 = db.Column(db.String(255))
     download_size = db.Column(db.String(255))
     external_collaboration = db.Column(db.String(255))
+    external_collaboration2 = db.Column(db.String(255))
+    external_collaboration3 = db.Column(db.String(255))
     article_type = db.Column(db.String(50))
     source = db.Column(db.String(255))
     last_edited = db.Column(db.DateTime)
@@ -262,6 +272,24 @@ def unauthorized():
     return redirect(url_for("home"))
 
 
+@app.context_processor
+def inject_scopes():
+    all_articles = Article.query.all()
+    counter = Counter()
+    for article in all_articles:
+        if article.article_type:
+            counter[("type", article.article_type)] += 1
+        if article.country:
+            for country in article.country.split(", "):
+                counter[("country", country)] += 1
+        if article.source:
+            counter[("source", article.source)] += 1
+
+    top_scopes = counter.most_common(5)
+    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    return {"all_scopes": all_scopes}
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
@@ -322,16 +350,13 @@ def inject_team_link():
 
 @app.route("/")
 def home():
-    # Define the maximum number of articles to display in each category
     max_articles = 10
 
-    # Fetch main articles
     main_articles = (
         Article.query.order_by(Article.publish_date.desc()).limit(max_articles).all()
     )
     main_articles_total = Article.query.count()
 
-    # Fetch recently edited articles
     recently_edited_articles = (
         Article.query.filter(Article.last_edited != None)
         .order_by(Article.last_edited.desc())
@@ -342,7 +367,6 @@ def home():
         Article.last_edited != None
     ).count()
 
-    # Fetch articles with non-empty, non-null external collaboration links
     external_collaboration_articles = (
         Article.query.filter(Article.external_collaboration != None)
         .filter(Article.external_collaboration != "")
@@ -356,22 +380,7 @@ def home():
         .count()
     )
 
-    # Counter for types, countries, sources
-    counter = Counter()
-    for article in main_articles:
-        if article.article_type:
-            counter[("type", article.article_type)] += 1
-        if article.country:
-            for country in article.country.split(", "):
-                counter[("country", country)] += 1
-        if article.source:
-            counter[("source", article.source)] += 1
-
-    top_scopes = counter.most_common(5)
-    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
-
     show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
-    print("Show Team Link:", show_team_link)
 
     return render_template(
         "home.html",
@@ -385,7 +394,6 @@ def home():
         external_collaboration_articles_total=external_collaboration_articles_total,
         external_collaboration_articles_more=external_collaboration_articles_total
         > max_articles,
-        all_scopes=all_scopes,
         show_team_link=show_team_link,
     )
 
@@ -405,10 +413,20 @@ def publish():
         article_country = ", ".join(article_countries)
         article_type = request.form["type"]
         article_download_link = request.form["download_link"]
+        article_download_link2 = request.form["download_link2"]
+        article_download_link3 = request.form["download_link3"]
         article_magnet_link = request.form.get("magnet_link")
+        article_magnet_link2 = request.form.get("magnet_link2")
+        article_magnet_link3 = request.form.get("magnet_link3")
         article_torrent_link = request.form.get("torrent_link")
+        article_torrent_link2 = request.form.get("torrent_link2")
+        article_torrent_link3 = request.form.get("torrent_link3")
         article_external_collaboration = request.form.get("external_collaboration")
+        article_external_collaboration2 = request.form.get("external_collaboration2")
+        article_external_collaboration3 = request.form.get("external_collaboration3")
         article_ipfs_link = request.form.get("ipfs_link")
+        article_ipfs_link2 = request.form.get("ipfs_link2")
+        article_ipfs_link3 = request.form.get("ipfs_link3")
         article_download_size = request.form.get("download_size")
         article_cyberwar = "cyberwar" in request.form
 
@@ -421,10 +439,20 @@ def publish():
             country=article_country,
             article_type=article_type,
             download_link=article_download_link,
+            download_link2=article_download_link2,
+            download_link3=article_download_link3,
             magnet_link=article_magnet_link,
+            magnet_link2=article_magnet_link2,
+            magnet_link3=article_magnet_link3,
             torrent_link=article_torrent_link,
+            torrent_link2=article_torrent_link2,
+            torrent_link3=article_torrent_link3,
             external_collaboration=article_external_collaboration,
+            external_collaboration2=article_external_collaboration2,
+            external_collaboration3=article_external_collaboration3,
             ipfs_link=article_ipfs_link,
+            ipfs_link2=article_ipfs_link2,
+            ipfs_link3=article_ipfs_link3,
             download_size=article_download_size,
             cyberwar=article_cyberwar,
         )
@@ -545,14 +573,23 @@ def edit_article(article_id):
         article.country = ", ".join(article_countries)  # Join countries into a string
         article.article_type = request.form["type"]
         article.download_link = request.form["download_link"]
+        article.download_link2 = request.form["download_link2"]
+        article.download_link3 = request.form["download_link3"]
         article.magnet_link = request.form["magnet_link"]
+        article.magnet_link2 = request.form["magnet_link2"]
+        article.magnet_link3 = request.form["magnet_link3"]
         article.torrent_link = request.form["torrent_link"]
+        article.torrent_link2 = request.form["torrent_link2"]
+        article.torrent_link3 = request.form["torrent_link3"]
         article.ipfs_link = request.form["ipfs_link"]
+        article.ipfs_link2 = request.form["ipfs_link2"]
+        article.ipfs_link3 = request.form["ipfs_link3"]
         article.download_size = request.form["download_size"]
         article.cyberwar = "cyberwar" in request.form
 
-        # Update external collaboration URL
         article.external_collaboration = request.form.get("external_collaboration")
+        article.external_collaboration2 = request.form.get("external_collaboration2")
+        article.external_collaboration3 = request.form.get("external_collaboration3")
 
         article.last_edited = datetime.utcnow()
 

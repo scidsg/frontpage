@@ -37,38 +37,97 @@
                 <input type="checkbox" id="cyberwar" name="cyberwar" {% if article.cyberwar %}checked{% endif %}>
             </div>
 
-            <div>
-                <label for="download_link">Download Link</label>
-                <input type="text" id="download_link" name="download_link" value="{{ article.download_link if article.download_link else '' }}">
-            </div>
-            <!-- Magnet Link -->
-            <div>
-                <label for="magnet_link">Magnet Link</label>
-                <input type="text" id="magnet_link" name="magnet_link" value="{{ article.magnet_link if article.magnet_link else '' }}">
-            </div>
+            <!-- DOWNLOAD SIZE -->
 
-            <!-- Torrent Link -->
-            <div>
-                <label for="torrent_link">Torrent Link</label>
-                <input type="text" id="torrent_link" name="torrent_link" value="{{ article.torrent_link if article.torrent_link else '' }}">
-            </div>
-
-            <!-- IPFS Link -->
-            <div>
-                <label for="ipfs_link">IPFS Link</label>
-                <input type="text" id="ipfs_link" name="ipfs_link" value="{{ article.ipfs_link if article.ipfs_link else '' }}">
-            </div>
-
-            <!-- IPFS Link -->
-            <div>
+             <div>
                 <label for="download_size">Download Size</label>
                 <input type="text" id="download_size" name="download_size" value="{{ article.download_size if article.download_size else '' }}">
             </div>
 
-            <!-- External Collaboration URL -->
+            <!-- PRIMARY DOWNLOAD LINKS -->
+
+            <h3>Direct Download Links</h3>
+
             <div>
-                <label for="external_collaboration">External Collaboration URL</label>
+                <label for="download_link">Download Link</label>
+                <input type="text" id="download_link" name="download_link" value="{{ article.download_link if article.download_link else '' }}">
+            </div>
+            <div>
+                <label for="download_link2">Download Link 2</label>
+                <input type="text" id="download_link2" name="download_link2" value="{{ article.download_link2 or '' }}">
+            </div>
+            <div>
+                <label for="download_link3">Download Link 3</label>
+                <input type="text" id="download_link3" name="download_link3" value="{{ article.download_link3 or '' }}">
+            </div>
+
+
+            <!-- Magnet Link -->
+
+            <h3>Magnet Links</h3>
+
+            <div>
+                <label for="magnet_link">Magnet Link</label>
+                <input type="text" id="magnet_link" name="magnet_link" value="{{ article.magnet_link if article.magnet_link else '' }}">
+            </div>
+            <div>
+                <label for="magnet_link2">Magnet Link 2</label>
+                <input type="text" id="magnet_link2" name="magnet_link2" value="{{ article.magnet_link2 or '' }}">
+            </div>
+            <div>
+                <label for="magnet_link3">Magnet Link 3</label>
+                <input type="text" id="magnet_link3" name="magnet_link3" value="{{ article.magnet_link3 or '' }}">
+            </div>
+
+            <!-- Torrent Link -->
+
+            <h3>Torrent Links</h3>
+
+            <div>
+                <label for="torrent_link">Torrent Link</label>
+                <input type="text" id="torrent_link" name="torrent_link" value="{{ article.torrent_link if article.torrent_link else '' }}">
+            </div>
+            <div>
+                <label for="torrent_link2">Torrent Link 2</label>
+                <input type="text" id="torrent_link2" name="torrent_link2" value="{{ article.torrent_link2 or '' }}">
+            </div>
+            <div>
+                <label for="torrent_link3">Torrent Link 3</label>
+                <input type="text" id="torrent_link3" name="torrent_link3" value="{{ article.torrent_link3 or '' }}">
+            </div>
+
+            <!-- IPFS Link -->
+
+            <h3>IPFS Links</h3>
+
+            <div>
+                <label for="ipfs_link">IPFS Link</label>
+                <input type="text" id="ipfs_link" name="ipfs_link" value="{{ article.ipfs_link if article.ipfs_link else '' }}">
+            </div>
+            <div>
+                <label for="ipfs_link2">IPFS Link 2</label>
+                <input type="text" id="ipfs_link2" name="ipfs_link2" value="{{ article.ipfs_link2 or '' }}">
+            </div>
+            <div>
+                <label for="ipfs_link3">IPFS Link 3</label>
+                <input type="text" id="ipfs_link3" name="ipfs_link3" value="{{ article.ipfs_link3 or '' }}">
+            </div>
+
+            <!-- External Collaboration URL -->
+
+            <h3>External Collaboration Links</h3>
+
+            <div>
+                <label for="external_collaboration">External Collaboration Link</label>
                 <input type="text" id="external_collaboration" name="external_collaboration" value="{{ article.external_collaboration if article.external_collaboration else '' }}">
+            </div>
+            <div>
+                <label for="external_collaboration2">External Collaboration Link 2</label>
+                <input type="text" id="external_collaboration2" name="external_collaboration2" value="{{ article.external_collaboration2 or '' }}">
+            </div>
+            <div>
+                <label for="external_collaboration3">External Collaboration Link 3</label>
+                <input type="text" id="external_collaboration3" name="external_collaboration3" value="{{ article.external_collaboration3 or '' }}">
             </div>
 
             <button type="submit">Update Article</button>

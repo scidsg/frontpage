@@ -28,4 +28,14 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault(); // Prevent default anchor action
         promoBlock.classList.toggle('hide');
     });
+    
+    var deleteButtons = document.querySelectorAll('.delete-article-button');
+
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            if (!confirm('Are you sure you want to delete this article?')) {
+                event.preventDefault();
+            }
+        });
+    });
 });

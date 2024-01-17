@@ -272,6 +272,14 @@ header h1 {
 	font-size: 1.25rem
 }
 
+header h1 a {
+	text-decoration: none;
+}
+
+header h1 a:hover {
+	text-decoration: underline;
+}
+
 header nav {
 	display: flex;
 	align-items: center;
@@ -411,13 +419,7 @@ textarea {
 	align-items: baseline;
 	gap: .75rem;
 	width: fit-content;
-	position: absolute;
-	top: 1rem;
-	right: 1rem;
-	outline: 1px solid rgba(0,0,0,0.1);
-	padding: .25rem .75rem;
-	border-radius: .25rem;
-	box-shadow: 3px 3px 0 0 rgba(0,0,0,.15);
+	padding: .25rem 0;
 }
 
 .article-actions form {
