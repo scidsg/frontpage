@@ -37,6 +37,10 @@ body {
 	box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
 }
 
+.content:not(.categories-list ~ .content) {
+	margin-top: -2rem;
+}
+
 .content.promo {
 	margin-bottom: 1rem;
 	background-image: url('banner-bg.png');
@@ -286,7 +290,7 @@ header nav a:hover {
 header nav ul {
 	display: flex;
 	list-style: none;
-	gap: 1rem;
+	gap: 1.5rem;
 	font-size: .875rem;
 	margin: 0;
 	padding: 0;

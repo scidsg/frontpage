@@ -265,6 +265,12 @@ def logout():
     return redirect(url_for("home"))
 
 
+@app.context_processor
+def inject_team_link():
+    show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
+    return dict(show_team_link=show_team_link)
+
+
 @app.route("/")
 def home():
     # Define the maximum number of articles to display in each category
@@ -315,6 +321,9 @@ def home():
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
 
+    show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
+    print("Show Team Link:", show_team_link)
+
     return render_template(
         "home.html",
         main_articles=main_articles,
@@ -328,6 +337,7 @@ def home():
         external_collaboration_articles_more=external_collaboration_articles_total
         > max_articles,
         all_scopes=all_scopes,
+        show_team_link=show_team_link,
     )
 
 
@@ -451,6 +461,8 @@ def article(article_id):
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
 
+    show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
+
     return render_template(
         "article.html",
         article=article,
@@ -459,6 +471,7 @@ def article(article_id):
         related_by_source_grouped=related_by_source_grouped,
         related_by_country_grouped=related_by_country_dict,
         all_scopes=all_scopes,
+        show_team_link=show_team_link,
     )
 
 
@@ -529,13 +542,15 @@ def articles_by_source(source):
     # Get the top 5 scopes
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
         "source_articles.html",
         articles=articles,
         source=source,
         article_count=article_count,
-        all_scopes=all_scopes,  # Pass the all_scopes to the template
+        all_scopes=all_scopes,
+        show_team_link=show_team_link,
     )
 
 
@@ -559,13 +574,15 @@ def articles_by_country(country):
     # Get the top 5 scopes
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
         "country_articles.html",
         articles=articles,
         country=country,
         article_count=article_count,
-        all_scopes=all_scopes,  # Pass the all_scopes to the template
+        all_scopes=all_scopes,
+        show_team_link=show_team_link,
     )
 
 
@@ -589,13 +606,15 @@ def articles_by_author(author):
     # Get the top 5 scopes
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
         "author_articles.html",
         articles=articles,
         author=author,
         article_count=article_count,
-        all_scopes=all_scopes,  # Pass the all_scopes to the template
+        all_scopes=all_scopes,
+        show_team_link=show_team_link,
     )
 
 
@@ -623,13 +642,15 @@ def articles_by_type(article_type):
     # Get the top 5 scopes
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
         "type_articles.html",
         articles=articles,
         article_type=article_type,
         article_count=article_count,
-        all_scopes=all_scopes,  # Pass the all_scopes to the template
+        all_scopes=all_scopes,
+        show_team_link=show_team_link,
     )
 
 
@@ -665,13 +686,15 @@ def all_categories():
     # Get the top 5 scopes
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
         "all_categories.html",
         types=types,
         countries=countries,
         sources=sources,
-        all_scopes=all_scopes,  # Pass the all_scopes to the template
+        all_scopes=all_scopes,
+        show_team_link=show_team_link,
     )
 
 
@@ -804,6 +827,7 @@ def all_articles(category):
     # Get the top 5 scopes
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
         "all_articles.html",
@@ -811,6 +835,7 @@ def all_articles(category):
         article_count=article_count,
         title=title,
         all_scopes=all_scopes,
+        show_team_link=show_team_link,
     )
 
 
