@@ -4,7 +4,9 @@
 {% block content %}
 <div class="content settings">
     <h1>Settings</h1>
-    <!-- Team Page Settings Section -->
+
+    <!-- TEAM PAGE CONSENT -->
+    
     <div>
         <h2>Team Page Settings</h2>
         <form action="{{ url_for('user_settings') }}" method="post">
@@ -18,6 +20,25 @@
             </div>
         </form>
     </div>
+
+    <!-- DISPLAY NAME -->
+
+    <div>
+        <h2>Display Name</h2>
+        <form action="{{ url_for('user_settings') }}" method="post">
+            {{ display_name_form.hidden_tag() }}
+            <div>
+                {{ display_name_form.display_name.label }}
+                {{ display_name_form.display_name() }}
+            </div>
+            <div>
+                <button type="submit" name="submit_display_name">Update Display Name</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- USER BIO -->
+
     <div>
         <h2>Biography</h2>
         <form action="{{ url_for('user_settings') }}" method="post">
@@ -31,6 +52,9 @@
         </div>
         </form>
     </div>
+
+    <!-- CHANGE PASSWORD -->
+
     <div>
         <h2>Change Password</h2>
         <form action="{{ url_for('user_settings') }}" method="post">

@@ -46,6 +46,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(100))
     bio = db.Column(db.Text)
     include_in_team_page = db.Column(db.Boolean, default=False)
+    display_name = db.Column(db.String(100), nullable=True)  # Removed unique=True
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -181,6 +182,15 @@ class PasswordForm(FlaskForm):
         render_kw={"placeholder": "Confirm New Password"},
     )
     submit_password = SubmitField("Update Password")
+
+
+class DisplayNameForm(FlaskForm):
+    display_name = StringField(
+        "Display Name",
+        validators=[Length(max=100)],
+        render_kw={"placeholder": "Enter a display name"},
+    )
+    submit_display_name = SubmitField("Update Display Name")
 
 
 class TeamPageForm(FlaskForm):
@@ -720,6 +730,7 @@ def user_settings():
     bio_form = BioForm(obj=current_user)
     password_form = PasswordForm()
     team_page_form = TeamPageForm(obj=current_user)
+    display_name_form = DisplayNameForm(obj=current_user)
 
     if "submit_bio" in request.form and bio_form.validate_on_submit():
         current_user.bio = bio_form.bio.data
@@ -741,11 +752,19 @@ def user_settings():
         db.session.commit()
         flash("👍 Team page settings updated", "success")
 
+    elif (
+        "submit_display_name" in request.form and display_name_form.validate_on_submit()
+    ):
+        current_user.display_name = display_name_form.display_name.data
+        db.session.commit()
+        flash("👍 Your display name has been updated.", "success")
+
     return render_template(
         "settings.html",
         bio_form=bio_form,
         password_form=password_form,
         team_page_form=team_page_form,
+        display_name_form=display_name_form,
     )
 
 
