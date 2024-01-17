@@ -636,6 +636,7 @@ blockquote {
 	border-left: 3px solid rgba(0,0,0,0.1);
 	margin: 1.5rem 1rem 1.5rem 1rem;
 	padding: 1rem 1rem;
+	font-style: italic;
 }
 
 blockquote p {
@@ -644,6 +645,10 @@ blockquote p {
 
 .content blockquote p:first-of-type {
 	margin: 0;
+}
+
+.boolean {
+	margin: 1rem 0 .75rem 0;
 }
 
 @media only screen and (max-width: 1056px) {
@@ -699,13 +704,6 @@ blockquote p {
         flex-direction: column;
         align-items: start;
     }
-
-    blockquote {
-	  border-left: 3px solid rgba(0,0,0,0.1);
-	  padding: .0125rem 0 .0125rem 1rem;
-	  margin-left: 1rem;
-	  font-style: italic;
-	}
 
 	.article-content blockquote p {
 		padding: 0;
