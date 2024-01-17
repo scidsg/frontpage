@@ -4,36 +4,63 @@
 {% block content %}
 <div class="content settings">
     <h1>Settings</h1>
-    <section>
-        <h2>Change Password</h2>
+    <!-- Team Page Settings Section -->
+    <div>
+        <h2>Team Page Settings</h2>
         <form action="{{ url_for('user_settings') }}" method="post">
-            {{ form.hidden_tag() }}
+            {{ team_page_form.hidden_tag() }}
             <div>
-                {{ form.current_password.label }}
-                {{ form.current_password() }}
-                {% for error in form.current_password.errors %}
-                <span class="error">{{ error }}</span>
-                {% endfor %}
+                {{ team_page_form.include_in_team_page.label }}
+                {{ team_page_form.include_in_team_page() }}
             </div>
             <div>
-                {{ form.new_password.label }}
-                {{ form.new_password() }}
-                {% for error in form.new_password.errors %}
-                <span class="error">{{ error }}</span>
-                {% endfor %}
-            </div>
-            <div>
-                {{ form.confirm_new_password.label }}
-                {{ form.confirm_new_password() }}
-                {% for error in form.confirm_new_password.errors %}
-                <span class="error">{{ error }}</span>
-                {% endfor %}
-            </div>
-            <div>
-                <button type="submit">Update Password</button>
+                <button type="submit" name="submit_team">Update Team Setting</button>
             </div>
         </form>
-    </section>
-    <!-- Future settings sections can be added here -->
+    </div>
+    <div>
+        <div>
+            <h2>Biography</h2>
+            <form action="{{ url_for('user_settings') }}" method="post">
+                {{ bio_form.hidden_tag() }}
+                <div>
+                    {{ bio_form.bio.label }}
+                    {{ bio_form.bio() }}
+                </div>
+            <div>
+                <button type="submit" name="submit_bio">Update Bio</button>
+            </div>
+            </form>
+        </div>
+    <div>
+        <h2>Change Password</h2>
+        <form action="{{ url_for('user_settings') }}" method="post">
+            {{ password_form.hidden_tag() }}
+            <div>
+                {{ password_form.current_password.label }}
+                {{ password_form.current_password() }}
+                {% for error in password_form.current_password.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                {{ password_form.new_password.label }}
+                {{ password_form.new_password() }}
+                {% for error in password_form.new_password.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                {{ password_form.confirm_new_password.label }}
+                {{ password_form.confirm_new_password() }}
+                {% for error in password_form.confirm_new_password.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                <button type="submit" name="submit_password">Update Password</button>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

@@ -651,6 +651,23 @@ blockquote p {
 	margin: 1rem 0 .75rem 0;
 }
 
+.content.settings {
+	max-width: 640px;
+}
+
+.content.settings textarea {
+	height: 200px;
+}
+
+.content.settings button {
+	background-color: white;
+	color: #333;
+}
+
+.content.settings input[type="checkbox"] {
+	margin-bottom: 1rem;
+}
+
 @media only screen and (max-width: 1056px) {
 
 	.related-articles-group {

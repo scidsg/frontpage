@@ -18,7 +18,7 @@ import logging
 import os
 import markdown
 import pycountry
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired, EqualTo, ValidationError, Length, Regexp
 from collections import Counter
 from itertools import groupby
@@ -44,6 +44,8 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
     password_hash = db.Column(db.String(100))
+    bio = db.Column(db.Text)
+    include_in_team_page = db.Column(db.Boolean, default=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -143,8 +145,14 @@ class RegistrationForm(FlaskForm):
             raise ValidationError("Invalid or expired invite code.")
 
 
-class UserSettingsForm(FlaskForm):
-    # Fields for password change
+class BioForm(FlaskForm):
+    bio = TextAreaField(
+        "Bio", render_kw={"placeholder": "Tell us something about yourself"}
+    )
+    submit_bio = SubmitField("Update Bio")
+
+
+class PasswordForm(FlaskForm):
     current_password = PasswordField(
         "Current Password",
         validators=[DataRequired()],
@@ -172,10 +180,12 @@ class UserSettingsForm(FlaskForm):
         ],
         render_kw={"placeholder": "Confirm New Password"},
     )
+    submit_password = SubmitField("Update Password")
 
-    # Add more fields here as your application grows
 
-    submit = SubmitField("Update Settings")
+class TeamPageForm(FlaskForm):
+    include_in_team_page = BooleanField("Include in Team Page", default=False)
+    submit_team = SubmitField("Update Team Setting")
 
 
 @app.errorhandler(404)
@@ -684,24 +694,71 @@ def delete_article(article_id):
 @app.route("/settings", methods=["GET", "POST"])
 @login_required
 def user_settings():
-    form = UserSettingsForm()
-    if form.validate_on_submit():
-        user = current_user
-        if not user.check_password(form.current_password.data):
-            flash("⛔️ Current password is incorrect.", "danger")
-            return redirect(url_for("user_settings"))
+    bio_form = BioForm(obj=current_user)
+    password_form = PasswordForm()
+    team_page_form = TeamPageForm(obj=current_user)
 
-        user.set_password(form.new_password.data)
+    if "submit_bio" in request.form and bio_form.validate_on_submit():
+        current_user.bio = bio_form.bio.data
         db.session.commit()
-        flash("👍 Your password has been updated. Please log in again.", "success")
+        flash("👍 Your bio has been updated.", "success")
 
-        # Log the user out
-        logout_user()
+    elif "submit_password" in request.form and password_form.validate_on_submit():
+        if current_user.check_password(password_form.current_password.data):
+            current_user.set_password(password_form.new_password.data)
+            db.session.commit()
+            flash("👍 Your password has been updated. Please log in again.", "success")
+            logout_user()
+            return redirect(url_for("login"))
+        else:
+            flash("⛔️ Current password is incorrect.", "danger")
 
-        # Redirect to the login page
-        return redirect(url_for("login"))
+    elif "submit_team" in request.form and team_page_form.validate_on_submit():
+        current_user.include_in_team_page = team_page_form.include_in_team_page.data
+        db.session.commit()
+        flash("Team page settings updated", "success")
 
-    return render_template("settings.html", form=form)
+    return render_template(
+        "settings.html",
+        bio_form=bio_form,
+        password_form=password_form,
+        team_page_form=team_page_form,
+    )
+
+
+@app.route("/update_bio", methods=["POST"])
+@login_required
+def update_bio():
+    form = UserSettingsForm()
+    user = current_user
+
+    if form.validate_on_submit():
+        user.bio = form.bio.data
+        db.session.commit()
+        flash("👍 Your bio has been updated.", "success")
+    else:
+        flash("Error updating bio.", "danger")
+
+    return redirect(url_for("user_settings"))
+
+
+@app.route("/change_password", methods=["POST"])
+@login_required
+def change_password():
+    form = UserSettingsForm()
+    user = current_user
+
+    if form.validate_on_submit():
+        if user.check_password(form.current_password.data):
+            user.set_password(form.new_password.data)
+            db.session.commit()
+            flash("👍 Your password has been updated.", "success")
+            logout_user()
+            return redirect(url_for("login"))
+        else:
+            flash("⛔️ Current password is incorrect.", "danger")
+
+    return redirect(url_for("user_settings"))
 
 
 @app.route("/all_articles/<category>")
@@ -755,6 +812,12 @@ def all_articles(category):
         title=title,
         all_scopes=all_scopes,
     )
+
+
+@app.route("/team")
+def team():
+    users = User.query.filter(User.include_in_team_page).all()
+    return render_template("team.html", users=users)
 
 
 # Error handler

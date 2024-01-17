@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="content">
+        <h1>Our Team</h1>
+        <div class="team-members">
+            {% for user in users %}
+            <div class="team-member">
+                <h2>{{ user.username }}</h2>
+                {% if user.bio %}
+                    <p>{{ user.bio }}</p>
+                {% else %}
+                    <p>No bio available.</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
