@@ -676,6 +676,11 @@ blockquote p {
 	margin-top: 1.5rem;
 }
 
+.avatar {
+	max-width: 200px;
+	width: 100%;
+}
+
 @media only screen and (max-width: 1056px) {
 
 	.related-articles-group {

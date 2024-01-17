@@ -18,18 +18,39 @@ import logging
 import os
 import markdown
 import pycountry
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, BooleanField
-from wtforms.validators import DataRequired, EqualTo, ValidationError, Length, Regexp
+from wtforms import (
+    StringField,
+    PasswordField,
+    SubmitField,
+    TextAreaField,
+    BooleanField,
+)
+from wtforms.validators import (
+    DataRequired,
+    EqualTo,
+    ValidationError,
+    Length,
+    Regexp,
+    URL,
+    Optional,
+)
+from werkzeug.utils import secure_filename
+from flask_wtf.file import FileField, FileAllowed
 from collections import Counter
 from itertools import groupby
 
 
 load_dotenv()  # Load environment variables from .env file
 
+# Uploads
+UPLOAD_FOLDER = "/var/www/html/frontpage/static/uploads"
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
+
 # Initialize Flask app and database
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////var/www/html/frontpage/blog.db"
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -46,7 +67,9 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(100))
     bio = db.Column(db.Text)
     include_in_team_page = db.Column(db.Boolean, default=False)
-    display_name = db.Column(db.String(100), nullable=True)  # Removed unique=True
+    display_name = db.Column(db.String(100), nullable=True)
+    custom_url = db.Column(db.String(255), nullable=True)
+    avatar = db.Column(db.String(255), nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -196,6 +219,22 @@ class DisplayNameForm(FlaskForm):
 class TeamPageForm(FlaskForm):
     include_in_team_page = BooleanField("Include in Team Page", default=False)
     submit_team = SubmitField("Update Team Setting")
+
+
+class CustomUrlForm(FlaskForm):
+    custom_url = StringField(
+        "Custom URL",
+        validators=[Optional(), URL(message="Must be a valid URL.")],
+        render_kw={"placeholder": "Enter your custom URL"},
+    )
+    submit_custom_url = SubmitField("Update Custom URL")
+
+
+class AvatarForm(FlaskForm):
+    avatar = FileField(
+        "Avatar", validators=[FileAllowed(["jpg", "png"], "Images only!")]
+    )
+    submit_avatar = SubmitField("Upload Avatar")
 
 
 @app.errorhandler(404)
@@ -731,33 +770,52 @@ def user_settings():
     password_form = PasswordForm()
     team_page_form = TeamPageForm(obj=current_user)
     display_name_form = DisplayNameForm(obj=current_user)
+    custom_url_form = CustomUrlForm(obj=current_user)
+    avatar_form = AvatarForm()
 
     if "submit_bio" in request.form and bio_form.validate_on_submit():
         current_user.bio = bio_form.bio.data
         db.session.commit()
-        flash("👍 Your bio has been updated.", "success")
+        flash("Your bio has been updated.", "success")
 
     elif "submit_password" in request.form and password_form.validate_on_submit():
         if current_user.check_password(password_form.current_password.data):
             current_user.set_password(password_form.new_password.data)
             db.session.commit()
-            flash("👍 Your password has been updated. Please log in again.", "success")
+            flash("Your password has been updated. Please log in again.", "success")
             logout_user()
             return redirect(url_for("login"))
         else:
-            flash("⛔️ Current password is incorrect.", "danger")
+            flash("Current password is incorrect.", "danger")
 
     elif "submit_team" in request.form and team_page_form.validate_on_submit():
         current_user.include_in_team_page = team_page_form.include_in_team_page.data
         db.session.commit()
-        flash("👍 Team page settings updated", "success")
+        flash("Team page settings updated", "success")
 
     elif (
         "submit_display_name" in request.form and display_name_form.validate_on_submit()
     ):
         current_user.display_name = display_name_form.display_name.data
         db.session.commit()
-        flash("👍 Your display name has been updated.", "success")
+        flash("Your display name has been updated.", "success")
+
+    elif "submit_custom_url" in request.form and custom_url_form.validate_on_submit():
+        current_user.custom_url = custom_url_form.custom_url.data
+        db.session.commit()
+        flash("Your custom URL has been updated.", "success")
+
+    elif avatar_form.validate_on_submit() and "avatar" in request.files:
+        file = avatar_form.avatar.data
+        filename = secure_filename(file.filename)
+        if filename != "":
+            file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            file.save(file_path)
+            current_user.avatar = filename
+            db.session.commit()
+            flash("Your avatar has been updated.", "success")
+        else:
+            flash("No file selected.", "warning")
 
     return render_template(
         "settings.html",
@@ -765,6 +823,8 @@ def user_settings():
         password_form=password_form,
         team_page_form=team_page_form,
         display_name_form=display_name_form,
+        custom_url_form=custom_url_form,
+        avatar_form=avatar_form,
     )
 
 

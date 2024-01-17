@@ -5,11 +5,17 @@
         <div class="team-members">
             {% for user in users %}
             <div class="team-member">
-                <h2>{{ user.username }}</h2>
+                {% if user.avatar %} <!-- Check if avatar exists -->
+                    <img class="avatar" src="{{ url_for('static', filename='uploads/' + user.avatar) }}" alt="Avatar">
+                {% endif %}
+                <h2>{{ user.display_name or user.username }}</h2> <!-- Display name or username -->
                 {% if user.bio %}
                     <p>{{ user.bio }}</p>
                 {% else %}
                     <p>No bio available.</p>
+                {% endif %}
+                {% if user.custom_url %} <!-- Check if custom URL exists -->
+                    <p><a href="{{ user.custom_url }}" target="_blank">Personal Website</a></p>
                 {% endif %}
             </div>
             {% endfor %}

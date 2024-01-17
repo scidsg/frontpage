@@ -37,6 +37,25 @@
         </form>
     </div>
 
+    <!-- AVATAR UPLOAD -->
+
+    <div>
+        <h2>Upload Avatar</h2>
+        <form action="{{ url_for('user_settings') }}" method="post" enctype="multipart/form-data">
+            {{ avatar_form.hidden_tag() }}
+            <div>
+                {{ avatar_form.avatar.label }}
+                {{ avatar_form.avatar() }}
+                {% for error in avatar_form.avatar.errors %}
+                <span class="error">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div>
+                <button type="submit" name="submit_avatar">Upload Avatar</button>
+            </div>
+        </form>
+    </div>
+
     <!-- USER BIO -->
 
     <div>
@@ -52,6 +71,23 @@
         </div>
         </form>
     </div>
+
+    <!-- CUSTOM URL -->
+
+    <div>
+        <h2>Personal URL</h2>
+        <form action="{{ url_for('user_settings') }}" method="post">
+            {{ custom_url_form.hidden_tag() }}
+            <div>
+                {{ custom_url_form.custom_url.label }}
+                {{ custom_url_form.custom_url() }}
+            </div>
+            <div>
+                <button type="submit" name="submit_custom_url">Update Personal URL</button>
+            </div>
+        </form>
+    </div>
+
 
     <!-- CHANGE PASSWORD -->
 

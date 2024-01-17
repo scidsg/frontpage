@@ -46,6 +46,11 @@ sudo chown -R www-data:www-data /var/www/html/frontpage
 sudo chown www-data:www-data /var/www/html/frontpage/blog.db
 sudo chmod 664 /var/www/html/frontpage/blog.db
 
+# Add upload directory
+mkdir /var/www/html/frontpage/static/uploads
+sudo chown -R www-data:www-data /var/www/html/frontpage/static/uploads
+sudo chmod -R 755 /var/www/html/frontpage/static/uploads
+
 # Install Nginx
 sudo apt install nginx -y
 
