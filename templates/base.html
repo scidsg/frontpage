@@ -14,6 +14,7 @@
             <a class="mobileNav btnIcon" aria-label="Navigation menu">Menu</a>
             <ul>
                 <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('team') }}">Team</a></li>
                 {% if current_user.is_authenticated %}
                     <li><a href="{{ url_for('publish') }}">Publish</a></li>
                     <li><a href="{{ url_for('logout') }}">Logout</a></li>
