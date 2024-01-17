@@ -676,9 +676,22 @@ blockquote p {
 	margin-top: 1.5rem;
 }
 
+.content input[type="file"] {
+	border: none;
+	padding: 0;
+}
+
 .avatar {
 	max-width: 200px;
-	width: 100%;
+	border-radius: 50vw;
+}
+
+.avatar + h2 {
+	margin-top: 1rem;
+}
+
+.team-member {
+	margin: 2rem 0
 }
 
 @media only screen and (max-width: 1056px) {
