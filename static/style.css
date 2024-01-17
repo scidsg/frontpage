@@ -668,6 +668,10 @@ blockquote p {
 	margin-bottom: 1rem;
 }
 
+.content.settings div:first-of-type h2 {
+	margin-top: 1.5rem;
+}
+
 @media only screen and (max-width: 1056px) {
 
 	.related-articles-group {

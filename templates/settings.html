@@ -19,19 +19,18 @@
         </form>
     </div>
     <div>
-        <div>
-            <h2>Biography</h2>
-            <form action="{{ url_for('user_settings') }}" method="post">
-                {{ bio_form.hidden_tag() }}
-                <div>
-                    {{ bio_form.bio.label }}
-                    {{ bio_form.bio() }}
-                </div>
+        <h2>Biography</h2>
+        <form action="{{ url_for('user_settings') }}" method="post">
+            {{ bio_form.hidden_tag() }}
             <div>
-                <button type="submit" name="submit_bio">Update Bio</button>
+                {{ bio_form.bio.label }}
+                {{ bio_form.bio() }}
             </div>
-            </form>
+        <div>
+            <button type="submit" name="submit_bio">Update Bio</button>
         </div>
+        </form>
+    </div>
     <div>
         <h2>Change Password</h2>
         <form action="{{ url_for('user_settings') }}" method="post">

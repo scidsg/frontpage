@@ -716,7 +716,7 @@ def user_settings():
     elif "submit_team" in request.form and team_page_form.validate_on_submit():
         current_user.include_in_team_page = team_page_form.include_in_team_page.data
         db.session.commit()
-        flash("Team page settings updated", "success")
+        flash("👍 Team page settings updated", "success")
 
     return render_template(
         "settings.html",
