@@ -17,10 +17,9 @@
                     <li><a href="{{ url_for('team') }}">Team</a></li>
                 {% endif %}
                 {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
                     <li><a href="{{ url_for('user_settings') }}">Settings</a></li>
                 </ul>
-                <a class="btn btn-primary" href="{{ url_for('publish') }}" target="_blank" rel="noopener noreferrer">Publish</a>
+                <a class="btn btn-primary" href="{{ url_for('publish') }}" target="_blank" rel="noopener noreferrer">New Article</a>
                 {% else %}
                     <li><a href="https://shop.scidsg.org/collections/ddos">Shop</a></li>
                     <li><a href="{{ url_for('login') }}">Login</a></li>
