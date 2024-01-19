@@ -19,7 +19,13 @@
                 {% if current_user.is_authenticated %}
                     <li><a href="{{ url_for('user_settings') }}">Settings</a></li>
                     {% if current_user.is_admin %}
-                        <li><a href="{{ url_for('approve_articles') }}">Approvals</a></li>
+                        <li><a href="{{ url_for('approve_articles') }}">
+                            Approvals
+                            {% if approval_count > 0 %}
+                                <span class="approval-count">{{ approval_count }}</span>
+                            {% endif %}
+                            </a>
+                        </li>
                         <li><a href="{{ url_for('users') }}">Users</a></li>
                     {% endif %}
                     <li><a href="{{ url_for('logout') }}">Logout</a></li>

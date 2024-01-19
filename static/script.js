@@ -1,3 +1,11 @@
+document.addEventListener('DOMContentLoaded', function() {
+    hideFlashMessages();
+    setupMobileNav();
+    setupPromoBlock();
+    setupDeleteButtons();
+    initializeUserPageLogic();
+});
+
 function hideFlashMessages() {
     const flashMessages = document.querySelectorAll('.flashes');
     flashMessages.forEach(msg => {
@@ -7,28 +15,33 @@ function hideFlashMessages() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    hideFlashMessages();
-
-    // Handle mobile navigation toggle
+function setupMobileNav() {
     const mobileNavButton = document.querySelector('.btnIcon');
     const navMenu = document.querySelector('header nav ul');
 
-    mobileNavButton.addEventListener('click', function() {
-        const isExpanded = this.getAttribute('aria-expanded') === 'true' || false;
-        this.setAttribute('aria-expanded', !isExpanded);
-        navMenu.classList.toggle('show');
-    });
+    if (mobileNavButton) {
+        mobileNavButton.addEventListener('click', function() {
+            const isExpanded = this.getAttribute('aria-expanded') === 'true' || false;
+            this.setAttribute('aria-expanded', !isExpanded);
+            navMenu.classList.toggle('show');
+        });
+    }
+}
 
-    // Handle closing the promo block
+function setupPromoBlock() {
     const closePromoButton = document.getElementById('close_promo');
-    const promoBlock = document.getElementById('promo');
+    if (closePromoButton) {
+        closePromoButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            const promoBlock = document.getElementById('promo');
+            if (promoBlock) {
+                promoBlock.classList.toggle('hide');
+            }
+        });
+    }
+}
 
-    closePromoButton.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent default anchor action
-        promoBlock.classList.toggle('hide');
-    });
-    
+function setupDeleteButtons() {
     var deleteButtons = document.querySelectorAll('.delete-article-button');
 
     deleteButtons.forEach(function(button) {
@@ -38,22 +51,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
-    initializeUserPageLogic();
-});
+}
 
 function initializeUserPageLogic() {
     const adminCheckboxes = document.querySelectorAll('.admin-checkbox');
-    adminCheckboxes.forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-            const userId = this.getAttribute('name').split('_')[1];
-            updateApprovalStatus(this, userId);
+
+    adminCheckboxes.forEach(function(adminCheckbox) {
+        toggleApprovalCheckbox(adminCheckbox);
+
+        adminCheckbox.addEventListener('change', function() {
+            toggleApprovalCheckbox(this);
         });
     });
 }
 
-function updateApprovalStatus(adminCheckbox, userId) {
+function toggleApprovalCheckbox(adminCheckbox) {
+    const userId = adminCheckbox.name.split('_')[1];
     const approvalCheckbox = document.getElementById('approval_' + userId);
+
     if (adminCheckbox.checked) {
         approvalCheckbox.checked = false;
         approvalCheckbox.disabled = true;

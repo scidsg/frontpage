@@ -299,6 +299,14 @@ def inject_scopes():
     return {"all_scopes": all_scopes}
 
 
+@app.context_processor
+def inject_approval_count():
+    if current_user.is_authenticated and current_user.is_admin:
+        approval_count = Article.query.filter_by(pending_approval=True).count()
+        return dict(approval_count=approval_count)
+    return dict(approval_count=0)
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
@@ -511,29 +519,36 @@ def publish():
 @login_required
 def approve_articles():
     if not current_user.is_admin:
-        flash("Unauthorized access.", "danger")
+        flash("⛔️ Unauthorized access.", "danger")
         return redirect(url_for("home"))
 
     # Fetch only articles that are pending approval
     articles_to_approve = Article.query.filter_by(pending_approval=True).all()
+    article_count = len(
+        articles_to_approve
+    )  # Get the count of articles pending approval
 
-    return render_template("approve_articles.html", articles=articles_to_approve)
+    return render_template(
+        "approve_articles.html",
+        articles=articles_to_approve,
+        article_count=article_count,
+    )
 
 
 @app.route("/approve_article/<slug>", methods=["POST"])
 @login_required
 def approve_article(slug):
     if not current_user.is_admin:
-        flash("Unauthorized access.", "danger")
+        flash("⛔️ Unauthorized access.", "danger")
         return redirect(url_for("home"))
 
     article = Article.query.filter_by(slug=slug).first_or_404()
     if current_user.is_admin:
         article.pending_approval = False  # Mark as approved
         db.session.commit()
-        flash("Article approved.", "success")
+        flash("🎉 Article approved.", "success")
     else:
-        flash("Unauthorized access.", "danger")
+        flash("⛔️ Unauthorized access.", "danger")
 
     return redirect(url_for("approve_articles"))
 
@@ -551,7 +566,7 @@ def users():
             user.requires_approval = f"approval_{user.id}" in request.form
             user.is_admin = f"admin_{user.id}" in request.form
         db.session.commit()
-        flash("Users updated successfully.", "success")
+        flash("👍 Users updated successfully.", "success")
 
     all_users = User.query.all()
     return render_template("users.html", users=all_users)

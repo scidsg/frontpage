@@ -144,6 +144,11 @@
 		background-color: #333;
 		color: white;
 	}
+	
+	.approval-count {
+		background-color: rgb(210, 103, 61);
+		color: white;
+	}
 
 }
 
@@ -277,6 +282,11 @@
 		background-color: white;
 		color: #333;
 	}
+	
+	.approval-count {
+		background-color: rgb(227, 161, 135);
+		color: #333;
+	}
 
 }
 
@@ -318,6 +328,18 @@ body {
 	background-size: 240px;
 	background-position-y: bottom -2rem;
 	background-position-x: right;
+}
+
+.approval-count {
+	min-width: 12px;
+	min-height: 20px;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	font-size: .75rem;
+	border-radius: 50vw;
+	padding: 0 .25rem;
+	width: fit-content;
 }
 
 .content.promo .btn-primary {
