@@ -139,6 +139,11 @@
 	.username {
 		color: #333;
 	}
+	
+	.btn.btn-primary {
+		background-color: #333;
+		color: white;
+	}
 
 }
 
@@ -266,6 +271,11 @@
 
 	.username {
 		color: white;
+	}
+	
+	.btn.btn-primary {
+		background-color: white;
+		color: #333;
 	}
 
 }

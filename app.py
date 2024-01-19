@@ -361,9 +361,14 @@ def inject_team_link():
 def home():
     max_articles = 10
 
+    # Only fetch articles that are not pending approval
     main_articles = (
-        Article.query.order_by(Article.publish_date.desc()).limit(max_articles).all()
+        Article.query.filter_by(pending_approval=False)
+        .order_by(Article.publish_date.desc())
+        .limit(max_articles)
+        .all()
     )
+
     main_articles_total = Article.query.count()
 
     recently_edited_articles = (
@@ -439,6 +444,7 @@ def publish():
         article_external_collaboration2 = request.form.get("external_collaboration2")
         article_external_collaboration3 = request.form.get("external_collaboration3")
         article_source = request.form["source"]
+        requires_approval = current_user.requires_approval
 
         new_article = Article(
             title=article_title,
@@ -464,31 +470,35 @@ def publish():
             external_collaboration2=article_external_collaboration2,
             external_collaboration3=article_external_collaboration3,
             source=article_source,
-            pending_approval=current_user.requires_approval,
+            pending_approval=requires_approval,
         )
 
-        # Set slug for new article
+        # Set slug for the new article
         new_article.set_slug()
 
-        # Add selected categories
+        # Handle article categories
         selected_category_ids = request.form.getlist("categories")
         selected_categories = Category.query.filter(
             Category.id.in_(selected_category_ids)
         ).all()
         new_article.categories = selected_categories
 
+        # Add and commit the new article to the database
         db.session.add(new_article)
         db.session.commit()
 
+        # Flash message based on whether the user requires approval
         flash_message = (
-            "Article published successfully."
-            if not current_user.requires_approval
-            else "Your article has been submitted for approval."
+            "⏱️ Your article has been submitted for approval."
+            if requires_approval
+            else "👍 Article published successfully."
         )
         flash(flash_message, "success")
 
+        # Redirect to home after successful submission
         return redirect(url_for("home"))
 
+    # Render the publish template with the necessary context
     return render_template(
         "publish.html",
         categories=categories,
@@ -504,12 +514,9 @@ def approve_articles():
         flash("Unauthorized access.", "danger")
         return redirect(url_for("home"))
 
-    # Fetch articles authored by users who require approval and are not yet approved
-    articles_to_approve = (
-        Article.query.join(User, Article.author == User.username)
-        .filter(User.requires_approval == True)
-        .all()
-    )
+    # Fetch only articles that are pending approval
+    articles_to_approve = Article.query.filter_by(pending_approval=True).all()
+
     return render_template("approve_articles.html", articles=articles_to_approve)
 
 
@@ -521,14 +528,12 @@ def approve_article(slug):
         return redirect(url_for("home"))
 
     article = Article.query.filter_by(slug=slug).first_or_404()
-    author = User.query.filter_by(username=article.author).first()
-
-    if author and author.requires_approval:
-        author.requires_approval = False  # Approve the author for future articles
+    if current_user.is_admin:
+        article.pending_approval = False  # Mark as approved
         db.session.commit()
         flash("Article approved.", "success")
     else:
-        flash("No approval required for this article.", "info")
+        flash("Unauthorized access.", "danger")
 
     return redirect(url_for("approve_articles"))
 
@@ -1006,29 +1011,37 @@ def all_articles(category):
     article_count = 0  # Initialize the article count
 
     if category == "recent":
-        articles = Article.query.order_by(Article.publish_date.desc()).all()
+        articles = (
+            Article.query.filter_by(pending_approval=False)
+            .order_by(Article.publish_date.desc())
+            .all()
+        )
         title = "All Recently Published Articles"
-        article_count = len(articles)  # Set the article count
     elif category == "edited":
         articles = (
-            Article.query.filter(Article.last_edited != None)
+            Article.query.filter(
+                Article.pending_approval == False, Article.last_edited != None
+            )
             .order_by(Article.last_edited.desc())
             .all()
         )
         title = "All Recently Edited Articles"
-        article_count = len(articles)  # Set the article count
     elif category == "external":
         articles = (
-            Article.query.filter(Article.external_collaboration != None)
-            .filter(Article.external_collaboration != "")
+            Article.query.filter(
+                Article.pending_approval == False,
+                Article.external_collaboration != None,
+                Article.external_collaboration != "",
+            )
             .order_by(Article.publish_date.desc())
             .all()
         )
         title = "All External Collaboration Articles"
-        article_count = len(articles)  # Set the article count
+
+    article_count = len(articles)  # Update the article count based on filtered results
 
     # Collect all articles to determine top scopes
-    all_articles = Article.query.all()
+    all_articles = Article.query.filter_by(pending_approval=False).all()
     counter = Counter()
     for article in all_articles:
         if article.article_type:
