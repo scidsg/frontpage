@@ -16,15 +16,241 @@
         url("fonts/mono/IBMPlexMono-Regular.woff2") format("woff2");
 }
 
+@media (prefers-color-scheme: light) {
+	body {
+		background-color: rgba(25, 111, 164, 0.05);
+	}
+
+	.content {
+		border: 1px solid rgba(0,0,0,0.1);
+		box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
+	}
+
+	.content:not(.related-articles-group.content),
+	.related-articles-group .article {
+		background-color: white;
+	}
+
+	h1, h2, h3, h4, h5, h6,
+	h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+		color: #333;
+	}
+
+	p, a {
+		color: #333;
+	}
+
+	.categories-list {
+		background-color: white;
+	}
+
+	.btn {
+		border: 1px solid rgba(51,51,51,1);
+	}
+
+
+	.btn-primary {
+		background-color: #333;
+		color: white;
+	}
+
+	.meta,
+	.meta a {
+		color: #595959;
+	}
+
+	header nav a {
+		color: #333;
+	}
+
+	header {
+		background-color: white;
+	}
+
+	.btnIcon {
+	    background-image: url('icon-menu.png');
+	}
+
+	button {
+		background-color: #333;
+		border: 1px solid rgba(51,51,51,1);
+		color: white;
+	}
+
+	input:not(input[type="checkbox"]), textarea, select {
+		border: 1px solid rgba(0,0,0,0.2);
+	}
+
+	.content.register input ~ span {
+		color: darkred;
+	}
+
+	select {
+		background-color: white;
+	}
+
+	.article-actions a,
+	.article-actions button {
+		color: #333;
+		border: 1px solid rgba(51,51,51,1);
+	}
+
+	button.destruct {
+		color: darkred;
+	}
+
+	.content.home h2 {
+		border-bottom: 1px solid rgba(0,0,0,0.15);
+	}
+
+	.flashes {
+	    background-color: white;
+	    outline: 1px solid rgba(0, 0, 0, 0.1);
+	    box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.1);
+	}
+
+	.article-row .article {
+		border: 1px solid rgba(0,0,0,0.1);
+		box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
+	}
+
+	blockquote {
+		border-left: 3px solid rgba(0,0,0,0.1);
+	}
+
+	.content.settings button {
+		background-color: white;
+		color: #333;
+	}
+
+	label {
+		color: #333;
+	}
+
+}
+
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: rgba(25, 25, 25, 1);
+	}
+
+	.content {
+		border: 1px solid rgba(255,255,255,0.1);
+		box-shadow: 0 6px 12px -6px rgba(0,0,0,0.5);
+	}
+
+	.content:not(.related-articles-group.content),
+	.related-articles-group .article {
+		background-color: rgba(51,51,51,1);
+	}
+
+	h1, h2, h3, h4, h5, h6,
+	h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+		color: white;
+	}
+
+	p, a {
+		color: white;
+	}
+
+	.categories-list {
+		background-color: rgba(51,51,51,1);
+	}
+
+	.btn {
+		border: 1px solid rgba(255,255,255,.7);
+	}
+
+
+	.btn-primary {
+		background-color: white;
+		color: rgba(51,51,51,1);
+	}
+
+	.meta,
+	.meta a {
+		color: rgba(255,255,255,.7);
+	}
+
+	header nav a {
+		color: white;
+	}
+
+	header {
+		background-color: rgba(51,51,51,1);
+	}
+
+	.btnIcon {
+	    background-image: url('icon-menu-dm.png');
+	}
+
+	button {
+		background-color: white;
+		border: 1px solid rgba(255,255,255,.5);
+		color: rgba(51,51,51,1);
+	}
+
+	input:not(input[type="checkbox"]), textarea, select {
+		border: 1px solid rgba(255,255,255,0.5);
+		background-color: #333;
+		color: white;
+	}
+
+	.content.register input ~ span {
+		color: pink;
+	}
+
+	select {
+		background-color: rgba(51,51,51,1);
+	}
+
+	.article-actions a,
+	.article-actions button {
+		color: white;
+		border: 1px solid rgba(255,255,255,.25);
+	}
+
+	button.destruct {
+		color: lightpink;
+	}
+
+	.content.home h2 {
+		border-bottom: 1px solid rgba(255,255,255,0.15);
+	}
+
+	.flashes {
+	    background-color: #333;
+	    outline: 1px solid rgba(255, 255, 255, 0.7);
+	    box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.5);
+	}
+
+	.article-row .article {
+		border: 1px solid rgba(255,255,255,0.1);
+		box-shadow: 0 6px 12px -6px rgba(0,0,0,0.5);
+	}
+
+	blockquote {
+		border-left: 3px solid rgba(255,255,255,0.1);
+	}
+
+	.content.settings button {
+		background-color: #333;
+		color: white;
+	}
+
+	label {
+		color: white;
+	}
+
+}
+
 body {
 	font-family: 'Atkinson Hyperlegible', sans-serif;
 	padding: 8.25rem 1rem 1rem 1rem;
 	margin: 0;
-	background-color: rgba(25, 111, 164, 0.05);
 }
 
 .content {
-	border: 1px solid rgba(0,0,0,0.1);
 	max-width: 1024px;
 	width: 100%;
 	padding: 2rem;
@@ -34,10 +260,9 @@ body {
 	margin: 0 auto;
 	position: relative;
 	border-radius: .5rem;
-	box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
 }
 
-.content:not(.categories-list ~ .content) {
+.content:not(.categories-list ~ .content):not(footer.content) {
 	margin-top: -2rem;
 }
 
@@ -48,11 +273,6 @@ body {
 	background-size: 240px;
 	background-position-y: bottom -2rem;
 	background-position-x: right;
-}
-
-.content:not(.related-articles-group.content),
-.related-articles-group .article {
-	background-color: white;
 }
 
 .content.promo .btn-primary {
@@ -84,19 +304,14 @@ body {
 	position: fixed;
 	top: 3.125rem;
 	left: 0;
-	background-color: white;
 	right: 0;
 	z-index: 9;
 	-ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+    scrollbar-width: none;  /* Firefox */
 }
 
 .categories-list::-webkit-scrollbar {
     display: none;
-}
-
-header {
-	background-color: blue !importnt;
 }
 
 ul.categories-list {
@@ -124,13 +339,12 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 	font-weight: normal;
 	font-family: 'Atkinson Bold', sans-serif;
 	margin: 0;
-	color: #333;
+	word-break: break-word;
 }
 
 p, a {
 	font-weight: normal;
 	font-family: 'Atkinson Hyperlegible', sans-serif;
-	color: #333;
 }
 
 h1 {
@@ -172,7 +386,6 @@ p {
 
 .btn {
 	padding: .625rem .825rem;
-	border: 1px solid rgba(51,51,51,1);
 	border-radius: .25rem;
 	white-space: nowrap;
 	display: flex;
@@ -187,8 +400,6 @@ p {
 }
 
 .btn-primary {
-	background-color: #333;
-	color: white;
 	font-family: 'Atkinson Bold', sans-serif;
 }
 
@@ -199,7 +410,6 @@ p {
 .meta {
 	font-family: 'IBM Plex Mono', monospace;
 	font-size: .8125rem;
-	color: #595959;
 	margin: .5rem 0;
 }
 
@@ -246,7 +456,6 @@ header {
 	right: 0;
 	left: 0;
 	padding: 1.25rem 1rem;
-	background-color: white;
 	align-items: center;
 	z-index: 999;
 }
@@ -261,15 +470,14 @@ header {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    background-image: url('icon-menu.png');
     min-width: 48px;
     display: none;
     padding: 0 0 0 2.5rem;
-	 align-content: center;
+	align-content: center;
 }
 
 header h1 {
-	font-size: 1.25rem
+	font-size: 1.25rem;
 }
 
 header h1 a {
@@ -288,7 +496,6 @@ header nav {
 
 header nav a {
 	text-decoration: none;
-	color: #333;
 }
 
 header nav a:hover {
@@ -329,9 +536,6 @@ button {
 	font-family: 'Atkinson Bold', sans-serif;
 	padding: .625rem 1.125rem;
 	font-size: 1rem;
-	background-color: #333;
-	border: 1px solid rgba(51,51,51,1);
-	color: white;
 	border-radius: .25rem;
 }
 
@@ -351,13 +555,11 @@ input:not(input[type="checkbox"]), textarea, select {
 	margin-bottom: 1rem;
 	margin-top: .25rem;
 	border-radius: .25rem;
-	border: 1px solid rgba(0,0,0,0.2);
 }
 
 select {
 	width: initial;
 	display: flex;
-	background-color: white;
 }
 
 .content.register input ~ span {
@@ -365,7 +567,6 @@ select {
 	top: -8px;
 	font-size: .825rem;
 	display: flex;
-	color: darkred;
 	margin-bottom: .5rem;
 }
 
@@ -417,9 +618,11 @@ textarea {
 .article-actions {
 	display: flex;
 	align-items: baseline;
-	gap: .75rem;
+	gap: .325rem;
 	width: fit-content;
 	padding: .25rem 0;
+	margin-bottom: .5rem;
+	margin-top: .425rem;
 }
 
 .article-actions form {
@@ -434,20 +637,15 @@ textarea {
 	text-decoration: none;
 	line-height: 1;
 	margin: 0;
-	padding: .25rem 0;
-	font-size: .825rem;
+	padding: .4125rem .5rem;
+	font-size: .775rem;
 	box-sizing: border-box;
-	outline: none;
-	border: none;
 	background-color: transparent;
-	color: #595959;
 	font-weight: normal;
-	font-family: 'Atkinson Hyperlegible', sans-serif;
+	font-family: 'Atkinson Bold', sans-serif;
+	border-radius: .25rem;
 }
 
-button.destruct {
-	color: darkred;
-}
 
 .hide {
 	display: none;
@@ -514,7 +712,6 @@ button.destruct {
 	margin-top: 0;
 	font-size: 1.25rem;
 	padding-bottom: 1.25rem;
-	border-bottom: 1px solid rgba(0,0,0,0.15);
 }
 
 .content.home {
@@ -527,7 +724,7 @@ button.destruct {
 	gap: 2rem;
 	display: flex;
 	flex-direction: column;
-	width: 50%;
+	flex: 1 0 0;
 }
 
 .content.home .column .article {
@@ -544,11 +741,8 @@ button.destruct {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: white;
     padding: 1rem;
     border-radius: .25rem;
-    outline: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.1);
     width: max-content;
     list-style: none;
     max-width: 80vw;
@@ -618,11 +812,9 @@ button.destruct {
 
 .article-row .article {
 	flex: 1 0 0;
-	border: 1px solid rgba(0,0,0,0.1);
 	padding: 1.5rem 1.25rem;
 	border-radius: .25rem;
 	max-width: 50%;
-	box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
 	margin: 0;
 }
 
@@ -641,7 +833,6 @@ button.destruct {
 }
 
 blockquote {
-	border-left: 3px solid rgba(0,0,0,0.1);
 	margin: 1.5rem 1rem 1.5rem 1rem;
 	padding: 1rem 1rem;
 	font-style: italic;
@@ -667,10 +858,6 @@ blockquote p {
 	height: 200px;
 }
 
-.content.settings button {
-	background-color: white;
-	color: #333;
-}
 
 .content.settings input[type="checkbox"] {
 	margin-bottom: 1rem;
@@ -702,6 +889,21 @@ blockquote p {
 	margin-top: 1.5rem;
 }
 
+footer {
+	margin: 0 auto;
+}
+
+footer p {
+	font-size: .825rem;
+	margin: .1rem 0;
+}
+
+footer.content {
+	padding: 1.125rem 1rem;
+	min-width: 100%;
+	margin-top: 1rem;
+}
+
 @media only screen and (max-width: 1056px) {
 
 	.related-articles-group {
@@ -710,6 +912,23 @@ blockquote p {
 }
 
 @media only screen and (max-width: 768px) {
+
+	@media (prefers-color-scheme: light) {
+		header nav ul {
+	        background-color: white;
+	        border: 1px solid rgba(0, 0, 0, .1);
+	        box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.15);
+	    }
+	}
+
+	@media (prefers-color-scheme: dark) {
+		header nav ul {
+	        background-color: #333;
+	        border: 1px solid rgba(255, 255, 255, .1);
+	        box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.25);
+	    }
+	}
+
 	body {
 		padding-top: 7.5rem;
 	}
@@ -726,7 +945,7 @@ blockquote p {
 	}
 
 	header nav {
-		gap: .5rem;
+		gap: .25rem;
 	}
 	
 	header {
@@ -745,11 +964,8 @@ blockquote p {
 	header nav ul {
         display: none;
         position: absolute;
-        background-color: white;
         top: 3.5rem;
         padding: 1rem;
-        border: 1px solid rgba(0, 0, 0, .1);
-        box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.15);
         border-radius: .25rem;
         gap: 1.5rem;
         flex-direction: column;
@@ -844,10 +1060,15 @@ blockquote p {
 		padding-right: 0;
 	}
 	
+	header h1 {
+		font-size: 1.125rem;
+	}
+	
 	.content {
 		padding: 1rem;
 		border: none;
 		box-shadow: none;
+		border-radius: 0;
 	}
 	
 	.content.home h2 {
@@ -867,8 +1088,13 @@ blockquote p {
 	}
 }
 
-@media only screen and (max-width: 395px) { 
+@media only screen and (max-width: 380px) { 
 	header h1 {
-		font-size: 1.125rem;
+			font-size: 1rem;
+		}
+
+	header {
+		padding-top: 1rem;
+		padding-bottom: 1rem;
 	}
 }
