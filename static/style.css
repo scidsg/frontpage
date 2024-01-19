@@ -136,6 +136,10 @@
 		background-image: url('banner-bg.png');
 	}
 
+	.username {
+		color: #333;
+	}
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -258,6 +262,10 @@
 
 	.content.promo {
 		background-image: url('banner-bg-dm.png');
+	}
+
+	.username {
+		color: white;
 	}
 
 }
@@ -928,6 +936,25 @@ footer.content {
 	padding: 1.125rem 1rem;
 	margin-top: 1rem;
 	max-width: 1440px;
+}
+
+.user {
+	margin-bottom: .75rem;
+}
+
+.user input[type="checkbox"] {
+	margin-bottom: 0;
+}
+
+.user:last-of-type {
+	margin-bottom: 1.5rem;
+}
+
+.username {
+	display: flex;
+	font-family: 'Atkinson Bold', sans-serif;
+	margin-bottom: .25rem;
+	font-size: 1.125rem;
 }
 
 @media only screen and (max-width: 1056px) {

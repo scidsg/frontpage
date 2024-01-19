@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
+  <h1>Users</h1>
+  <form method="POST">
+    {% for user in users %}
+      <div class="user">
+        <span class="username">{{ user.username }}</span>
+        <input type="checkbox" class="admin-checkbox" name="admin_{{ user.id }}" value="{{ user.id }}" {% if user.is_admin %}checked{% endif %} onchange="updateApprovalStatus(this, {{ user.id }})"> Admin<br>
+        <input type="checkbox" class="approval-checkbox" name="approval_{{ user.id }}" value="{{ user.id }}" {% if user.requires_approval %}checked{% endif %} id="approval_{{ user.id }}"> Requires Approval
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">Update Users</button>
+  </form>
+</div>
+{% endblock %}

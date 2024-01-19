@@ -71,6 +71,8 @@ class User(UserMixin, db.Model):
     display_name = db.Column(db.String(100), nullable=True)
     custom_url = db.Column(db.String(255), nullable=True)
     avatar = db.Column(db.String(255), nullable=True)
+    requires_approval = db.Column(db.Boolean, default=False, nullable=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -126,6 +128,7 @@ class Article(db.Model):
     last_edited = db.Column(db.DateTime)
     cyberwar = db.Column(db.Boolean, default=False, nullable=False)
     slug = db.Column(db.String(255), unique=True, nullable=False)
+    pending_approval = db.Column(db.Boolean, default=False, nullable=False)
     categories = db.relationship(
         "Category",
         secondary=article_categories,
@@ -421,27 +424,26 @@ def publish():
         article_download_link = request.form["download_link"]
         article_download_link2 = request.form["download_link2"]
         article_download_link3 = request.form["download_link3"]
-        article_magnet_link = request.form.get("magnet_link")
-        article_magnet_link2 = request.form.get("magnet_link2")
-        article_magnet_link3 = request.form.get("magnet_link3")
-        article_torrent_link = request.form.get("torrent_link")
-        article_torrent_link2 = request.form.get("torrent_link2")
-        article_torrent_link3 = request.form.get("torrent_link3")
+        article_magnet_link = request.form["magnet_link"]
+        article_magnet_link2 = request.form["magnet_link2"]
+        article_magnet_link3 = request.form["magnet_link3"]
+        article_torrent_link = request.form["torrent_link"]
+        article_torrent_link2 = request.form["torrent_link2"]
+        article_torrent_link3 = request.form["torrent_link3"]
+        article_ipfs_link = request.form["ipfs_link"]
+        article_ipfs_link2 = request.form["ipfs_link2"]
+        article_ipfs_link3 = request.form["ipfs_link3"]
+        article_download_size = request.form["download_size"]
+        article_cyberwar = "cyberwar" in request.form
         article_external_collaboration = request.form.get("external_collaboration")
         article_external_collaboration2 = request.form.get("external_collaboration2")
         article_external_collaboration3 = request.form.get("external_collaboration3")
-        article_ipfs_link = request.form.get("ipfs_link")
-        article_ipfs_link2 = request.form.get("ipfs_link2")
-        article_ipfs_link3 = request.form.get("ipfs_link3")
-        article_download_size = request.form.get("download_size")
-        article_cyberwar = "cyberwar" in request.form
-
-        article_author = current_user.username
+        article_source = request.form["source"]
 
         new_article = Article(
             title=article_title,
             content=article_content,
-            author=article_author,
+            author=current_user.username,
             country=article_country,
             article_type=article_type,
             download_link=article_download_link,
@@ -453,22 +455,20 @@ def publish():
             torrent_link=article_torrent_link,
             torrent_link2=article_torrent_link2,
             torrent_link3=article_torrent_link3,
-            external_collaboration=article_external_collaboration,
-            external_collaboration2=article_external_collaboration2,
-            external_collaboration3=article_external_collaboration3,
             ipfs_link=article_ipfs_link,
             ipfs_link2=article_ipfs_link2,
             ipfs_link3=article_ipfs_link3,
             download_size=article_download_size,
             cyberwar=article_cyberwar,
+            external_collaboration=article_external_collaboration,
+            external_collaboration2=article_external_collaboration2,
+            external_collaboration3=article_external_collaboration3,
+            source=article_source,
+            pending_approval=current_user.requires_approval,
         )
-        # Set and check the uniqueness of the slug
-        new_article.slug = slugify(article_title)
-        original_slug = new_article.slug
-        count = 1
-        while Article.query.filter_by(slug=new_article.slug).first():
-            new_article.slug = f"{original_slug}-{count}"
-            count += 1
+
+        # Set slug for new article
+        new_article.set_slug()
 
         # Add selected categories
         selected_category_ids = request.form.getlist("categories")
@@ -476,12 +476,17 @@ def publish():
             Category.id.in_(selected_category_ids)
         ).all()
         new_article.categories = selected_categories
-        new_article.source = request.form["source"]
 
         db.session.add(new_article)
         db.session.commit()
 
-        flash("👍 Article published successfully.")
+        flash_message = (
+            "Article published successfully."
+            if not current_user.requires_approval
+            else "Your article has been submitted for approval."
+        )
+        flash(flash_message, "success")
+
         return redirect(url_for("home"))
 
     return render_template(
@@ -490,6 +495,61 @@ def publish():
         countries=countries,
         article_types=article_types,
     )
+
+
+@app.route("/approve_articles")
+@login_required
+def approve_articles():
+    if not current_user.is_admin:
+        flash("Unauthorized access.", "danger")
+        return redirect(url_for("home"))
+
+    # Fetch articles authored by users who require approval and are not yet approved
+    articles_to_approve = (
+        Article.query.join(User, Article.author == User.username)
+        .filter(User.requires_approval == True)
+        .all()
+    )
+    return render_template("approve_articles.html", articles=articles_to_approve)
+
+
+@app.route("/approve_article/<slug>", methods=["POST"])
+@login_required
+def approve_article(slug):
+    if not current_user.is_admin:
+        flash("Unauthorized access.", "danger")
+        return redirect(url_for("home"))
+
+    article = Article.query.filter_by(slug=slug).first_or_404()
+    author = User.query.filter_by(username=article.author).first()
+
+    if author and author.requires_approval:
+        author.requires_approval = False  # Approve the author for future articles
+        db.session.commit()
+        flash("Article approved.", "success")
+    else:
+        flash("No approval required for this article.", "info")
+
+    return redirect(url_for("approve_articles"))
+
+
+@app.route("/users", methods=["GET", "POST"])
+@login_required
+def users():
+    if not current_user.is_admin:
+        flash("Unauthorized access.", "danger")
+        return redirect(url_for("home"))
+
+    if request.method == "POST":
+        all_users = User.query.all()
+        for user in all_users:
+            user.requires_approval = f"approval_{user.id}" in request.form
+            user.is_admin = f"admin_{user.id}" in request.form
+        db.session.commit()
+        flash("Users updated successfully.", "success")
+
+    all_users = User.query.all()
+    return render_template("users.html", users=all_users)
 
 
 # Article route using slug

@@ -38,4 +38,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    initializeUserPageLogic();
 });
+
+function initializeUserPageLogic() {
+    const adminCheckboxes = document.querySelectorAll('.admin-checkbox');
+    adminCheckboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            const userId = this.getAttribute('name').split('_')[1];
+            updateApprovalStatus(this, userId);
+        });
+    });
+}
+
+function updateApprovalStatus(adminCheckbox, userId) {
+    const approvalCheckbox = document.getElementById('approval_' + userId);
+    if (adminCheckbox.checked) {
+        approvalCheckbox.checked = false;
+        approvalCheckbox.disabled = true;
+    } else {
+        approvalCheckbox.disabled = false;
+    }
+}
