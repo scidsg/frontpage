@@ -24,7 +24,7 @@
         <!-- ARTICLE ACTIONS -->
         {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
             <div class="article-actions">
-                <a href="{{ url_for('edit_article', article_id=article.id) }}">✍️ Edit Article</a>
+                <a href="{{ url_for('edit_article', slug=article.slug) }}">✍️ Edit Article</a>
                 <form action="{{ url_for('delete_article', article_id=article.id) }}" method="post">
                     <button type="submit" class="destruct delete-article-button">🗑️ Delete Article</button>
                 </form>
@@ -141,10 +141,10 @@
                         <div class="article-row">
                             {% for article in articles[:3] %}
                                 <div class="article">
-                                    <h4><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h4>
+                                    <h4><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h4>
                                     <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
                                     <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
-                                    <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                                    <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
                                 </div>
                             {% endfor %}
                         </div>
@@ -162,10 +162,10 @@
                         <div class="article-row">
                             {% for article in articles[:3] %}
                                 <div class="article">
-                                    <h4><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h4>
+                                    <h4><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h4>
                                     <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H%M') }}</p>
                                     <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
-                                    <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                                    <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
                                 </div>
                             {% endfor %}
                         </div>
@@ -183,10 +183,10 @@
                         <div class="article-row">
                             {% for article in articles[:3] %}
                                 <div class="article">
-                                    <h4><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h4>
+                                    <h4><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h4>
                                     <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
                                     <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
-                                    <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                                    <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
                                 </div>
                             {% endfor %}
                         </div>
