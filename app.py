@@ -38,6 +38,7 @@ from werkzeug.utils import secure_filename
 from flask_wtf.file import FileField, FileAllowed
 from collections import Counter
 from itertools import groupby
+from slugify import slugify
 
 
 load_dotenv()  # Load environment variables from .env file
@@ -124,6 +125,7 @@ class Article(db.Model):
     source = db.Column(db.String(255))
     last_edited = db.Column(db.DateTime)
     cyberwar = db.Column(db.Boolean, default=False, nullable=False)
+    slug = db.Column(db.String(255), unique=True, nullable=False)
     categories = db.relationship(
         "Category",
         secondary=article_categories,
@@ -133,6 +135,10 @@ class Article(db.Model):
 
     def __repr__(self):
         return "<Article %r>" % self.title
+
+    def set_slug(self):
+        if not self.slug:
+            self.slug = slugify(self.title)
 
 
 class InvitationCode(db.Model):
@@ -456,12 +462,22 @@ def publish():
             download_size=article_download_size,
             cyberwar=article_cyberwar,
         )
+        # Set and check the uniqueness of the slug
+        new_article.slug = slugify(article_title)
+        original_slug = new_article.slug
+        count = 1
+        while Article.query.filter_by(slug=new_article.slug).first():
+            new_article.slug = f"{original_slug}-{count}"
+            count += 1
+
+        # Add selected categories
         selected_category_ids = request.form.getlist("categories")
         selected_categories = Category.query.filter(
             Category.id.in_(selected_category_ids)
         ).all()
         new_article.categories = selected_categories
         new_article.source = request.form["source"]
+
         db.session.add(new_article)
         db.session.commit()
 
@@ -476,15 +492,15 @@ def publish():
     )
 
 
-# Article route
-@app.route("/article/<int:article_id>")
-def article(article_id):
-    article = Article.query.get_or_404(article_id)
+# Article route using slug
+@app.route("/article/<slug>")
+def article(slug):
+    article = Article.query.filter_by(slug=slug).first_or_404()
     content_html = markdown.markdown(article.content)
 
     # Fetch related articles and group them
     related_by_type = Article.query.filter(
-        Article.article_type == article.article_type, Article.id != article_id
+        Article.article_type == article.article_type, Article.slug != slug
     ).all()
     related_by_type_grouped = {
         k: list(g)
@@ -495,7 +511,7 @@ def article(article_id):
     }
 
     related_by_source = Article.query.filter(
-        Article.source == article.source, Article.id != article_id
+        Article.source == article.source, Article.slug != slug
     ).all()
     related_by_source_grouped = {
         k: list(g)
@@ -508,19 +524,13 @@ def article(article_id):
     related_by_country_dict = {}
     if article.country:
         countries = article.country.split(", ")
-        print("Countries in the current article:", countries)  # Debugging print
         for country in countries:
             related_articles = Article.query.filter(
-                Article.country.like(f"%{country}%"), Article.id != article_id
+                Article.country.like(f"%{country}%"), Article.slug != slug
             ).all()
-            print(
-                f"Related articles for {country}:", related_articles
-            )  # Debugging print
-
-            for rel_article in related_articles:
-                if country not in related_by_country_dict:
-                    related_by_country_dict[country] = []
-                related_by_country_dict[country].append(rel_article)
+            if country not in related_by_country_dict:
+                related_by_country_dict[country] = []
+            related_by_country_dict[country].extend(related_articles)
 
     # Collect all articles to determine top scopes
     all_articles = Article.query.all()
@@ -552,60 +562,89 @@ def article(article_id):
     )
 
 
-@app.route("/edit/<int:article_id>", methods=["GET", "POST"])
+@app.route("/edit/<slug>", methods=["GET", "POST"])
 @login_required
-def edit_article(article_id):
-    article = Article.query.get_or_404(article_id)
+def edit_article(slug):
+    app.logger.info(f"Editing article with slug: {slug}")
+
+    article = Article.query.filter_by(slug=slug).first_or_404()
+    if not article:
+        app.logger.warning(f"Article with slug {slug} not found")
+        flash("Article not found.")
+        return redirect(url_for("home"))
+
+    categories = Category.query.all()
     countries = [country.name for country in pycountry.countries]
     article_types = ["Hack", "Leak", "News", "Opinion", "Other", "Research", "Scrape"]
 
-    # Check if the current user is the author or an admin
     if not (current_user.username == article.author or current_user.is_admin):
+        app.logger.warning(
+            f"Unauthorized edit attempt by user {current_user.username} on article {slug}"
+        )
         flash("⛔️ You do not have permission to edit this article.")
         return redirect(url_for("home"))
 
     if request.method == "POST":
-        article.title = request.form["title"]
-        article.content = request.form["content"]
-        article_countries = request.form.getlist(
-            "countries"
-        )  # Get list of selected countries
-        article.country = ", ".join(article_countries)  # Join countries into a string
-        article.article_type = request.form["type"]
-        article.download_link = request.form["download_link"]
-        article.download_link2 = request.form["download_link2"]
-        article.download_link3 = request.form["download_link3"]
-        article.magnet_link = request.form["magnet_link"]
-        article.magnet_link2 = request.form["magnet_link2"]
-        article.magnet_link3 = request.form["magnet_link3"]
-        article.torrent_link = request.form["torrent_link"]
-        article.torrent_link2 = request.form["torrent_link2"]
-        article.torrent_link3 = request.form["torrent_link3"]
-        article.ipfs_link = request.form["ipfs_link"]
-        article.ipfs_link2 = request.form["ipfs_link2"]
-        article.ipfs_link3 = request.form["ipfs_link3"]
-        article.download_size = request.form["download_size"]
-        article.cyberwar = "cyberwar" in request.form
+        app.logger.info(f"Processing POST request for editing article {slug}")
 
-        article.external_collaboration = request.form.get("external_collaboration")
-        article.external_collaboration2 = request.form.get("external_collaboration2")
-        article.external_collaboration3 = request.form.get("external_collaboration3")
+        print(request.form)  # Debugging print statement
+        app.logger.debug(f"Form data: {request.form}")
 
-        article.last_edited = datetime.utcnow()
+        try:
+            original_title = article.title
+            article.title = request.form["title"]
+            article.content = request.form["content"]
+            article.country = ", ".join(request.form.getlist("countries"))
+            article.article_type = request.form["type"]
+            article.download_link = request.form["download_link"]
+            article.magnet_link = request.form["magnet_link"]
+            article.torrent_link = request.form["torrent_link"]
+            article.ipfs_link = request.form["ipfs_link"]
+            article.download_size = request.form["download_size"]
+            article.cyberwar = "cyberwar" in request.form
+            article.external_collaboration = request.form.get("external_collaboration")
+            article.source = request.form.get("source", "")
+            article.last_edited = datetime.utcnow()
 
-        db.session.commit()
-        flash("👍 Article updated successfully.")
-        return redirect(url_for("article", article_id=article_id))
+            if original_title != article.title:
+                article.slug = slugify(article.title)
+                original_slug = article.slug
+                count = 1
+                while Article.query.filter(
+                    Article.slug == article.slug, Article.id != article.id
+                ).first():
+                    article.slug = f"{original_slug}-{count}"
+                    count += 1
+
+            selected_category_ids = request.form.getlist("categories")
+            selected_categories = Category.query.filter(
+                Category.id.in_(selected_category_ids)
+            ).all()
+            article.categories = selected_categories
+
+            db.session.commit()
+            app.logger.info(f"Article {slug} updated successfully")
+            flash("👍 Article updated successfully.")
+            return redirect(url_for("article", slug=article.slug))
+
+        except Exception as e:
+            app.logger.error(f"Error updating article {slug}: {e}", exc_info=True)
+            flash("Error updating article.")
+            return redirect(url_for("edit_article", slug=slug))
+
     else:
         selected_countries = article.country.split(", ") if article.country else []
+        selected_categories = [category.id for category in article.categories]
 
-    return render_template(
-        "edit_article.html",
-        article=article,
-        countries=countries,
-        selected_countries=selected_countries,
-        article_types=article_types,
-    )
+        return render_template(
+            "edit_article.html",
+            article=article,
+            categories=categories,
+            countries=countries,
+            selected_countries=selected_countries,
+            article_types=article_types,
+            selected_categories=selected_categories,
+        )
 
 
 @app.route("/source/<source>")
