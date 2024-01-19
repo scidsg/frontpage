@@ -978,6 +978,10 @@ footer.content {
 	margin-bottom: 1rem;
 }
 
+.user:first-of-type {
+	margin-top: 1.5rem;
+}
+
 .user input[type="checkbox"] {
 	margin-bottom: 0;
 }

@@ -2,6 +2,7 @@
 {% block content %}
 <div class="content">
   <h1>Users</h1>
+  <p class="meta">Total Users: {{ user_count }}</p> <!-- Display user count -->
   <form method="POST">
     {% for user in users %}
       <div class="user">

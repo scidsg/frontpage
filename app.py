@@ -569,7 +569,8 @@ def users():
         flash("👍 Users updated successfully.", "success")
 
     all_users = User.query.all()
-    return render_template("users.html", users=all_users)
+    user_count = len(all_users)  # Get the count of users
+    return render_template("users.html", users=all_users, user_count=user_count)
 
 
 # Article route using slug
