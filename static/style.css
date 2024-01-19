@@ -21,6 +21,10 @@
 		background-color: rgba(25, 111, 164, 0.05);
 	}
 
+	.login .brand {
+		background-image: url('ddos-logo.png');
+	}
+
 	.content {
 		border: 1px solid rgba(0,0,0,0.1);
 		box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
@@ -136,6 +140,10 @@
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: rgba(25, 25, 25, 1);
+	}
+
+	.login .brand {
+		background-image: url('ddos-logo-dm.png');
 	}
 
 	.content {
@@ -256,6 +264,13 @@ body {
 	font-family: 'Atkinson Hyperlegible', sans-serif;
 	padding: 8.25rem 1rem 1rem 1rem;
 	margin: 0;
+}
+
+.login .brand {
+	width: 120px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
 }
 
 .content {

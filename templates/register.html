@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="content register">
-        <img src="{{ url_for('static', filename='ddos-logo.png') }}" alt="Logo for Distributed Denial of Secrets">
+        <div class="brand"></div>
         <h1>Register</h1>
         <form method="POST" action="">
             {{ form.hidden_tag() }}
