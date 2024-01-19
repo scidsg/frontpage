@@ -287,6 +287,10 @@
 		background-color: rgb(227, 161, 135);
 		color: #333;
 	}
+	
+	.user {
+		color: white;
+	}
 
 }
 
@@ -971,7 +975,7 @@ footer.content {
 }
 
 .user {
-	margin-bottom: .75rem;
+	margin-bottom: 1rem;
 }
 
 .user input[type="checkbox"] {
