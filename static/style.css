@@ -267,10 +267,12 @@ body {
 }
 
 .login .brand {
-	width: 120px;
+	width: 82px;
+	height: 108px;
 	background-size: contain;
 	background-position: center;
 	background-repeat: no-repeat;
+	margin-bottom: 1rem;
 }
 
 .content {
