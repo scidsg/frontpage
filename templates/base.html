@@ -66,10 +66,8 @@
         {% endblock %}
     </main>
 
-    <footer class="content">
-        <p>Distributed Denial of Secrets is a 501(c)(3) non-profit. <a href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer">Support our mission!</a></p>
-        <p><a href="https://github.com/scidsg/frontpage">Powered by 📰 Frontpage</a>, a free and open-source product by <a href="https://scidsg.org" target="_blank" rel="noopener noreferrer">Science & Design, Inc.</a></p>
-    </footer>
+    {% block footer %}
+    {% endblock %}
 
     <!-- Add your JavaScript files here -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
