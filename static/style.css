@@ -127,6 +127,10 @@
 		color: #333;
 	}
 
+	.content.promo {
+		background-image: url('banner-bg.png');
+	}
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -242,6 +246,10 @@
 		color: white;
 	}
 
+	.content.promo {
+		background-image: url('banner-bg-dm.png');
+	}
+
 }
 
 body {
@@ -268,7 +276,6 @@ body {
 
 .content.promo {
 	margin-bottom: 1rem;
-	background-image: url('banner-bg.png');
 	background-repeat: no-repeat;
 	background-size: 240px;
 	background-position-y: bottom -2rem;
