@@ -21,7 +21,8 @@
 		background-color: rgba(25, 111, 164, 0.05);
 	}
 
-	.login .brand {
+	.login .brand,
+	.register .brand {
 		background-image: url('ddos-logo.png');
 	}
 
@@ -142,7 +143,8 @@
 		background-color: rgba(25, 25, 25, 1);
 	}
 
-	.login .brand {
+	.login .brand,
+	.register .brand {
 		background-image: url('ddos-logo-dm.png');
 	}
 
@@ -266,7 +268,8 @@ body {
 	margin: 0;
 }
 
-.login .brand {
+.login .brand,
+.register .brand {
 	width: 82px;
 	height: 108px;
 	background-size: contain;
