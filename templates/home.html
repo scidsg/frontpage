@@ -18,10 +18,10 @@
             <h2>Recently Published</h2>
             {% for article in main_articles %}
                 <div class="article">
-                    <h3><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h3>
+                    <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
                     <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
                     <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
-                    <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                    <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
                 </div>
             {% endfor %}
             {% if main_articles_more %}
@@ -33,14 +33,14 @@
             <h2>Recently Edited</h2>
             {% for article in recently_edited_articles %}
                 <div class="article">
-                    <h3><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h3>
+                    <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
                     {% if article.last_edited %}
                         <p class="meta">Edited on {{ article.last_edited.strftime('%Y-%m-%d %H:%M') }}</p>
                     {% else %}
                         <p class="meta">Edited date not available</p>
                     {% endif %}
                     <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
-                    <a class="drill-in" href="{{ url_for('article', article_id=article.id) }}">Read more</a>
+                    <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
                 </div>
         {% endfor %}
         {% if recently_edited_articles_more %}
@@ -53,7 +53,7 @@
             <h2>Collaborations</h2>
             {% for article in external_collaboration_articles %}
                 <div class="article">
-                    <h3><a href="{{ url_for('article', article_id=article.id) }}">{{ article.title }}</a></h3>
+                    <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
                     <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
                     <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
                     <p><a class="drill-in" href="{{ article.external_collaboration }}">Read more</a><span class="emoji-meta">↗️</span></p>
