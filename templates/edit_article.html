@@ -13,6 +13,22 @@
                 <label for="content">Content</label>
                 <textarea id="content" name="content" required>{{ article.content }}</textarea>
             </div>
+
+            <div>
+                <label for="source">Source</label>
+                <input type="text" id="source" name="source" value="{{ article.source }}">
+            </div>
+
+            <div>
+                <label for="publish_date">Publication Date</label>
+                <input type="datetime-local" id="publish_date" name="publish_date" value="{{ article.publish_date.strftime('%Y-%m-%dT%H:%M') if article.publish_date }}">
+            </div>
+
+            <div>
+                <label for="last_edited">Last Edited Date</label>
+                <input type="datetime-local" id="last_edited" name="last_edited" value="{{ article.last_edited.strftime('%Y-%m-%dT%H:%M') if article.last_edited }}">
+            </div>
+
             <div class="country-list">
                 <label>Countries</label>
                 {% for country in countries %}
