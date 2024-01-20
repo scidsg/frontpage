@@ -71,6 +71,8 @@ class User(UserMixin, db.Model):
     display_name = db.Column(db.String(100), nullable=True)
     custom_url = db.Column(db.String(255), nullable=True)
     avatar = db.Column(db.String(255), nullable=True)
+    requires_approval = db.Column(db.Boolean, default=False, nullable=False)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -126,6 +128,7 @@ class Article(db.Model):
     last_edited = db.Column(db.DateTime)
     cyberwar = db.Column(db.Boolean, default=False, nullable=False)
     slug = db.Column(db.String(255), unique=True, nullable=False)
+    pending_approval = db.Column(db.Boolean, default=False, nullable=False)
     categories = db.relationship(
         "Category",
         secondary=article_categories,
@@ -296,6 +299,14 @@ def inject_scopes():
     return {"all_scopes": all_scopes}
 
 
+@app.context_processor
+def inject_approval_count():
+    if current_user.is_authenticated and current_user.is_admin:
+        approval_count = Article.query.filter_by(pending_approval=True).count()
+        return dict(approval_count=approval_count)
+    return dict(approval_count=0)
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
@@ -358,9 +369,14 @@ def inject_team_link():
 def home():
     max_articles = 10
 
+    # Only fetch articles that are not pending approval
     main_articles = (
-        Article.query.order_by(Article.publish_date.desc()).limit(max_articles).all()
+        Article.query.filter_by(pending_approval=False)
+        .order_by(Article.publish_date.desc())
+        .limit(max_articles)
+        .all()
     )
+
     main_articles_total = Article.query.count()
 
     recently_edited_articles = (
@@ -421,27 +437,27 @@ def publish():
         article_download_link = request.form["download_link"]
         article_download_link2 = request.form["download_link2"]
         article_download_link3 = request.form["download_link3"]
-        article_magnet_link = request.form.get("magnet_link")
-        article_magnet_link2 = request.form.get("magnet_link2")
-        article_magnet_link3 = request.form.get("magnet_link3")
-        article_torrent_link = request.form.get("torrent_link")
-        article_torrent_link2 = request.form.get("torrent_link2")
-        article_torrent_link3 = request.form.get("torrent_link3")
+        article_magnet_link = request.form["magnet_link"]
+        article_magnet_link2 = request.form["magnet_link2"]
+        article_magnet_link3 = request.form["magnet_link3"]
+        article_torrent_link = request.form["torrent_link"]
+        article_torrent_link2 = request.form["torrent_link2"]
+        article_torrent_link3 = request.form["torrent_link3"]
+        article_ipfs_link = request.form["ipfs_link"]
+        article_ipfs_link2 = request.form["ipfs_link2"]
+        article_ipfs_link3 = request.form["ipfs_link3"]
+        article_download_size = request.form["download_size"]
+        article_cyberwar = "cyberwar" in request.form
         article_external_collaboration = request.form.get("external_collaboration")
         article_external_collaboration2 = request.form.get("external_collaboration2")
         article_external_collaboration3 = request.form.get("external_collaboration3")
-        article_ipfs_link = request.form.get("ipfs_link")
-        article_ipfs_link2 = request.form.get("ipfs_link2")
-        article_ipfs_link3 = request.form.get("ipfs_link3")
-        article_download_size = request.form.get("download_size")
-        article_cyberwar = "cyberwar" in request.form
-
-        article_author = current_user.username
+        article_source = request.form["source"]
+        requires_approval = current_user.requires_approval
 
         new_article = Article(
             title=article_title,
             content=article_content,
-            author=article_author,
+            author=current_user.username,
             country=article_country,
             article_type=article_type,
             download_link=article_download_link,
@@ -453,43 +469,108 @@ def publish():
             torrent_link=article_torrent_link,
             torrent_link2=article_torrent_link2,
             torrent_link3=article_torrent_link3,
-            external_collaboration=article_external_collaboration,
-            external_collaboration2=article_external_collaboration2,
-            external_collaboration3=article_external_collaboration3,
             ipfs_link=article_ipfs_link,
             ipfs_link2=article_ipfs_link2,
             ipfs_link3=article_ipfs_link3,
             download_size=article_download_size,
             cyberwar=article_cyberwar,
+            external_collaboration=article_external_collaboration,
+            external_collaboration2=article_external_collaboration2,
+            external_collaboration3=article_external_collaboration3,
+            source=article_source,
+            pending_approval=requires_approval,
         )
-        # Set and check the uniqueness of the slug
-        new_article.slug = slugify(article_title)
-        original_slug = new_article.slug
-        count = 1
-        while Article.query.filter_by(slug=new_article.slug).first():
-            new_article.slug = f"{original_slug}-{count}"
-            count += 1
 
-        # Add selected categories
+        # Set slug for the new article
+        new_article.set_slug()
+
+        # Handle article categories
         selected_category_ids = request.form.getlist("categories")
         selected_categories = Category.query.filter(
             Category.id.in_(selected_category_ids)
         ).all()
         new_article.categories = selected_categories
-        new_article.source = request.form["source"]
 
+        # Add and commit the new article to the database
         db.session.add(new_article)
         db.session.commit()
 
-        flash("👍 Article published successfully.")
+        # Flash message based on whether the user requires approval
+        flash_message = (
+            "⏱️ Your article has been submitted for approval."
+            if requires_approval
+            else "👍 Article published successfully."
+        )
+        flash(flash_message, "success")
+
+        # Redirect to home after successful submission
         return redirect(url_for("home"))
 
+    # Render the publish template with the necessary context
     return render_template(
         "publish.html",
         categories=categories,
         countries=countries,
         article_types=article_types,
     )
+
+
+@app.route("/approve_articles")
+@login_required
+def approve_articles():
+    if not current_user.is_admin:
+        flash("⛔️ Unauthorized access.", "danger")
+        return redirect(url_for("home"))
+
+    # Fetch only articles that are pending approval
+    articles_to_approve = Article.query.filter_by(pending_approval=True).all()
+    article_count = len(
+        articles_to_approve
+    )  # Get the count of articles pending approval
+
+    return render_template(
+        "approve_articles.html",
+        articles=articles_to_approve,
+        article_count=article_count,
+    )
+
+
+@app.route("/approve_article/<slug>", methods=["POST"])
+@login_required
+def approve_article(slug):
+    if not current_user.is_admin:
+        flash("⛔️ Unauthorized access.", "danger")
+        return redirect(url_for("home"))
+
+    article = Article.query.filter_by(slug=slug).first_or_404()
+    if current_user.is_admin:
+        article.pending_approval = False  # Mark as approved
+        db.session.commit()
+        flash("🎉 Article approved.", "success")
+    else:
+        flash("⛔️ Unauthorized access.", "danger")
+
+    return redirect(url_for("approve_articles"))
+
+
+@app.route("/users", methods=["GET", "POST"])
+@login_required
+def users():
+    if not current_user.is_admin:
+        flash("Unauthorized access.", "danger")
+        return redirect(url_for("home"))
+
+    if request.method == "POST":
+        all_users = User.query.all()
+        for user in all_users:
+            user.requires_approval = f"approval_{user.id}" in request.form
+            user.is_admin = f"admin_{user.id}" in request.form
+        db.session.commit()
+        flash("👍 Users updated successfully.", "success")
+
+    all_users = User.query.all()
+    user_count = len(all_users)  # Get the count of users
+    return render_template("users.html", users=all_users, user_count=user_count)
 
 
 # Article route using slug
@@ -946,29 +1027,37 @@ def all_articles(category):
     article_count = 0  # Initialize the article count
 
     if category == "recent":
-        articles = Article.query.order_by(Article.publish_date.desc()).all()
+        articles = (
+            Article.query.filter_by(pending_approval=False)
+            .order_by(Article.publish_date.desc())
+            .all()
+        )
         title = "All Recently Published Articles"
-        article_count = len(articles)  # Set the article count
     elif category == "edited":
         articles = (
-            Article.query.filter(Article.last_edited != None)
+            Article.query.filter(
+                Article.pending_approval == False, Article.last_edited != None
+            )
             .order_by(Article.last_edited.desc())
             .all()
         )
         title = "All Recently Edited Articles"
-        article_count = len(articles)  # Set the article count
     elif category == "external":
         articles = (
-            Article.query.filter(Article.external_collaboration != None)
-            .filter(Article.external_collaboration != "")
+            Article.query.filter(
+                Article.pending_approval == False,
+                Article.external_collaboration != None,
+                Article.external_collaboration != "",
+            )
             .order_by(Article.publish_date.desc())
             .all()
         )
         title = "All External Collaboration Articles"
-        article_count = len(articles)  # Set the article count
+
+    article_count = len(articles)  # Update the article count based on filtered results
 
     # Collect all articles to determine top scopes
-    all_articles = Article.query.all()
+    all_articles = Article.query.filter_by(pending_approval=False).all()
     counter = Counter()
     for article in all_articles:
         if article.article_type:

@@ -19,11 +19,21 @@
 
         <!-- ARTICLE AUTHOR  -->
 
-        <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+        {% if article.pending_approval %}
+            <p class="meta">Submitted by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+        {% else %}
+            <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+        {% endif %}
 
         <!-- ARTICLE ACTIONS -->
         {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
             <div class="article-actions">
+                <!-- Check if the article is pending approval and if the current user is an admin -->
+                {% if article.pending_approval and current_user.is_admin %}
+                    <form action="{{ url_for('approve_article', slug=article.slug) }}" method="post">
+                        <button type="submit" class="btn btn-primary">Approve</button>
+                    </form>
+                {% endif %}
                 <a href="{{ url_for('edit_article', slug=article.slug) }}">Edit Article</a>
                 <form action="{{ url_for('delete_article', article_id=article.id) }}" method="post">
                     <button type="submit" class="destruct delete-article-button">Delete Article</button>

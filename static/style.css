@@ -136,6 +136,20 @@
 		background-image: url('banner-bg.png');
 	}
 
+	.username {
+		color: #333;
+	}
+	
+	.btn.btn-primary {
+		background-color: #333;
+		color: white;
+	}
+	
+	.approval-count {
+		background-color: rgb(210, 103, 61);
+		color: white;
+	}
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -260,6 +274,24 @@
 		background-image: url('banner-bg-dm.png');
 	}
 
+	.username {
+		color: white;
+	}
+	
+	.btn.btn-primary {
+		background-color: white;
+		color: #333;
+	}
+	
+	.approval-count {
+		background-color: rgb(227, 161, 135);
+		color: #333;
+	}
+	
+	.user {
+		color: white;
+	}
+
 }
 
 body {
@@ -300,6 +332,18 @@ body {
 	background-size: 240px;
 	background-position-y: bottom -2rem;
 	background-position-x: right;
+}
+
+.approval-count {
+	min-width: 12px;
+	min-height: 20px;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	font-size: .75rem;
+	border-radius: 50vw;
+	padding: 0 .25rem;
+	width: fit-content;
 }
 
 .content.promo .btn-primary {
@@ -928,6 +972,29 @@ footer.content {
 	padding: 1.125rem 1rem;
 	margin-top: 1rem;
 	max-width: 1440px;
+}
+
+.user {
+	margin-bottom: 1rem;
+}
+
+.user:first-of-type {
+	margin-top: 1.5rem;
+}
+
+.user input[type="checkbox"] {
+	margin-bottom: 0;
+}
+
+.user:last-of-type {
+	margin-bottom: 1.5rem;
+}
+
+.username {
+	display: flex;
+	font-family: 'Atkinson Bold', sans-serif;
+	margin-bottom: .25rem;
+	font-size: 1.125rem;
 }
 
 @media only screen and (max-width: 1056px) {
