@@ -6,6 +6,23 @@ if [[ $EUID -ne 0 ]]; then
   exec sudo /bin/bash "$0" "$@"
 fi
 
+# Welcome message and ASCII art
+cat <<"EOF"
+  _____                _                          
+ |  ___| __ ___  _ __ | |_ _ __   __ _  __ _  ___ 
+ | |_ | '__/ _ \| '_ \| __| '_ \ / _` |/ _` |/ _ \
+ |  _|| | | (_) | | | | |_| |_) | (_| | (_| |  __/
+ |_|  |_|  \___/|_| |_|\__| .__/ \__,_|\__, |\___|
+                          |_|          |___/      
+
+📰 A self-hosted, privacy-focused publishing platform for independent and autonomous newsrooms.
+https://github.com/scidsg/frontpage
+
+A free tool by Science & Design - https://scidsg.org
+
+EOF
+sleep 3
+
 # Function to display error message and exit
 error_exit() {
     echo "An error occurred during installation. Please check the output above for more details."
