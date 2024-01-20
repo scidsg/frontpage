@@ -712,13 +712,38 @@ def edit_article(slug):
             article.content = request.form["content"]
             article.country = ", ".join(request.form.getlist("countries"))
             article.article_type = request.form["type"]
+
+            # Update DL links
             article.download_link = request.form["download_link"]
-            article.magnet_link = request.form["magnet_link"]
-            article.torrent_link = request.form["torrent_link"]
-            article.ipfs_link = request.form["ipfs_link"]
+            article.download_link2 = request.form.get("download_link2")
+            article.download_link3 = request.form.get("download_link3")
+
+            # Update magnet links
+            article.magnet_link = request.form.get("magnet_link")
+            article.magnet_link2 = request.form.get("magnet_link2")
+            article.magnet_link3 = request.form.get("magnet_link3")
+
+            # Update torrent links
+            article.torrent_link = request.form.get("torrent_link")
+            article.torrent_link2 = request.form.get("torrent_link2")
+            article.torrent_link3 = request.form.get("torrent_link3")
+
+            # Update IPFS links
+            article.ipfs_link = request.form.get("ipfs_link")
+            article.ipfs_link2 = request.form.get("ipfs_link2")
+            article.ipfs_link3 = request.form.get("ipfs_link3")
+
+            # Update external collaboration links
+            article.external_collaboration = request.form.get("external_collaboration")
+            article.external_collaboration2 = request.form.get(
+                "external_collaboration2"
+            )
+            article.external_collaboration3 = request.form.get(
+                "external_collaboration3"
+            )
+
             article.download_size = request.form["download_size"]
             article.cyberwar = "cyberwar" in request.form
-            article.external_collaboration = request.form.get("external_collaboration")
             article.source = request.form.get("source", "")
             article.last_edited = datetime.utcnow()
 
