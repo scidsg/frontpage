@@ -1143,6 +1143,10 @@ footer.content {
 	.content.promo p {
 		width: 100%;
 	}
+	
+	.content:not(.categories-list ~ .content):not(footer.content) {
+		margin-top: -3.25rem;
+	}
 }
 
 @media only screen and (max-width: 469px) { 
@@ -1151,7 +1155,7 @@ footer.content {
 	}
 
 	body {
-		padding-top: 8.5rem;
+		padding-top: 8.125rem;
 	}
 
 }

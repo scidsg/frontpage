@@ -54,7 +54,7 @@
         {% endwith %}
         
         <!-- Categories List -->
-        {% if request.endpoint not in ['login', 'register', 'publish', 'edit_article', 'user_settings', 'team', 'approve_articles'] %}
+        {% if request.endpoint not in ['login', 'register', 'publish', 'edit_article', 'user_settings', 'team', 'approve_articles', 'users'] %}
             <ul class="categories-list">
                 {% for scope in all_scopes %}
                     <li>
