@@ -1001,6 +1001,11 @@ footer.content {
 	font-size: 1.125rem;
 }
 
+.content.approval .article-actions {
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
 @media only screen and (max-width: 1056px) {
 
 	.related-articles-group {
