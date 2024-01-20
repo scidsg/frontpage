@@ -1157,6 +1157,10 @@ footer.content {
 	body {
 		padding-top: 8.125rem;
 	}
+	
+	.content.home h2 {
+		padding-bottom: 1rem;
+	}
 
 }
 
