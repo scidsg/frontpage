@@ -645,6 +645,16 @@ def article(slug):
         if a.source:
             counter[("source", a.source)] += 1
 
+    # Check if the article is pending approval
+    if article.pending_approval:
+        # If the article is pending, only allow access to admins
+        if not current_user.is_authenticated or not current_user.is_admin:
+            flash(
+                "⛔️ Nuh uh uh, you didn't say the magic word...",
+                "warning",
+            )
+            return redirect(url_for("home"))
+
     # Get the top 5 scopes
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
@@ -672,6 +682,11 @@ def edit_article(slug):
     if not article:
         app.logger.warning(f"Article with slug {slug} not found")
         flash("Article not found.")
+        return redirect(url_for("home"))
+
+    # If the article is pending approval, restrict editing to admins
+    if article.pending_approval and not current_user.is_admin:
+        flash("⛔️ This article is pending approval and cannot be edited.", "warning")
         return redirect(url_for("home"))
 
     categories = Category.query.all()
