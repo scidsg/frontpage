@@ -39,6 +39,7 @@ from flask_wtf.file import FileField, FileAllowed
 from collections import Counter
 from itertools import groupby
 from slugify import slugify
+from sqlalchemy.exc import IntegrityError
 
 
 load_dotenv()  # Load environment variables from .env file
@@ -491,17 +492,36 @@ def publish():
         ).all()
         new_article.categories = selected_categories
 
-        # Add and commit the new article to the database
-        db.session.add(new_article)
-        db.session.commit()
+        try:
+            # Attempt to add and commit the new article to the database
+            db.session.add(new_article)
+            db.session.commit()
 
-        # Flash message based on whether the user requires approval
-        flash_message = (
-            "⏱️ Your article has been submitted for approval."
-            if requires_approval
-            else "👍 Article published successfully."
-        )
-        flash(flash_message, "success")
+            # Flash success message
+            flash_message = (
+                "⏱️ Your article has been submitted for approval."
+                if requires_approval
+                else "👍 Article published successfully."
+            )
+            flash(flash_message, "success")
+
+        except IntegrityError:
+            # Rollback in case of an integrity error
+            db.session.rollback()
+
+            # Flash error message to the user
+            flash(
+                "An error occurred: The article slug must be unique. Please try a different title.",
+                "danger",
+            )
+
+            # Log the error
+            app.logger.error(
+                "IntegrityError: Duplicate slug found while trying to publish an article."
+            )
+
+            # Redirect back to the publish page for correction
+            return redirect(url_for("publish"))
 
         # Redirect to home after successful submission
         return redirect(url_for("home"))
