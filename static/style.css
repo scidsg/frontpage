@@ -1149,7 +1149,7 @@ footer.content {
 	}
 }
 
-@media only screen and (max-width: 469px) { 
+@media only screen and (max-width: 467px) { 
 	.categories-list {
 		top: 3.5rem;
 	}
@@ -1160,6 +1160,10 @@ footer.content {
 	
 	.content.home h2 {
 		padding-bottom: 1rem;
+	}
+	
+	.content.promo {
+		margin-top: .425rem;
 	}
 
 }
@@ -1187,6 +1191,7 @@ footer.content {
 
 	.content.promo {
 		padding: 1.5rem 1.25rem;
+		border-radius: .5rem;
 		border: 1px solid rgba(0,0,0,0.1);
 		width: 92vw;
 		box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
