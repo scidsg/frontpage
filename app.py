@@ -482,8 +482,22 @@ def publish():
             pending_approval=requires_approval,
         )
 
+        # Extract and handle the publication date
+        publish_date_str = request.form.get("publish_date")
+        if publish_date_str:
+            publish_date = datetime.strptime(publish_date_str, "%Y-%m-%dT%H:%M")
+            new_article.publish_date = publish_date
+        else:
+            new_article.publish_date = datetime.utcnow()  # default to current time
+
         # Set slug for the new article
         new_article.set_slug()
+
+        # Handle the last_edited date
+        last_edited_str = request.form.get("last_edited")
+        if last_edited_str:
+            last_edited = datetime.strptime(last_edited_str, "%Y-%m-%dT%H:%M")
+            new_article.last_edited = last_edited
 
         # Handle article categories
         selected_category_ids = request.form.getlist("categories")
@@ -745,7 +759,19 @@ def edit_article(slug):
             article.download_size = request.form["download_size"]
             article.cyberwar = "cyberwar" in request.form
             article.source = request.form.get("source", "")
-            article.last_edited = datetime.utcnow()
+
+            # Extract and handle the publication and last edited dates
+            publish_date_str = request.form.get("publish_date")
+            if publish_date_str:
+                article.publish_date = datetime.strptime(
+                    publish_date_str, "%Y-%m-%dT%H:%M"
+                )
+
+            last_edited_str = request.form.get("last_edited")
+            if last_edited_str:
+                article.last_edited = datetime.strptime(
+                    last_edited_str, "%Y-%m-%dT%H:%M"
+                )
 
             if original_title != article.title:
                 article.slug = slugify(article.title)

@@ -65,6 +65,10 @@
             {% if article.cyberwar %}
                 <p><strong>Cyberwar:</strong> ✅</p>
             {% endif %}
+
+            {% if article.download_size %}
+                <p><span class="label">Download Size:</span> {{ article.download_size }}</p>
+            {% endif %}
             
             <!-- DOWNLOAD LINKS -->
 
@@ -115,10 +119,6 @@
                 <p><span class="label">IPFS Link 3:</span> <a href="{{ article.ipfs_link3 }}" target="_blank">Link</a></p>
             {% endif %}
 
-
-            {% if article.download_size %}
-                <p><span class="label">Download Size:</span> {{ article.download_size }}</p>
-            {% endif %}
 
             <!-- EXTERNAL COLLAB LINK -->
 
