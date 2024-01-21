@@ -311,15 +311,22 @@ def unauthorized():
 def inject_scopes():
     all_articles = Article.query.all()
     counter = Counter()
+
     for article in all_articles:
-        if article.article_type:
-            counter[("type", article.article_type)] += 1
+        # Count article types using the new many-to-many relationship
+        for atype in article.article_types:
+            counter[("type", atype.name)] += 1
+
+        # Count countries (no change here)
         if article.country:
             for country in article.country.split(", "):
                 counter[("country", country)] += 1
+
+        # Count sources (no change here)
         if article.source:
             counter[("source", article.source)] += 1
 
+    # Retrieve the top 5 scopes
     top_scopes = counter.most_common(5)
     all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
     return {"all_scopes": all_scopes}
@@ -843,21 +850,11 @@ def articles_by_source(source):
     articles = Article.query.filter_by(source=source).all()
     article_count = len(articles)  # Get the count of articles
 
-    # Collect all articles to determine top scopes
-    all_articles = Article.query.all()
-    counter = Counter()
-    for article in all_articles:
-        if article.article_type:
-            counter[("type", article.article_type)] += 1
-        if article.country:
-            for country in article.country.split(", "):
-                counter[("country", country)] += 1
-        if article.source:
-            counter[("source", article.source)] += 1
+    # Use inject_scopes function to get the top scopes
+    scope_data = inject_scopes()
+    all_scopes = scope_data["all_scopes"]
 
-    # Get the top 5 scopes
-    top_scopes = counter.most_common(5)
-    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    # Check if the team link should be shown
     show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
@@ -875,21 +872,11 @@ def articles_by_country(country):
     articles = Article.query.filter(Article.country.like(f"%{country}%")).all()
     article_count = len(articles)  # Get the count of articles
 
-    # Collect all articles to determine top scopes
-    all_articles = Article.query.all()
-    counter = Counter()
-    for article in all_articles:
-        if article.article_type:
-            counter[("type", article.article_type)] += 1
-        if article.country:
-            for c in article.country.split(", "):
-                counter[("country", c)] += 1
-        if article.source:
-            counter[("source", article.source)] += 1
+    # Use inject_scopes function to get the top scopes
+    scope_data = inject_scopes()
+    all_scopes = scope_data["all_scopes"]
 
-    # Get the top 5 scopes
-    top_scopes = counter.most_common(5)
-    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    # Check if the team link should be shown
     show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
@@ -907,21 +894,11 @@ def articles_by_author(author):
     articles = Article.query.filter_by(author=author).all()
     article_count = len(articles)  # Get the count of articles
 
-    # Collect all articles to determine top scopes
-    all_articles = Article.query.all()
-    counter = Counter()
-    for article in all_articles:
-        if article.article_type:
-            counter[("type", article.article_type)] += 1
-        if article.country:
-            for c in article.country.split(", "):
-                counter[("country", c)] += 1
-        if article.source:
-            counter[("source", article.source)] += 1
+    # Use inject_scopes function to get the top scopes
+    scope_data = inject_scopes()
+    all_scopes = scope_data["all_scopes"]
 
-    # Get the top 5 scopes
-    top_scopes = counter.most_common(5)
-    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    # Check if the team link should be shown
     show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
@@ -936,35 +913,26 @@ def articles_by_author(author):
 
 @app.route("/type/<article_type>")
 def articles_by_type(article_type):
-    # Fetch the specific article type
-    type_obj = ArticleType.query.filter_by(name=article_type).first()
+    articles = []
 
     if article_type.lower() == "all":
         articles = Article.query.all()
-    elif type_obj:
-        # Use the relationship to filter articles
-        articles = type_obj.articles
     else:
-        # Handle case where no such type exists
-        articles = []
+        type_obj = ArticleType.query.filter_by(name=article_type).first()
+        if type_obj:
+            articles = (
+                Article.query.join(Article.article_types)
+                .filter(ArticleType.name == article_type)
+                .all()
+            )
 
-    article_count = len(articles)  # Get the count of articles
+    article_count = len(articles)
 
-    # Collect all articles to determine top scopes
-    all_articles = Article.query.all()
-    counter = Counter()
-    for article in all_articles:
-        for atype in article.article_types:
-            counter[("type", atype.name)] += 1
-        if article.country:
-            for c in article.country.split(", "):
-                counter[("country", c)] += 1
-        if article.source:
-            counter[("source", article.source)] += 1
+    # Use inject_scopes function to get the top scopes
+    scope_data = inject_scopes()
+    all_scopes = scope_data["all_scopes"]
 
-    # Get the top 5 scopes
-    top_scopes = counter.most_common(5)
-    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    # Check if the team link should be shown
     show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
@@ -998,20 +966,11 @@ def all_categories():
     )
     sources = sorted(set(article.source for article in articles if article.source))
 
-    # Collect all articles to determine top scopes
-    counter = Counter()
-    for article in articles:
-        for atype in article.article_types:
-            counter[("type", atype.name)] += 1
-        if article.country:
-            for country in article.country.split(", "):
-                counter[("country", country)] += 1
-        if article.source:
-            counter[("source", article.source)] += 1
+    # Use inject_scopes function to get the top scopes
+    scope_data = inject_scopes()
+    all_scopes = scope_data["all_scopes"]
 
-    # Get the top 5 scopes
-    top_scopes = counter.most_common(5)
-    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
+    # Check if the team link should be shown
     show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
@@ -1144,7 +1103,6 @@ def change_password():
 def all_articles(category):
     articles = []
     title = ""
-    article_count = 0  # Initialize the article count
 
     if category == "recent":
         articles = (
@@ -1174,23 +1132,12 @@ def all_articles(category):
         )
         title = "All External Collaboration Articles"
 
-    article_count = len(articles)  # Update the article count based on filtered results
+    article_count = len(articles)
 
-    # Collect all articles to determine top scopes
-    all_articles = Article.query.filter_by(pending_approval=False).all()
-    counter = Counter()
-    for article in all_articles:
-        if article.article_type:
-            counter[("type", article.article_type)] += 1
-        if article.country:
-            for country in article.country.split(", "):
-                counter[("country", country)] += 1
-        if article.source:
-            counter[("source", article.source)] += 1
+    # Use inject_scopes function to get the top scopes
+    scope_data = inject_scopes()
+    all_scopes = scope_data["all_scopes"]
 
-    # Get the top 5 scopes
-    top_scopes = counter.most_common(5)
-    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
     show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
     return render_template(
