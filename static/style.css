@@ -576,6 +576,7 @@ header nav ul {
 header .btn {
 	font-size: .875rem;
 	font-family: 'Atkinson Bold', sans-serif;
+	padding: .625rem .75rem;
 }
 
 .btn-emoji {
