@@ -60,7 +60,15 @@
                 {% endfor %}
                 </p>
             {% endif %}
-            <p><span class="label">Type:</span> <a href="{{ url_for('articles_by_type', article_type=article.article_type) }}">{{ article.article_type }}</a></p>
+            
+            {% if article.article_types %}
+                <p><span class="label">Type:</span>
+                {% for atype in article.article_types %}
+                    <a href="{{ url_for('articles_by_type', article_type=atype.name) }}">{{ atype.name }}</a>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+                </p>
+            {% endif %}
+
 
             {% if article.cyberwar %}
                 <p><strong>Cyberwar:</strong> ✅</p>

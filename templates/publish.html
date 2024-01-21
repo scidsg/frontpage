@@ -46,19 +46,13 @@
             </div>
 
             <!-- Article Type Selection -->
-            <div>
-                <label for="type">Type</label>
-                <select id="type" name="type">
-                    {% for type in article_types %}
-                    <option value="{{ type }}">{{ type }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <!-- Cyberwar Checkbox -->
-            <div class="boolean">
-                <label for="cyberwar">Cyberwar</label>
-                <input type="checkbox" id="cyberwar" name="cyberwar">
+            <div class="checkbox-list">
+                <label for="article_types">Article Types</label>
+                {% for atype in article_types %}
+                <div>
+                    <input type="checkbox" name="article_types" value="{{ atype.id }}"> {{ atype.name }}
+                </div>
+                {% endfor %}
             </div>
 
             <!-- Download Size -->

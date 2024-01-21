@@ -657,6 +657,10 @@ textarea {
 	padding: .25rem 0;
 }
 
+.checkbox-list {
+	margin-bottom: 1rem;
+}
+
 .article {
 	display: flex;
 	flex-direction: column;
