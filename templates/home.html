@@ -1,6 +1,4 @@
 {% extends "base.html" %}
-{% block title %}{{ 'Home' }}{% endblock %}
-
 {% block content %}
     {% if not current_user.is_authenticated %}
         <div class="content promo promo-home" id="promo">

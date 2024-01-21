@@ -391,7 +391,7 @@ def login():
             return redirect(url_for("home"))
         flash("⛔️ Invalid username or password")
 
-    return render_template("login.html")
+    return render_template("login.html", title="Login")
 
 
 # Logout route
@@ -449,6 +449,7 @@ def home():
 
     return render_template(
         "home.html",
+        title="Home",
         main_articles=main_articles,
         main_articles_total=main_articles_total,
         main_articles_more=main_articles_total > max_articles,
@@ -574,6 +575,7 @@ def publish():
 
     return render_template(
         "publish.html",
+        title="Publish Article",
         categories=categories,
         countries=countries,
         article_types=article_types,  # Pass article types to the template
@@ -595,6 +597,7 @@ def approve_articles():
 
     return render_template(
         "approve_articles.html",
+        title="Approve Articles",
         articles=articles_to_approve,
         article_count=article_count,
     )
@@ -649,7 +652,9 @@ def users():
 
     all_users = User.query.all()
     user_count = len(all_users)
-    return render_template("users.html", users=all_users, user_count=user_count)
+    return render_template(
+        "users.html", title="Users", users=all_users, user_count=user_count
+    )
 
 
 @app.route("/article/<slug>")
@@ -726,6 +731,7 @@ def article(slug):
 
     return render_template(
         "article.html",
+        title=article.title,
         article=article,
         content_html=content_html,
         related_by_type_grouped=related_by_type_grouped,
@@ -859,6 +865,7 @@ def edit_article(slug):
 
         return render_template(
             "edit_article.html",
+            title="Edit Article",
             article=article,
             categories=categories,
             countries=countries,
@@ -881,8 +888,12 @@ def articles_by_source(source):
     # Check if the team link should be shown
     show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
+    # Create a dynamic title based on the source
+    title = f"Articles from {source}"
+
     return render_template(
         "source_articles.html",
+        title=title,
         articles=articles,
         source=source,
         article_count=article_count,
@@ -903,8 +914,12 @@ def articles_by_country(country):
     # Check if the team link should be shown
     show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
+    # Create a dynamic title based on the country
+    title = f"Articles from {country}"
+
     return render_template(
         "country_articles.html",
+        title=title,
         articles=articles,
         country=country,
         article_count=article_count,
@@ -925,8 +940,12 @@ def articles_by_author(author):
     # Check if the team link should be shown
     show_team_link = User.query.filter_by(include_in_team_page=True).first() is not None
 
+    # Create a dynamic title based on the author's name
+    title = f"Articles by {author}"
+
     return render_template(
         "author_articles.html",
+        title=title,
         articles=articles,
         author=author,
         article_count=article_count,
@@ -941,6 +960,7 @@ def articles_by_type(article_type):
 
     if article_type.lower() == "all":
         articles = Article.query.all()
+        title = "All Articles"  # Title for 'all' types
     else:
         type_obj = ArticleType.query.filter_by(name=article_type).first()
         if type_obj:
@@ -949,6 +969,7 @@ def articles_by_type(article_type):
                 .filter(ArticleType.name == article_type)
                 .all()
             )
+        title = f"Articles of Type: {article_type}"  # Dynamic title for specific type
 
     article_count = len(articles)
 
@@ -961,6 +982,7 @@ def articles_by_type(article_type):
 
     return render_template(
         "type_articles.html",
+        title=title,
         articles=articles,
         article_type=article_type,
         article_count=article_count,
@@ -999,6 +1021,7 @@ def all_categories():
 
     return render_template(
         "all_categories.html",
+        title="All Categories",
         article_types=article_types,
         countries=countries,
         sources=sources,
@@ -1079,6 +1102,7 @@ def user_settings():
 
     return render_template(
         "settings.html",
+        title="Settings",
         bio_form=bio_form,
         password_form=password_form,
         team_page_form=team_page_form,
@@ -1167,9 +1191,9 @@ def all_articles(category):
 
     return render_template(
         "all_articles.html",
+        title="All Articles",
         articles=articles,
         article_count=article_count,
-        title=title,
         all_scopes=all_scopes,
         show_team_link=show_team_link,
     )
@@ -1178,7 +1202,7 @@ def all_articles(category):
 @app.route("/team")
 def team():
     users = User.query.filter(User.include_in_team_page).all()
-    return render_template("team.html", users=users)
+    return render_template("team.html", title="Our Team", users=users)
 
 
 # Error handler
