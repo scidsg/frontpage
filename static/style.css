@@ -180,6 +180,10 @@
 	p, a, li {
 		color: white;
 	}
+	
+	.checkbox-list {
+		color: white;
+	}
 
 	.categories-list {
 		background-color: rgba(51,51,51,1);
