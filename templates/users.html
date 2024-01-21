@@ -1,14 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="content">
+<div class="content users">
   <h1>Users</h1>
-  <p class="meta">Total Users: {{ user_count }}</p> <!-- Display user count -->
+  <p class="meta">Total Users: {{ user_count }}</p>
   <form method="POST">
     {% for user in users %}
       <div class="user">
         <span class="username">{{ user.username }}</span>
-        <input type="checkbox" class="admin-checkbox" name="admin_{{ user.id }}" value="{{ user.id }}" {% if user.is_admin %}checked{% endif %} onchange="updateApprovalStatus(this, {{ user.id }})"> Admin<br>
-        <input type="checkbox" class="approval-checkbox" name="approval_{{ user.id }}" value="{{ user.id }}" {% if user.requires_approval %}checked{% endif %} id="approval_{{ user.id }}"> Requires Approval
+        <input type="checkbox" class="admin-checkbox" name="admin_{{ user.id }}" value="{{ user.id }}" {% if user.is_admin %}checked{% endif %}> Admin<br>
+        <input type="checkbox" class="approval-checkbox" name="approval_{{ user.id }}" value="{{ user.id }}" {% if user.requires_approval %}checked{% endif %} id="approval_{{ user.id }}"> Requires Approval<br>
+        {% if current_user.id != user.id %}
+          <button type="submit" class="btn destruct" name="delete_user" value="{{ user.id }}" data-username="{{ user.username }}">Delete {{ user.username }}</button>
+        {% else %}
+        {% endif %}
       </div>
     {% endfor %}
     <button type="submit" class="btn btn-primary">Update Users</button>
