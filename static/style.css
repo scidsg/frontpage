@@ -1153,7 +1153,7 @@ footer.content {
 	}
 	
 	.content:not(.categories-list ~ .content):not(footer.content) {
-		margin-top: -3.25rem;
+		margin-top: -3.125rem;
 	}
 }
 
@@ -1163,17 +1163,13 @@ footer.content {
 	}
 
 	body {
-		padding-top: 8.125rem;
+		padding-top: 8.5rem;
 	}
 	
 	.content.home h2 {
 		padding-bottom: 1rem;
 	}
-	
-	.content.promo {
-		margin-top: .425rem;
-	}
-	
+		
 	.content.login,
 	.content.register {
 		padding-top: 2rem;
