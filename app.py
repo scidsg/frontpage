@@ -616,15 +616,29 @@ def users():
         return redirect(url_for("home"))
 
     if request.method == "POST":
-        all_users = User.query.all()
-        for user in all_users:
-            user.requires_approval = f"approval_{user.id}" in request.form
-            user.is_admin = f"admin_{user.id}" in request.form
-        db.session.commit()
-        flash("👍 Users updated successfully.", "success")
+        if "delete_user" in request.form:
+            user_id_to_delete = request.form.get("delete_user")
+            if int(user_id_to_delete) != current_user.id:
+                user_to_delete = User.query.get(user_id_to_delete)
+                if user_to_delete:
+                    db.session.delete(user_to_delete)
+                    db.session.commit()
+                    flash("User deleted successfully.", "success")
+                else:
+                    flash("User not found.", "danger")
+            else:
+                flash("You cannot delete your own account.", "warning")
+            return redirect(url_for("users"))
+        else:
+            all_users = User.query.all()
+            for user in all_users:
+                user.requires_approval = f"approval_{user.id}" in request.form
+                user.is_admin = f"admin_{user.id}" in request.form
+            db.session.commit()
+            flash("👍 Users updated successfully.", "success")
 
     all_users = User.query.all()
-    user_count = len(all_users)  # Get the count of users
+    user_count = len(all_users)
     return render_template("users.html", users=all_users, user_count=user_count)
 
 

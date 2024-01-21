@@ -42,16 +42,27 @@ function setupPromoBlock() {
 }
 
 function setupDeleteButtons() {
-    var deleteButtons = document.querySelectorAll('.delete-article-button');
+    var deleteArticleButtons = document.querySelectorAll('.delete-article-button');
+    var deleteUserButtons = document.querySelectorAll('.btn.destruct');
 
-    deleteButtons.forEach(function(button) {
+    deleteArticleButtons.forEach(function(button) {
         button.addEventListener('click', function(event) {
             if (!confirm('Are you sure you want to delete this article?')) {
                 event.preventDefault();
             }
         });
     });
+
+    deleteUserButtons.forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            var username = button.getAttribute('data-username');
+            if (!confirm('Are you sure you want to delete the user: ' + username + '?')) {
+                event.preventDefault();
+            }
+        });
+    });
 }
+
 
 function initializeUserPageLogic() {
     const adminCheckboxes = document.querySelectorAll('.admin-checkbox');
