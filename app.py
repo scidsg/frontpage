@@ -61,6 +61,18 @@ migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+# Association table for articles and article types
+article_article_types = db.Table(
+    "article_article_types",
+    db.Column("article_id", db.Integer, db.ForeignKey("article.id"), primary_key=True),
+    db.Column(
+        "article_type_id",
+        db.Integer,
+        db.ForeignKey("article_type.id"),
+        primary_key=True,
+    ),
+)
+
 
 # User model
 class User(UserMixin, db.Model):
@@ -127,12 +139,17 @@ class Article(db.Model):
     article_type = db.Column(db.String(50))
     source = db.Column(db.String(255))
     last_edited = db.Column(db.DateTime)
-    cyberwar = db.Column(db.Boolean, default=False, nullable=False)
     slug = db.Column(db.String(255), unique=True, nullable=False)
     pending_approval = db.Column(db.Boolean, default=False, nullable=False)
     categories = db.relationship(
         "Category",
         secondary=article_categories,
+        lazy="subquery",
+        backref=db.backref("articles", lazy=True),
+    )
+    article_types = db.relationship(
+        "ArticleType",
+        secondary=article_article_types,
         lazy="subquery",
         backref=db.backref("articles", lazy=True),
     )
@@ -143,6 +160,14 @@ class Article(db.Model):
     def set_slug(self):
         if not self.slug:
             self.slug = slugify(self.title)
+
+
+class ArticleType(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=True)
+
+    def __repr__(self):
+        return "<ArticleType %r>" % self.name
 
 
 class InvitationCode(db.Model):
@@ -427,14 +452,17 @@ def home():
 def publish():
     categories = Category.query.all()
     countries = [country.name for country in pycountry.countries]
-    article_types = ["Hack", "Leak", "News", "Opinion", "Other", "Research", "Scrape"]
+    article_types = ArticleType.query.all()  # Fetch article types from the database
 
     if request.method == "POST":
         article_title = request.form["title"]
         article_content = request.form["content"]
         article_countries = request.form.getlist("countries")
         article_country = ", ".join(article_countries)
-        article_type = request.form["type"]
+        selected_article_type_ids = request.form.getlist("article_types")
+        selected_article_types = ArticleType.query.filter(
+            ArticleType.id.in_(selected_article_type_ids)
+        ).all()
         article_download_link = request.form["download_link"]
         article_download_link2 = request.form["download_link2"]
         article_download_link3 = request.form["download_link3"]
@@ -448,7 +476,6 @@ def publish():
         article_ipfs_link2 = request.form["ipfs_link2"]
         article_ipfs_link3 = request.form["ipfs_link3"]
         article_download_size = request.form["download_size"]
-        article_cyberwar = "cyberwar" in request.form
         article_external_collaboration = request.form.get("external_collaboration")
         article_external_collaboration2 = request.form.get("external_collaboration2")
         article_external_collaboration3 = request.form.get("external_collaboration3")
@@ -460,10 +487,10 @@ def publish():
             content=article_content,
             author=current_user.username,
             country=article_country,
-            article_type=article_type,
             download_link=article_download_link,
             download_link2=article_download_link2,
             download_link3=article_download_link3,
+            article_types=selected_article_types,
             magnet_link=article_magnet_link,
             magnet_link2=article_magnet_link2,
             magnet_link3=article_magnet_link3,
@@ -474,7 +501,6 @@ def publish():
             ipfs_link2=article_ipfs_link2,
             ipfs_link3=article_ipfs_link3,
             download_size=article_download_size,
-            cyberwar=article_cyberwar,
             external_collaboration=article_external_collaboration,
             external_collaboration2=article_external_collaboration2,
             external_collaboration3=article_external_collaboration3,
@@ -507,45 +533,33 @@ def publish():
         new_article.categories = selected_categories
 
         try:
-            # Attempt to add and commit the new article to the database
             db.session.add(new_article)
             db.session.commit()
 
-            # Flash success message
             flash_message = (
                 "⏱️ Your article has been submitted for approval."
                 if requires_approval
                 else "👍 Article published successfully."
             )
             flash(flash_message, "success")
-
         except IntegrityError:
-            # Rollback in case of an integrity error
             db.session.rollback()
-
-            # Flash error message to the user
             flash(
                 "An error occurred: The article slug must be unique. Please try a different title.",
                 "danger",
             )
-
-            # Log the error
             app.logger.error(
                 "IntegrityError: Duplicate slug found while trying to publish an article."
             )
-
-            # Redirect back to the publish page for correction
             return redirect(url_for("publish"))
 
-        # Redirect to home after successful submission
         return redirect(url_for("home"))
 
-    # Render the publish template with the necessary context
     return render_template(
         "publish.html",
         categories=categories,
         countries=countries,
-        article_types=article_types,
+        article_types=article_types,  # Pass article types to the template
     )
 
 
@@ -607,26 +621,29 @@ def users():
     return render_template("users.html", users=all_users, user_count=user_count)
 
 
-# Article route using slug
 @app.route("/article/<slug>")
 def article(slug):
     article = Article.query.filter_by(slug=slug).first_or_404()
     content_html = markdown.markdown(article.content)
 
-    # Fetch related articles and group them
-    related_by_type = Article.query.filter(
-        Article.article_type == article.article_type, Article.slug != slug
-    ).all()
-    related_by_type_grouped = {
-        k: list(g)
-        for k, g in groupby(
-            sorted(related_by_type, key=lambda x: x.article_type),
-            key=lambda x: x.article_type,
+    # Fetch related articles by type
+    related_by_type = (
+        Article.query.join(Article.article_types)
+        .filter(
+            ArticleType.id.in_([atype.id for atype in article.article_types]),
+            Article.id != article.id,
         )
+        .all()
+    )
+
+    related_by_type_grouped = {
+        atype.name: [art for art in related_by_type if atype in art.article_types]
+        for atype in article.article_types
     }
 
+    # Fetch related articles by source
     related_by_source = Article.query.filter(
-        Article.source == article.source, Article.slug != slug
+        Article.source == article.source, Article.id != article.id
     ).all()
     related_by_source_grouped = {
         k: list(g)
@@ -641,7 +658,7 @@ def article(slug):
         countries = article.country.split(", ")
         for country in countries:
             related_articles = Article.query.filter(
-                Article.country.like(f"%{country}%"), Article.slug != slug
+                Article.country.like(f"%{country}%"), Article.id != article.id
             ).all()
             if country not in related_by_country_dict:
                 related_by_country_dict[country] = []
@@ -651,11 +668,12 @@ def article(slug):
     all_articles = Article.query.all()
     counter = Counter()
     for a in all_articles:
-        if a.article_type:
-            counter[("type", a.article_type)] += 1
+        if a.article_types:
+            for atype in a.article_types:
+                counter[("type", atype.name)] += 1
         if a.country:
-            for country in a.country.split(", "):
-                counter[("country", country)] += 1
+            for c in a.country.split(", "):
+                counter[("country", c)] += 1
         if a.source:
             counter[("source", a.source)] += 1
 
@@ -705,7 +723,7 @@ def edit_article(slug):
 
     categories = Category.query.all()
     countries = [country.name for country in pycountry.countries]
-    article_types = ["Hack", "Leak", "News", "Opinion", "Other", "Research", "Scrape"]
+    all_article_types = ArticleType.query.all()  # Fetch all article types
 
     if not (current_user.username == article.author or current_user.is_admin):
         app.logger.warning(
@@ -717,15 +735,18 @@ def edit_article(slug):
     if request.method == "POST":
         app.logger.info(f"Processing POST request for editing article {slug}")
 
-        print(request.form)  # Debugging print statement
-        app.logger.debug(f"Form data: {request.form}")
-
         try:
             original_title = article.title
             article.title = request.form["title"]
             article.content = request.form["content"]
             article.country = ", ".join(request.form.getlist("countries"))
-            article.article_type = request.form["type"]
+
+            # Handle article types
+            selected_article_type_ids = request.form.getlist("article_types")
+            selected_article_types = ArticleType.query.filter(
+                ArticleType.id.in_(selected_article_type_ids)
+            ).all()
+            article.article_types = selected_article_types
 
             # Update DL links
             article.download_link = request.form["download_link"]
@@ -757,7 +778,6 @@ def edit_article(slug):
             )
 
             article.download_size = request.form["download_size"]
-            article.cyberwar = "cyberwar" in request.form
             article.source = request.form.get("source", "")
 
             # Extract and handle the publication and last edited dates
@@ -775,6 +795,7 @@ def edit_article(slug):
 
             if original_title != article.title:
                 article.slug = slugify(article.title)
+                # Ensure unique slug
                 original_slug = article.slug
                 count = 1
                 while Article.query.filter(
@@ -783,6 +804,7 @@ def edit_article(slug):
                     article.slug = f"{original_slug}-{count}"
                     count += 1
 
+            # Handle categories
             selected_category_ids = request.form.getlist("categories")
             selected_categories = Category.query.filter(
                 Category.id.in_(selected_category_ids)
@@ -802,6 +824,7 @@ def edit_article(slug):
     else:
         selected_countries = article.country.split(", ") if article.country else []
         selected_categories = [category.id for category in article.categories]
+        selected_article_type_ids = [atype.id for atype in article.article_types]
 
         return render_template(
             "edit_article.html",
@@ -809,7 +832,8 @@ def edit_article(slug):
             categories=categories,
             countries=countries,
             selected_countries=selected_countries,
-            article_types=article_types,
+            all_article_types=all_article_types,
+            selected_article_type_ids=selected_article_type_ids,
             selected_categories=selected_categories,
         )
 
@@ -912,10 +936,17 @@ def articles_by_author(author):
 
 @app.route("/type/<article_type>")
 def articles_by_type(article_type):
+    # Fetch the specific article type
+    type_obj = ArticleType.query.filter_by(name=article_type).first()
+
     if article_type.lower() == "all":
         articles = Article.query.all()
+    elif type_obj:
+        # Use the relationship to filter articles
+        articles = type_obj.articles
     else:
-        articles = Article.query.filter_by(article_type=article_type).all()
+        # Handle case where no such type exists
+        articles = []
 
     article_count = len(articles)  # Get the count of articles
 
@@ -923,8 +954,8 @@ def articles_by_type(article_type):
     all_articles = Article.query.all()
     counter = Counter()
     for article in all_articles:
-        if article.article_type:
-            counter[("type", article.article_type)] += 1
+        for atype in article.article_types:
+            counter[("type", atype.name)] += 1
         if article.country:
             for c in article.country.split(", "):
                 counter[("country", c)] += 1
@@ -1182,6 +1213,27 @@ def handle_exception(e):
     return "An internal error occurred", 500
 
 
+def initialize_article_types():
+    existing_types = [atype.name for atype in ArticleType.query.all()]
+    for atype in [
+        "Banker's Box",
+        "Corporate",
+        "Cyberwar",
+        "Hack",
+        "Leak",
+        "News",
+        "Opinion",
+        "Other",
+        "Ransomware",
+        "Research",
+        "Scrape",
+    ]:
+        if atype not in existing_types:
+            new_type = ArticleType(name=atype)
+            db.session.add(new_type)
+    db.session.commit()
+
+
 # Initialize logging
 if not app.debug:
     file_handler = RotatingFileHandler(
@@ -1201,10 +1253,12 @@ if not app.debug:
 def initialize_database():
     with app.app_context():
         db.create_all()
+        initialize_article_types()  # Initialize article types after creating all tables
 
 
 # Call the database initialization function
 initialize_database()
+
 
 if __name__ == "__main__":
     initialize_database()

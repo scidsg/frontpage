@@ -39,19 +39,17 @@
                 {% endfor %}
             </div>
 
-            <div>
-                <label for="type">Type</label>
-                <select id="type" name="type">
-                    {% for type in article_types %}
-                    <option value="{{ type }}" {% if article.article_type == type %}selected{% endif %}>{{ type }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+            <!-- Article Type Selection -->
 
-            <!-- Cyberwar Checkbox -->
-            <div class="boolean">
-                <label for="cyberwar">Cyberwar</label>
-                <input type="checkbox" id="cyberwar" name="cyberwar" {% if article.cyberwar %}checked{% endif %}>
+            <div class="checkbox-list">
+                <label>Article Types</label>
+                {% for atype in all_article_types %}
+                <div>
+                    <input type="checkbox" name="article_types" value="{{ atype.id }}" 
+                        {% if atype.id in selected_article_type_ids %} checked {% endif %}> 
+                    {{ atype.name }}
+                </div>
+                {% endfor %}
             </div>
 
             <!-- DOWNLOAD SIZE -->
