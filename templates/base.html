@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#333333">
-    <title>{{ title }} - Distributed Denial of Secrets</title>
+    <title>{{ title|default('Default Title') }} - Distributed Denial of Secrets</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Meta tags for link previews -->
+    <meta name="description" content="A 501(c)(3) dedicated to archiving and publishing hacked and leaked data.">
+    <meta property="og:title" content="{{ title }} - Distributed Denial of Secrets">
+    <meta property="og:description" content="A 501(c)(3) dedicated to archiving and publishing hacked and leaked data.">
+    <!-- <meta property="og:image" content="{{ url_for('static', filename='path/to/your/image.jpg') }}"> -->
+    <meta property="og:url" content="{{ request.url }}">
+    <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
     <header>
