@@ -177,7 +177,7 @@
 		color: white;
 	}
 
-	p, a {
+	p, a, li {
 		color: white;
 	}
 
@@ -508,10 +508,6 @@ h1 + form {
 .metadata {
 	padding: 1rem 0;
 	font-size: .875rem;
-}
-
-.ipfs p {
-	word-break:  break-word;
 }
 
 .metadata h2 {
@@ -1172,6 +1168,12 @@ footer.content {
 	
 	.content.promo {
 		margin-top: .425rem;
+	}
+	
+	.content.login,
+	.content.register {
+		padding-top: 2rem;
+		padding-bottom: 2rem;
 	}
 
 }
