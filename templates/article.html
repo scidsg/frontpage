@@ -60,7 +60,7 @@
                 {% endfor %}
                 </p>
             {% endif %}
-            
+
             {% if article.article_types %}
                 <p><span class="label">Type:</span>
                 {% for atype in article.article_types %}
@@ -116,16 +116,17 @@
 
 
             <!-- IPFS LINKS -->
-
-            {% if article.ipfs_link %}
-                <p><span class="label">IPFS Link:</span> <a href="{{ article.ipfs_link }}" target="_blank">Link</a></p>
-            {% endif %}
-            {% if article.ipfs_link2 %}
-                <p><span class="label">IPFS Link 2:</span> <a href="{{ article.ipfs_link2 }}" target="_blank">Link</a></p>
-            {% endif %}
-            {% if article.ipfs_link3 %}
-                <p><span class="label">IPFS Link 3:</span> <a href="{{ article.ipfs_link3 }}" target="_blank">Link</a></p>
-            {% endif %}
+            <div class="ipfs">
+                {% if article.ipfs_link %}
+                    <p><span class="label">IPFS Link:</span> {{ article.ipfs_link }}</p>
+                {% endif %}
+                {% if article.ipfs_link2 %}
+                    <p><span class="label">IPFS Link 2:</span> {{ article.ipfs_link2 }}</p>
+                {% endif %}
+                {% if article.ipfs_link3 %}
+                    <p><span class="label">IPFS Link 3:</span> {{ article.ipfs_link3 }}</p>
+                {% endif %}
+            </div>
 
 
             <!-- EXTERNAL COLLAB LINK -->
