@@ -10,7 +10,7 @@ from flask_login import (
 )
 from flask_migrate import Migrate
 from flask_wtf import FlaskForm
-from werkzeug.security import generate_password_hash, check_password_hash
+from passlib.context import CryptContext
 from dotenv import load_dotenv
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
@@ -35,6 +35,7 @@ from wtforms.validators import (
     Optional,
 )
 from werkzeug.utils import secure_filename
+from werkzeug.security import check_password_hash
 from flask_wtf.file import FileField, FileAllowed
 from collections import Counter
 from itertools import groupby
@@ -43,6 +44,9 @@ from sqlalchemy.exc import IntegrityError
 
 
 load_dotenv()  # Load environment variables from .env file
+
+# create a password context
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Uploads
 UPLOAD_FOLDER = "/var/www/html/frontpage/static/uploads"
@@ -88,10 +92,15 @@ class User(UserMixin, db.Model):
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password_hash = pwd_context.hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        try:
+            # First, try to verify the password with Passlib
+            return pwd_context.verify(password, self.password_hash)
+        except ValueError:
+            # If it fails (old hash), fall back to Werkzeug's method
+            return check_password_hash(self.password_hash, password)
 
 
 class Category(db.Model):
@@ -354,8 +363,9 @@ def register():
             flash("⛔️ Invalid or expired invite code.", "danger")
             return render_template("register.html", title="Register", form=form)
 
-        hashed_password = generate_password_hash(form.password.data)
-        user = User(username=form.username.data, password_hash=hashed_password)
+        user = User(username=form.username.data)
+        user.set_password(form.password.data)
+        user.requires_approval = True  # Set new users to require approval
         db.session.add(user)
 
         # Mark invite code as used
@@ -1102,6 +1112,7 @@ def change_password():
 
     if form.validate_on_submit():
         if user.check_password(form.current_password.data):
+            # Set new password using Passlib
             user.set_password(form.new_password.data)
             db.session.commit()
             flash("👍 Your password has been updated.", "success")
