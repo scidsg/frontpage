@@ -510,6 +510,10 @@ h1 + form {
 	font-size: .875rem;
 }
 
+.ipfs p {
+	word-break:  break-word;
+}
+
 .metadata h2 {
 	font-size: 1.5rem;
 	margin-bottom: .5rem;
