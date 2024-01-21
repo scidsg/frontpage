@@ -979,11 +979,15 @@ def articles_by_type(article_type):
 
 @app.route("/all_categories")
 def all_categories():
-    articles = Article.query.order_by(Article.publish_date.desc()).all()
-
-    types = sorted(
-        set(article.article_type for article in articles if article.article_type)
+    # Fetch all article types that have at least one article
+    article_types = (
+        ArticleType.query.filter(ArticleType.articles.any())
+        .order_by(ArticleType.name)
+        .all()
     )
+
+    # Fetch countries and sources from articles
+    articles = Article.query.all()
     countries = sorted(
         set(
             country
@@ -995,11 +999,10 @@ def all_categories():
     sources = sorted(set(article.source for article in articles if article.source))
 
     # Collect all articles to determine top scopes
-    all_articles = Article.query.all()
     counter = Counter()
-    for article in all_articles:
-        if article.article_type:
-            counter[("type", article.article_type)] += 1
+    for article in articles:
+        for atype in article.article_types:
+            counter[("type", atype.name)] += 1
         if article.country:
             for country in article.country.split(", "):
                 counter[("country", country)] += 1
@@ -1013,7 +1016,7 @@ def all_categories():
 
     return render_template(
         "all_categories.html",
-        types=types,
+        article_types=article_types,
         countries=countries,
         sources=sources,
         all_scopes=all_scopes,

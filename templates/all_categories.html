@@ -6,11 +6,10 @@
         <!-- Types List -->
         <h2>Types</h2>
         <ul>
-            {% for type in types %}
-                <li><a href="{{ url_for('articles_by_type', article_type=type) }}">{{ type }}</a></li>
+            {% for atype in article_types %}
+                <li><a href="{{ url_for('articles_by_type', article_type=atype.name) }}">{{ atype.name }}</a></li>
             {% endfor %}
         </ul>
-
         <!-- Countries List -->
         <h2>Countries</h2>
         <ul>
