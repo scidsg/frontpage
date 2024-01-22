@@ -27,9 +27,9 @@
                 <input type="datetime-local" id="last_edited" name="last_edited" value="{{ article.last_edited.strftime('%Y-%m-%dT%H:%M') if article.last_edited }}">
             </div>
 
-            <div class="country-list">
-                <label>Countries</label>
-                {% for country in countries %}
+            <label>Countries</label>
+            <div class="checkbox-list">
+                {% for country in countries|sort %}
                 <div>
                     <input type="checkbox" id="country-{{ country }}" name="countries" value="{{ country }}" {% if country in selected_countries %}checked{% endif %}>
                     <label for="country-{{ country }}">{{ country }}</label>
@@ -38,10 +38,9 @@
             </div>
 
             <!-- Article Type Selection -->
-
+            <label>Article Types</label>
             <div class="checkbox-list">
-                <label>Article Types</label>
-                {% for atype in all_article_types %}
+                {% for atype in article_types|sort(attribute='name') %}
                 <div>
                     <input type="checkbox" name="article_types" value="{{ atype.id }}" 
                         {% if atype.id in selected_article_type_ids %} checked {% endif %}> 
@@ -49,6 +48,7 @@
                 </div>
                 {% endfor %}
             </div>
+
 
             <!-- DOWNLOAD SIZE -->
 

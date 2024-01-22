@@ -34,8 +34,8 @@
 
             <!-- Country Selection -->
             <label>Countries</label>
-            <div class="country-list">
-                {% for country in countries %}
+            <div class="checkbox-list">
+                {% for country in countries|sort %}
                 <div>
                     <input type="checkbox" id="country-{{ country }}" name="countries" value="{{ country }}">
                     <label for="country-{{ country }}">{{ country }}</label>
@@ -44,9 +44,9 @@
             </div>
 
             <!-- Article Type Selection -->
+            <label for="article_types">Article Types</label>
             <div class="checkbox-list">
-                <label for="article_types">Article Types</label>
-                {% for atype in article_types %}
+                {% for atype in article_types|sort(attribute='name') %}
                 <div>
                     <input type="checkbox" name="article_types" value="{{ atype.id }}"> {{ atype.name }}
                 </div>

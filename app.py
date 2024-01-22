@@ -753,14 +753,9 @@ def edit_article(slug):
         flash("Article not found.")
         return redirect(url_for("home"))
 
-    # If the article is pending approval, restrict editing to admins
     if article.pending_approval and not current_user.is_admin:
         flash("⛔️ This article is pending approval and cannot be edited.", "warning")
         return redirect(url_for("home"))
-
-    categories = Category.query.all()
-    countries = [country.name for country in pycountry.countries]
-    all_article_types = ArticleType.query.all()  # Fetch all article types
 
     if not (current_user.username == article.author or current_user.is_admin):
         app.logger.warning(
@@ -768,6 +763,10 @@ def edit_article(slug):
         )
         flash("⛔️ You do not have permission to edit this article.")
         return redirect(url_for("home"))
+
+    categories = Category.query.all()
+    countries = [country.name for country in pycountry.countries]
+    article_types = ArticleType.query.all()  # Corrected variable name
 
     if request.method == "POST":
         app.logger.info(f"Processing POST request for editing article {slug}")
@@ -870,7 +869,7 @@ def edit_article(slug):
             categories=categories,
             countries=countries,
             selected_countries=selected_countries,
-            all_article_types=all_article_types,
+            article_types=article_types,  # Corrected variable name
             selected_article_type_ids=selected_article_type_ids,
             selected_categories=selected_categories,
         )
@@ -1218,13 +1217,18 @@ def initialize_article_types():
         "Banker's Box",
         "Corporate",
         "Cyberwar",
+        "Environmental",
+        "Fascist",
         "Hack",
         "Leak",
+        "Leak Markets",
+        "Limited Distribution",
         "News",
         "Opinion",
+        "Organization",
         "Other",
         "Ransomware",
-        "Research",
+        "Researchers",
         "Scrape",
     ]:
         if atype not in existing_types:
