@@ -54,9 +54,7 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Install Flask and other dependencies
-poetry export > requirements.txt
-pip3 install -r requirements.txt
-rm requirements.txt
+poetry install
 
 # Generate and export Flask secret key
 FLASK_SECRET_KEY=$(openssl rand -hex 32)
@@ -68,10 +66,9 @@ python /var/www/html/frontpage/init_db.py
 
 # Change owner and permissions of the SQLite database file
 sudo chown -R www-data:www-data /var/www/html/frontpage
-sudo chown www-data:www-data /var/www/html/frontpage/blog.db
-sudo chmod 664 /var/www/html/frontpage/blog.db
 
 # Add upload directory
+mkdir /var/www/html/frontpage/static
 mkdir /var/www/html/frontpage/static/uploads
 sudo chown -R www-data:www-data /var/www/html/frontpage/static/uploads
 sudo chmod -R 755 /var/www/html/frontpage/static/uploads
