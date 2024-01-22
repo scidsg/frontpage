@@ -53,7 +53,7 @@ class PasswordForm(FlaskForm):
         "New Password",
         validators=[
             DataRequired(),
-            Length(min=8, message="Password must be at least 8 characters long."),
+            Length(min=8, max=128, message="Password must be at least 8 characters long."),
             Regexp(r"(?=.*[A-Za-z])", message="Password must contain letters."),
             Regexp(r"(?=.*[0-9])", message="Password must contain numbers."),
             Regexp(
