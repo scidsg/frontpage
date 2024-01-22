@@ -399,22 +399,22 @@ def home():
     main_articles_total = Article.query.count()
 
     recently_edited_articles = (
-        Article.query.filter(Article.last_edited != None)
+        Article.query.filter(Article.last_edited.isnot(None))
         .order_by(Article.last_edited.desc())
         .limit(max_articles)
         .all()
     )
-    recently_edited_articles_total = Article.query.filter(Article.last_edited != None).count()
+    recently_edited_articles_total = Article.query.filter(Article.last_edited.isnot(None)).count()
 
     external_collaboration_articles = (
-        Article.query.filter(Article.external_collaboration != None)
+        Article.query.filter(Article.external_collaboration.isnot(None))
         .filter(Article.external_collaboration != "")
         .order_by(Article.publish_date.desc())
         .limit(max_articles)
         .all()
     )
     external_collaboration_articles_total = (
-        Article.query.filter(Article.external_collaboration != None)
+        Article.query.filter(Article.external_collaboration.isnot(None))
         .filter(Article.external_collaboration != "")
         .count()
     )
@@ -1105,7 +1105,6 @@ def change_password():
 @app.route("/all_articles/<category>")
 def all_articles(category):
     articles = []
-    title = ""
 
     if category == "recent":
         articles = (
@@ -1116,7 +1115,9 @@ def all_articles(category):
         title = "All Recently Published Articles"
     elif category == "edited":
         articles = (
-            Article.query.filter(Article.pending_approval == False, Article.last_edited != None)
+            Article.query.filter(
+                Article.pending_approval.is_(False), Article.last_edited.isnot(None)
+            )
             .order_by(Article.last_edited.desc())
             .all()
         )
@@ -1124,8 +1125,8 @@ def all_articles(category):
     elif category == "external":
         articles = (
             Article.query.filter(
-                Article.pending_approval == False,
-                Article.external_collaboration != None,
+                Article.pending_approval.is_(False),
+                Article.external_collaboration.isnot(None),
                 Article.external_collaboration != "",
             )
             .order_by(Article.publish_date.desc())
@@ -1143,7 +1144,7 @@ def all_articles(category):
 
     return render_template(
         "all_articles.html",
-        title="All Articles",
+        title=title,
         articles=articles,
         article_count=article_count,
         all_scopes=all_scopes,
