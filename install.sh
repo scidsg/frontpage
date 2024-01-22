@@ -97,7 +97,7 @@ After=network.target
 User=www-data
 Group=www-data
 WorkingDirectory=/var/www/html/frontpage/
-ExecStart=/var/www/html/frontpage/venv/bin/gunicorn -w 1 -b 127.0.0.1:5000 app:app
+ExecStart=/var/www/html/frontpage/venv/bin/gunicorn -w 1 -b 127.0.0.1:5000 frontpage:app
 
 [Install]
 WantedBy=multi-user.target

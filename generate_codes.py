@@ -1,4 +1,4 @@
-from app import app, db, InvitationCode
+from frontpage import app, db, InvitationCode
 import secrets
 from datetime import datetime, timedelta
 
