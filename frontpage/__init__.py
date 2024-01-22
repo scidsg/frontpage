@@ -1,47 +1,33 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_sqlalchemy import SQLAlchemy
+import logging
+import os
+from collections import Counter
+from datetime import datetime
+from itertools import groupby
+from logging.handlers import RotatingFileHandler
+
+import markdown
+import pycountry
+from dotenv import load_dotenv
+from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_login import (
     LoginManager,
     UserMixin,
-    login_user,
-    login_required,
-    logout_user,
     current_user,
+    login_required,
+    login_user,
+    logout_user,
 )
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileAllowed, FileField
 from passlib.context import CryptContext
-from dotenv import load_dotenv
-from datetime import datetime
-from logging.handlers import RotatingFileHandler
-import logging
-import os
-import markdown
-import pycountry
-from wtforms import (
-    StringField,
-    PasswordField,
-    SubmitField,
-    TextAreaField,
-    BooleanField,
-)
-from wtforms.validators import (
-    DataRequired,
-    EqualTo,
-    ValidationError,
-    Length,
-    Regexp,
-    URL,
-    Optional,
-)
-from werkzeug.utils import secure_filename
-from werkzeug.security import check_password_hash
-from flask_wtf.file import FileField, FileAllowed
-from collections import Counter
-from itertools import groupby
 from slugify import slugify
 from sqlalchemy.exc import IntegrityError
-
+from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
+from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField
+from wtforms.validators import URL, DataRequired, EqualTo, Length, Optional, Regexp, ValidationError
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -115,9 +101,7 @@ class Category(db.Model):
 article_categories = db.Table(
     "article_categories",
     db.Column("article_id", db.Integer, db.ForeignKey("article.id"), primary_key=True),
-    db.Column(
-        "category_id", db.Integer, db.ForeignKey("category.id"), primary_key=True
-    ),
+    db.Column("category_id", db.Integer, db.ForeignKey("category.id"), primary_key=True),
 )
 
 
@@ -213,9 +197,7 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
-            raise ValidationError(
-                "That username is already taken. Please choose a different one."
-            )
+            raise ValidationError("That username is already taken. Please choose a different one.")
 
     def validate_invite_code(self, invite_code):
         code = InvitationCode.query.filter_by(code=invite_code.data, used=False).first()
@@ -224,9 +206,7 @@ class RegistrationForm(FlaskForm):
 
 
 class BioForm(FlaskForm):
-    bio = TextAreaField(
-        "Bio", render_kw={"placeholder": "Tell us something about yourself"}
-    )
+    bio = TextAreaField("Bio", render_kw={"placeholder": "Tell us something about yourself"})
     submit_bio = SubmitField("Update Bio")
 
 
@@ -285,9 +265,7 @@ class CustomUrlForm(FlaskForm):
 
 
 class AvatarForm(FlaskForm):
-    avatar = FileField(
-        "Avatar", validators=[FileAllowed(["jpg", "png"], "Images only!")]
-    )
+    avatar = FileField("Avatar", validators=[FileAllowed(["jpg", "png"], "Images only!")])
     submit_avatar = SubmitField("Upload Avatar")
 
 
@@ -356,9 +334,7 @@ def register():
 
     form = RegistrationForm()
     if form.validate_on_submit():
-        invite_code = InvitationCode.query.filter_by(
-            code=form.invite_code.data, used=False
-        ).first()
+        invite_code = InvitationCode.query.filter_by(code=form.invite_code.data, used=False).first()
         if not invite_code:
             flash("⛔️ Invalid or expired invite code.", "danger")
             return render_template("register.html", title="Register", form=form)
@@ -428,9 +404,7 @@ def home():
         .limit(max_articles)
         .all()
     )
-    recently_edited_articles_total = Article.query.filter(
-        Article.last_edited != None
-    ).count()
+    recently_edited_articles_total = Article.query.filter(Article.last_edited != None).count()
 
     external_collaboration_articles = (
         Article.query.filter(Article.external_collaboration != None)
@@ -458,8 +432,7 @@ def home():
         recently_edited_articles_more=recently_edited_articles_total > max_articles,
         external_collaboration_articles=external_collaboration_articles,
         external_collaboration_articles_total=external_collaboration_articles_total,
-        external_collaboration_articles_more=external_collaboration_articles_total
-        > max_articles,
+        external_collaboration_articles_more=external_collaboration_articles_total > max_articles,
         show_team_link=show_team_link,
     )
 
@@ -545,9 +518,7 @@ def publish():
 
         # Handle article categories
         selected_category_ids = request.form.getlist("categories")
-        selected_categories = Category.query.filter(
-            Category.id.in_(selected_category_ids)
-        ).all()
+        selected_categories = Category.query.filter(Category.id.in_(selected_category_ids)).all()
         new_article.categories = selected_categories
 
         try:
@@ -591,9 +562,7 @@ def approve_articles():
 
     # Fetch only articles that are pending approval
     articles_to_approve = Article.query.filter_by(pending_approval=True).all()
-    article_count = len(
-        articles_to_approve
-    )  # Get the count of articles pending approval
+    article_count = len(articles_to_approve)  # Get the count of articles pending approval
 
     return render_template(
         "approve_articles.html",
@@ -652,9 +621,7 @@ def users():
 
     all_users = User.query.all()
     user_count = len(all_users)
-    return render_template(
-        "users.html", title="Users", users=all_users, user_count=user_count
-    )
+    return render_template("users.html", title="Users", users=all_users, user_count=user_count)
 
 
 @app.route("/article/<slug>")
@@ -806,12 +773,8 @@ def edit_article(slug):
 
             # Update external collaboration links
             article.external_collaboration = request.form.get("external_collaboration")
-            article.external_collaboration2 = request.form.get(
-                "external_collaboration2"
-            )
-            article.external_collaboration3 = request.form.get(
-                "external_collaboration3"
-            )
+            article.external_collaboration2 = request.form.get("external_collaboration2")
+            article.external_collaboration3 = request.form.get("external_collaboration3")
 
             article.download_size = request.form["download_size"]
             article.source = request.form.get("source", "")
@@ -819,15 +782,11 @@ def edit_article(slug):
             # Extract and handle the publication and last edited dates
             publish_date_str = request.form.get("publish_date")
             if publish_date_str:
-                article.publish_date = datetime.strptime(
-                    publish_date_str, "%Y-%m-%dT%H:%M"
-                )
+                article.publish_date = datetime.strptime(publish_date_str, "%Y-%m-%dT%H:%M")
 
             last_edited_str = request.form.get("last_edited")
             if last_edited_str:
-                article.last_edited = datetime.strptime(
-                    last_edited_str, "%Y-%m-%dT%H:%M"
-                )
+                article.last_edited = datetime.strptime(last_edited_str, "%Y-%m-%dT%H:%M")
 
             if original_title != article.title:
                 article.slug = slugify(article.title)
@@ -994,9 +953,7 @@ def articles_by_type(article_type):
 def all_categories():
     # Fetch all article types that have at least one article
     article_types = (
-        ArticleType.query.filter(ArticleType.articles.any())
-        .order_by(ArticleType.name)
-        .all()
+        ArticleType.query.filter(ArticleType.articles.any()).order_by(ArticleType.name).all()
     )
 
     # Fetch countries and sources from articles
@@ -1075,9 +1032,7 @@ def user_settings():
         db.session.commit()
         flash("Team page settings updated", "success")
 
-    elif (
-        "submit_display_name" in request.form and display_name_form.validate_on_submit()
-    ):
+    elif "submit_display_name" in request.form and display_name_form.validate_on_submit():
         current_user.display_name = display_name_form.display_name.data
         db.session.commit()
         flash("Your display name has been updated.", "success")
@@ -1161,9 +1116,7 @@ def all_articles(category):
         title = "All Recently Published Articles"
     elif category == "edited":
         articles = (
-            Article.query.filter(
-                Article.pending_approval == False, Article.last_edited != None
-            )
+            Article.query.filter(Article.pending_approval == False, Article.last_edited != None)
             .order_by(Article.last_edited.desc())
             .all()
         )
@@ -1239,13 +1192,9 @@ def initialize_article_types():
 
 # Initialize logging
 if not app.debug:
-    file_handler = RotatingFileHandler(
-        "app.log", maxBytes=1024 * 1024 * 100, backupCount=20
-    )
+    file_handler = RotatingFileHandler("app.log", maxBytes=1024 * 1024 * 100, backupCount=20)
     file_handler.setFormatter(
-        logging.Formatter(
-            "%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]"
-        )
+        logging.Formatter("%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]")
     )
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)

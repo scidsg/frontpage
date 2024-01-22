@@ -9,3 +9,14 @@ help: ## Print the help message
 .PHONY: run
 run: ## Run the app
 	FLASK_APP=frontpage/__init__.py flask run --debug -h localhost -p 5000
+
+.PHONY: lint
+lint: ## Lint the code
+	isort --check . && \
+		black --check . && \
+		flake8 --check .
+
+.PHONY: fmt
+fmt: ## Format the code
+	isort . && \
+		black .

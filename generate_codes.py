@@ -1,17 +1,14 @@
-from frontpage import app, db, InvitationCode
 import secrets
 from datetime import datetime, timedelta
+
+from frontpage import InvitationCode, app, db
 
 
 def create_invite_code():
     with app.app_context():
         code = secrets.token_urlsafe(16)
-        expiration_date = datetime.utcnow() + timedelta(
-            days=365
-        )  # Set expiration for 1 year
-        new_code = InvitationCode(
-            code=code, used=False, expiration_date=expiration_date
-        )
+        expiration_date = datetime.utcnow() + timedelta(days=365)  # Set expiration for 1 year
+        new_code = InvitationCode(code=code, used=False, expiration_date=expiration_date)
         db.session.add(new_code)
         db.session.commit()
         return code
@@ -20,9 +17,7 @@ def create_invite_code():
 def get_number_of_codes():
     while True:
         try:
-            num = input(
-                "Enter the number of invite codes to generate (or 'exit' to quit): "
-            )
+            num = input("Enter the number of invite codes to generate (or 'exit' to quit): ")
             if num.lower() == "exit":
                 return None
             number = int(num)
