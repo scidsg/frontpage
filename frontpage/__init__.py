@@ -1261,8 +1261,3 @@ def initialize_database():
 
 # Call the database initialization function
 initialize_database()
-
-
-if __name__ == "__main__":
-    initialize_database()
-    app.run(debug=True, host="127.0.0.1", port=5000)
