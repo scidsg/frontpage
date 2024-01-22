@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from collections import Counter
 from logging.handlers import RotatingFileHandler
 
@@ -30,6 +31,36 @@ migrate = Migrate(app, db)
 # Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+# Utility function to convert size strings to bytes
+def parse_size(size_str):
+    units = {"B": 1, "KB": 1024, "MB": 1024**2, "GB": 1024**3, "TB": 1024**4}
+    size_str = size_str.upper().replace(" ", "")
+    matches = re.match(r"([0-9]*\.?[0-9]+)([A-Z]+)", size_str)
+
+    if not matches:
+        raise ValueError("Invalid size format")
+
+    size, unit = matches.groups()
+    if unit not in units:
+        raise ValueError("Unknown size unit")
+
+    return int(float(size) * units[unit])
+
+
+# Convert bytes to human-readable format
+def format_size(size_in_bytes):
+    if size_in_bytes < 1024:
+        return f"{size_in_bytes} B"
+    elif size_in_bytes < 1024**2:
+        return f"{size_in_bytes / 1024:.2f} KB"
+    elif size_in_bytes < 1024**3:
+        return f"{size_in_bytes / 1024**2:.2f} MB"
+    elif size_in_bytes < 1024**4:
+        return f"{size_in_bytes / 1024**3:.2f} GB"
+    else:
+        return f"{size_in_bytes / 1024**4:.2f} TB"
 
 
 @app.errorhandler(404)

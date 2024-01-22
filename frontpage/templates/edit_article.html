@@ -49,12 +49,11 @@
                 {% endfor %}
             </div>
 
-
             <!-- DOWNLOAD SIZE -->
-
-             <div>
+            <div>
                 <label for="download_size">Download Size</label>
-                <input type="text" id="download_size" name="download_size" value="{{ article.download_size if article.download_size else '' }}">
+                <input type="text" id="download_size" name="download_size" value="{{ download_size_for_edit }}" placeholder="Enter size e.g., 1.5 GB, 250 MB">
+                <small>Enter size in B, KB, MB, GB, or TB (e.g., 1.5 GB, 250 MB)</small>
             </div>
 
             <!-- PRIMARY DOWNLOAD LINKS -->
