@@ -20,7 +20,6 @@ from flask_login import (
 from flask_migrate import Migrate
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
-from passlib.context import CryptContext
 from slugify import slugify
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash
@@ -28,12 +27,10 @@ from werkzeug.utils import secure_filename
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField
 from wtforms.validators import URL, DataRequired, EqualTo, Length, Optional, Regexp, ValidationError
 
+from .crypto import pwd_context
 from .db import db
 
 load_dotenv()  # Load environment variables from .env file
-
-# create a password context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Uploads
 UPLOAD_FOLDER = "/var/www/html/frontpage/static/uploads"
