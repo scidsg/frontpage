@@ -18,7 +18,6 @@ from flask_login import (
     logout_user,
 )
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField
 from passlib.context import CryptContext
@@ -28,6 +27,8 @@ from werkzeug.security import check_password_hash
 from werkzeug.utils import secure_filename
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField
 from wtforms.validators import URL, DataRequired, EqualTo, Length, Optional, Regexp, ValidationError
+
+from .db import db
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -44,7 +45,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////var/www/html/frontpage/blog.
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 
 # Initialize Flask-Login
