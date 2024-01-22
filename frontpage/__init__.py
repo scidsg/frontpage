@@ -37,7 +37,7 @@ login_manager.init_app(app)
 def parse_size(size_str):
     units = {"B": 1, "KB": 1024, "MB": 1024**2, "GB": 1024**3, "TB": 1024**4}
     size_str = size_str.upper().replace(" ", "")
-    matches = re.match(r"([0-9]*\.?[0-9]+)([A-Z]+)", size_str)
+    matches = re.match(r"([0-9]*\.?[0-9]+)\s*([A-Z]+)", size_str)
 
     if not matches:
         raise ValueError("Invalid size format")
