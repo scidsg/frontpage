@@ -16,6 +16,7 @@ from datetime import datetime
 from logging.handlers import RotatingFileHandler
 import logging
 import os
+import re
 import markdown
 import pycountry
 from wtforms import (
@@ -76,6 +77,38 @@ article_article_types = db.Table(
         primary_key=True,
     ),
 )
+
+
+# Utility function to convert size strings to bytes
+def parse_size(size_str):
+    units = {"B": 1, "KB": 1024, "MB": 1024**2, "GB": 1024**3, "TB": 1024**4}
+    size_str = size_str.upper().replace(" ", "")
+    matches = re.match(r"([0-9]*\.?[0-9]+)([A-Z]+)", size_str)
+
+    if not matches:
+        raise ValueError("Invalid size format")
+
+    size, unit = matches.groups()
+    if unit not in units:
+        raise ValueError("Unknown size unit")
+
+    return int(float(size) * units[unit])
+
+
+# Convert bytes to human-readable format
+
+
+def format_size(size_in_bytes):
+    if size_in_bytes < 1024:
+        return f"{size_in_bytes} B"
+    elif size_in_bytes < 1024**2:
+        return f"{size_in_bytes / 1024:.2f} KB"
+    elif size_in_bytes < 1024**3:
+        return f"{size_in_bytes / 1024**2:.2f} MB"
+    elif size_in_bytes < 1024**4:
+        return f"{size_in_bytes / 1024**3:.2f} GB"
+    else:
+        return f"{size_in_bytes / 1024**4:.2f} TB"
 
 
 # User model
@@ -141,7 +174,7 @@ class Article(db.Model):
     ipfs_link = db.Column(db.String(255))
     ipfs_link2 = db.Column(db.String(255))
     ipfs_link3 = db.Column(db.String(255))
-    download_size = db.Column(db.String(255))
+    download_size = db.Column(db.Integer)  # Changed from String to Integer
     external_collaboration = db.Column(db.String(255))
     external_collaboration2 = db.Column(db.String(255))
     external_collaboration3 = db.Column(db.String(255))
@@ -500,6 +533,16 @@ def publish():
         article_source = request.form["source"]
         requires_approval = current_user.requires_approval
 
+        # Convert the download size to bytes
+        try:
+            article_download_size_bytes = parse_size(article_download_size)
+        except ValueError:
+            flash(
+                "Invalid download size format. Please use formats like 1 MB, 2.4GB, etc.",
+                "danger",
+            )
+            return redirect(url_for("publish"))
+
         new_article = Article(
             title=article_title,
             content=article_content,
@@ -518,7 +561,7 @@ def publish():
             ipfs_link=article_ipfs_link,
             ipfs_link2=article_ipfs_link2,
             ipfs_link3=article_ipfs_link3,
-            download_size=article_download_size,
+            download_size=article_download_size_bytes,  # Use the converted size in bytes
             external_collaboration=article_external_collaboration,
             external_collaboration2=article_external_collaboration2,
             external_collaboration3=article_external_collaboration3,
@@ -660,6 +703,18 @@ def users():
 @app.route("/article/<slug>")
 def article(slug):
     article = Article.query.filter_by(slug=slug).first_or_404()
+
+    # Convert the download size to a readable format
+    if article.download_size is not None:
+        try:
+            download_size_int = int(article.download_size)
+            article.download_size_formatted = format_size(download_size_int)
+        except ValueError:
+            # Handle the case where download_size is not a valid integer
+            article.download_size_formatted = "Invalid size format"
+    else:
+        article.download_size_formatted = None
+
     content_html = markdown.markdown(article.content)
 
     # Fetch related articles by type
@@ -766,7 +821,17 @@ def edit_article(slug):
 
     categories = Category.query.all()
     countries = [country.name for country in pycountry.countries]
-    article_types = ArticleType.query.all()  # Corrected variable name
+    article_types = ArticleType.query.all()
+
+    # Convert the download size from bytes for the edit form using format_size
+    if article.download_size is not None:
+        try:
+            size_in_bytes = int(article.download_size)
+            article.download_size_for_edit = format_size(size_in_bytes)
+        except ValueError:
+            article.download_size_for_edit = "Invalid size"
+    else:
+        article.download_size_for_edit = ""
 
     if request.method == "POST":
         app.logger.info(f"Processing POST request for editing article {slug}")
@@ -813,7 +878,17 @@ def edit_article(slug):
                 "external_collaboration3"
             )
 
-            article.download_size = request.form["download_size"]
+            # Convert download size
+            article_download_size = request.form["download_size"]
+            try:
+                article.download_size = parse_size(article_download_size)
+            except ValueError:
+                flash(
+                    "Invalid download size format. Please use formats like 1 MB, 2.4GB, etc.",
+                    "danger",
+                )
+                return redirect(url_for("edit_article", slug=slug))
+
             article.source = request.form.get("source", "")
 
             # Extract and handle the publication and last edited dates
@@ -869,9 +944,10 @@ def edit_article(slug):
             categories=categories,
             countries=countries,
             selected_countries=selected_countries,
-            article_types=article_types,  # Corrected variable name
+            article_types=article_types,
             selected_article_type_ids=selected_article_type_ids,
             selected_categories=selected_categories,
+            download_size_for_edit=article.download_size_for_edit,
         )
 
 
