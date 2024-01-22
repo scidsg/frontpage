@@ -37,7 +37,13 @@ export DEBIAN_FRONTEND=noninteractive
 sudo apt update && sudo apt -y dist-upgrade
 
 # Install Python and pip
-sudo apt install -y python3 python3-pip git python3-venv nginx
+sudo apt install -y \
+    git \
+    nginx \
+    python3 \
+    python3-pip \
+    python3-poetry \
+    python3-venv
 
 cd /var/www/html
 git clone https://github.com/scidsg/frontpage
@@ -48,7 +54,9 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Install Flask and other dependencies
+poetry export > requirements.txt
 pip3 install -r requirements.txt
+rm requirements.txt
 
 # Generate and export Flask secret key
 FLASK_SECRET_KEY=$(openssl rand -hex 32)
