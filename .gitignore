@@ -2,5 +2,9 @@
 *.pyc
 __pycache__
 
+# flask
+instance/
+app.log
+
 # configs
 .env
