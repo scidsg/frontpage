@@ -35,32 +35,42 @@ login_manager.init_app(app)
 
 # Utility function to convert size strings to bytes
 def parse_size(size_str):
-    units = {"B": 1, "KB": 1024, "MB": 1024**2, "GB": 1024**3, "TB": 1024**4}
+    # Units for binary (base 2) and decimal (base 10) formats
+    units_binary = {"B": 1, "KIB": 1024, "MIB": 1024**2, "GIB": 1024**3, "TIB": 1024**4}
+    units_decimal = {"KB": 1000, "MB": 1000**2, "GB": 1000**3, "TB": 1000**4}
+
+    # Make the string uppercase and remove spaces
     size_str = size_str.upper().replace(" ", "")
+
+    # Regular expression to parse the size string
     matches = re.match(r"([0-9]*\.?[0-9]+)\s*([A-Z]+)", size_str)
 
     if not matches:
         raise ValueError("Invalid size format")
 
     size, unit = matches.groups()
-    if unit not in units:
+
+    # Check if the unit is binary or decimal and calculate accordingly
+    if unit in units_binary:
+        return int(float(size) * units_binary[unit])
+    elif unit in units_decimal:
+        return int(float(size) * units_decimal[unit])
+    else:
         raise ValueError("Unknown size unit")
 
-    return int(float(size) * units[unit])
 
-
-# Convert bytes to human-readable format
+# Convert bytes to human-readable format using decimal units
 def format_size(size_in_bytes):
-    if size_in_bytes < 1024:
+    if size_in_bytes < 1000:
         return f"{size_in_bytes} B"
-    elif size_in_bytes < 1024**2:
-        return f"{size_in_bytes / 1024:.2f} KB"
-    elif size_in_bytes < 1024**3:
-        return f"{size_in_bytes / 1024**2:.2f} MB"
-    elif size_in_bytes < 1024**4:
-        return f"{size_in_bytes / 1024**3:.2f} GB"
+    elif size_in_bytes < 1000**2:
+        return f"{size_in_bytes / 1000:.2f} KB"
+    elif size_in_bytes < 1000**3:
+        return f"{size_in_bytes / 1000**2:.2f} MB"
+    elif size_in_bytes < 1000**4:
+        return f"{size_in_bytes / 1000**3:.2f} GB"
     else:
-        return f"{size_in_bytes / 1024**4:.2f} TB"
+        return f"{size_in_bytes / 1000**4:.2f} TB"
 
 
 @app.errorhandler(404)

@@ -329,16 +329,10 @@ def users():
 def article(slug):
     article = Article.query.filter_by(slug=slug).first_or_404()
 
-    # Convert the download size to a readable format
-    if article.download_size is not None:
-        try:
-            download_size_int = int(article.download_size)
-            article.download_size_formatted = format_size(download_size_int)
-        except ValueError:
-            # Handle the case where download_size is not a valid integer
-            article.download_size_formatted = "Invalid size format"
-    else:
-        article.download_size_formatted = None
+    # Convert the download size to a human-readable format for the template
+    download_size_formatted = (
+        format_size(int(article.download_size)) if article.download_size is not None else None
+    )
 
     content_html = markdown.markdown(article.content)
 
@@ -413,6 +407,7 @@ def article(slug):
         "article.html",
         title=article.title,
         article=article,
+        download_size_formatted=download_size_formatted,
         content_html=content_html,
         related_by_type_grouped=related_by_type_grouped,
         related_by_source_grouped=related_by_source_grouped,
