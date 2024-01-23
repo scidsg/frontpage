@@ -810,6 +810,7 @@ textarea {
 
 .content li {
 	margin: .25rem 0;
+	max-width: 640px;
 }
 
 .content h3:not(.related-articles-group h3) {
