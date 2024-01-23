@@ -892,12 +892,14 @@ def team():
 
 @app.route("/all_articles/a-z")
 def all_articles_alphabetized():
-    articles = Article.query.order_by(Article.title).all()  # Fetch all articles and sort by title
+    # Fetch all articles that do not require approval and sort by title
+    articles = Article.query.filter_by(pending_approval=False).order_by(Article.title).all()
     article_count = len(articles)  # Get the count of articles
 
+    # Render the template with the filtered articles
     return render_template(
         "all_articles_alphabetized.html",
+        title="All Approved Articles (A-Z)",
         articles=articles,
         article_count=article_count,
-        title="All Articles (A-Z)",
     )
