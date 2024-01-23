@@ -372,6 +372,10 @@ body {
 	max-width: 1440px;
 }
 
+label:not(.checkbox-list label) {
+	display: flex;
+}
+
 .content.home {
 	max-width: 1440px;
 }
@@ -601,6 +605,7 @@ label {
 	font-size: 1rem;
 	font-family: 'Atkinson Bold', sans-serif;
 	font-weight: normal;
+	/*! display: flex; */
 }
 
 input {
