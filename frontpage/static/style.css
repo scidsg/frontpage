@@ -1094,6 +1094,28 @@ footer.content {
 	margin: 0;
 }
 
+.content .metric.top-categories {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around
+}
+
+.content .metric.top-categories h3 {
+	margin-top: 0;
+	margin-bottom: 0;
+	font-size: 1rem;
+}
+
+.content .metric.top-categories p {
+	margin-bottom: 0;
+}
+
+.content .metric.top-categories p:not(.mono) {
+	font-size: 1.5rem;
+	line-height: 1.2;
+	margin-top: .5rem;
+}
+
 .metric.number .label {
 	font-size: .875rem;
 	display: flex;
@@ -1107,13 +1129,17 @@ footer.content {
 	line-height: 1;
 }
 
+.content.metrics {
+	gap: 1rem;
+}
+
 .metric-row {
 	display: flex;
 	gap: 1rem;
 }
 
 .metric-row:first-of-type {
-	margin-top: 2rem;
+	margin-top: 1rem;
 }
 
 .metric {
