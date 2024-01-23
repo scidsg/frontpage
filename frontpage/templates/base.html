@@ -31,6 +31,7 @@
                     <li><a href="{{ url_for('team') }}">Team</a></li>
                 {% endif %}
                 {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('impact') }}">Impact</a></li>
                     <li><a href="{{ url_for('user_settings') }}">Settings</a></li>
                     {% if current_user.is_admin %}
                         <li><a href="{{ url_for('approve_articles') }}">
