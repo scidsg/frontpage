@@ -1125,7 +1125,7 @@ footer.content {
 }
 
 .metric.number {
-	font-size: 4rem;
+	font-size: 3rem;
 	line-height: 1;
 }
 
@@ -1348,7 +1348,11 @@ nav.user-logged-in {
 	.content.metrics .metric {
 		width: initial;
 	}
-}
+	
+	.content .metric.top-categories {
+		flex-direction: column;
+		gap: 1.75rem;
+	}
 
 @media only screen and (max-width: 467px) { 
 	.categories-list {
