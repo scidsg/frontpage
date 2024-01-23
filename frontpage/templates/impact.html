@@ -1,9 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="content">
+<div class="content metrics">
     <h1>Impact Metrics</h1>
-    <p>Total Number of Articles: {{ total_articles_count }}</p>
-    <p>Percentage of Articles Marked as "Limited Distribution": {{ limited_dist_percentage|round(2) }}%</p>
-    <!-- Additional metrics can be displayed here as they are added -->
+    <div class="metric-row">
+        <p class="number metric"><span class="label">Total Number of Articles</span> {{ total_articles_count }}</p>
+        <p class="number metric"><span class="label">Limited Distribution %</span> {{ limited_dist_percentage|round(2) }}%</p>
+    </div>
+    <div class="metric-row">
+        <!-- Top Categories -->
+        <div class="top-categories metric">
+            <div class="category">
+                <h3>Top Source</h3>
+                <p>{{ top_source[0] }}<br><span class="meta">{{ top_source[1] }} Articles</span></p>
+            </div>
+            <div class="category">
+                <h3>Top Country</h3>
+                <p>{{ top_country[0] }}<br><span class="meta">{{ top_country[1] }} Articles</span></p>
+            </div>
+            <div class="category">
+                <h3>Top Type</h3>
+                <p>{{ top_type[0] }}<br><span class="meta">{{ top_type[1] }} Articles</span></p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

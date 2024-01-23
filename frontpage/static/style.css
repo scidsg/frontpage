@@ -152,8 +152,13 @@
 		color: white;
 	}
 
-	small {
-		color: #333;
+	.content.metrics .metric {
+		border: 1px solid rgba(0,0,0,0.1);
+		box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
+	}
+
+	.metric.number .label {
+		color: #595959;
 	}
 
 }
@@ -306,8 +311,13 @@
 		color: white;
 	}
 
-	small {
-		color: white;
+	.content.metrics .metric {
+		border: 1px solid rgba(255,255,255,0.2);
+		box-shadow: 0 6px 12px -6px rgba(0,0,0,0.5);
+	}
+
+	.metric.number .label {
+		color: #ccc;
 	}
 
 }
@@ -372,10 +382,6 @@ body {
 	max-width: 1440px;
 }
 
-label:not(.checkbox-list label) {
-	display: flex;
-}
-
 .content.home {
 	max-width: 1440px;
 }
@@ -405,11 +411,6 @@ label:not(.checkbox-list label) {
 
 .categories-list::-webkit-scrollbar {
     display: none;
-}
-
-input + small {
-	display: flex;
-	margin-top: -.325rem;
 }
 
 ul.categories-list {
@@ -605,7 +606,6 @@ label {
 	font-size: 1rem;
 	font-family: 'Atkinson Bold', sans-serif;
 	font-weight: normal;
-	/*! display: flex; */
 }
 
 input {
@@ -630,7 +630,6 @@ button {
 	width: fit-content;
 	font-family: 'Atkinson Bold', sans-serif;
 	text-decoration: none;
-	background-color: transparent;
 }
 
 .btn:hover {
@@ -1039,14 +1038,83 @@ footer.content {
 	padding-bottom: 0;
 }
 
+.content.metrics .metric {
+	border-radius: .5rem;
+	padding: 2rem;
+	width: fit-content;
+	text-align: center;
+	align-items: center;
+	justify-content: center;
+  display: flex;
+	flex-direction: column;
+	align-self: stretch;
+	margin: 0;
+}
+
+.metric.number .label {
+	font-size: .875rem;
+	display: flex;
+	width: fit-content;
+	margin-bottom: 1rem; 
+	line-height: 1.4;
+}
+
+.metric.number {
+	font-size: 4rem;
+	line-height: 1;
+}
+
+.metric-row {
+	display: flex;
+	gap: 1rem;
+}
+
+.metric-row:first-of-type {
+	margin-top: 1rem;
+}
+
+.metric {
+	flex: 1 0 0;
+}
+
+.content .top-categories.metric {
+	flex-direction: row;
+	display: flex;
+	justify-content: space-around;
+}
+
+.content .top-categories.metric h3,
+.content .top-categories.metric p {
+	margin: 0;
+}
+
+.content .top-categories.metric h3 + p {
+	margin: 0;
+	font-size: 2.25rem;
+	line-height: 1;
+}
+
+.content .top-categories.metric h3 {
+	margin-bottom: .75rem;
+	font-size: .875rem;
+}
+
+.content.metrics {
+	gap: 1rem;
+}
+
 @media only screen and (max-width: 1056px) {
 
 	.related-articles-group {
 		padding: 2rem .75rem;
 	}
+
+	.content .top-categories.metric h3 + p {
+		font-size: 2rem;
+	}
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 800px) {
 
 	@media (prefers-color-scheme: light) {
 		header nav ul {
@@ -1138,6 +1206,15 @@ footer.content {
 		padding-left: 0;
 	}
 	
+	.content .top-categories.metric {
+		flex-direction: column;
+		gap: 2rem;
+	}
+
+	.content .top-categories.metric h3 + p {
+		font-size: 1.75rem;
+	}
+	
 }
 
 @media only screen and (max-width: 640px) { 
@@ -1179,6 +1256,14 @@ footer.content {
 	
 	.content:not(.categories-list ~ .content):not(footer.content) {
 		margin-top: -3.125rem;
+	}
+	
+	.metric-row {
+		flex-direction: column;
+	}
+	
+	.content.metrics .metric {
+		width: initial;
 	}
 }
 

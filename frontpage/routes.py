@@ -925,11 +925,38 @@ def impact():
         limited_dist_articles_count = 0
         limited_dist_percentage = 0
 
+    # Top Source
+    top_source = (
+        db.session.query(Article.source, db.func.count(Article.id))
+        .group_by(Article.source)
+        .order_by(db.func.count(Article.id).desc())
+        .first()
+    )
+
+    # Top Country
+    top_country = (
+        db.session.query(Article.country, db.func.count(Article.id))
+        .group_by(Article.country)
+        .order_by(db.func.count(Article.id).desc())
+        .first()
+    )
+
+    # Top Type
+    top_type = (
+        db.session.query(ArticleType.name, db.func.count(Article.id))
+        .join(Article.article_types)
+        .group_by(ArticleType.name)
+        .order_by(db.func.count(Article.id).desc())
+        .first()
+    )
+
     # Render the template with the calculated metrics
     return render_template(
         "impact.html",
         title="Impact Metrics",
         total_articles_count=total_articles_count,
-        limited_dist_articles_count=limited_dist_articles_count,
         limited_dist_percentage=limited_dist_percentage,
+        top_source=top_source,
+        top_country=top_country,
+        top_type=top_type,
     )
