@@ -147,11 +147,15 @@ def handle_exception(e):
 def initialize_article_types():
     existing_types = [atype.name for atype in ArticleType.query.all()]
     for atype in [
+        "Allegations of State Sponsorship",
         "Banker's Box",
         "Corporate",
         "Cyberwar",
         "Environmental",
+        "European Union",
+        "Extractivist Leaks",
         "Fascist",
+        "Fuerzas Represivas",
         "Hack",
         "Leak",
         "Leak Markets",

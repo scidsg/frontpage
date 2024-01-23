@@ -164,15 +164,18 @@ def publish():
         article_source = request.form["source"]
         requires_approval = current_user.requires_approval
 
-        # Convert the download size to bytes
-        try:
-            article_download_size_bytes = parse_size(article_download_size)
-        except ValueError:
-            flash(
-                "Invalid download size format. Please use formats like 1 MB, 2.4GB, etc.",
-                "danger",
-            )
-            return redirect(url_for("publish"))
+        article_download_size_bytes = None  # Default to None if no size is provided
+
+        # Only attempt conversion if a size is provided
+        if article_download_size.strip():  # Check if the string is not just whitespace
+            try:
+                article_download_size_bytes = parse_size(article_download_size)
+            except ValueError:
+                flash(
+                    "Invalid download size format. Please use formats like 1 MB, 2.4GB, etc.",
+                    "danger",
+                )
+                return redirect(url_for("publish"))
 
         new_article = Article(
             title=article_title,
@@ -192,7 +195,7 @@ def publish():
             ipfs_link=article_ipfs_link,
             ipfs_link2=article_ipfs_link2,
             ipfs_link3=article_ipfs_link3,
-            download_size=article_download_size_bytes,  # Use the converted size in bytes
+            download_size=article_download_size_bytes,  # Use the converted size in bytes or None
             external_collaboration=article_external_collaboration,
             external_collaboration2=article_external_collaboration2,
             external_collaboration3=article_external_collaboration3,
@@ -885,3 +888,16 @@ def all_articles(category):
 def team():
     users = User.query.filter(User.include_in_team_page).all()
     return render_template("team.html", title="Our Team", users=users)
+
+
+@app.route("/all_articles/a-z")
+def all_articles_alphabetized():
+    articles = Article.query.order_by(Article.title).all()  # Fetch all articles and sort by title
+    article_count = len(articles)  # Get the count of articles
+
+    return render_template(
+        "all_articles_alphabetized.html",
+        articles=articles,
+        article_count=article_count,
+        title="All Articles (A-Z)",
+    )
