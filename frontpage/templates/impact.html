@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
+    <h1>Impact Metrics</h1>
+    <p>Total Number of Articles: {{ total_articles_count }}</p>
+    <p>Percentage of Articles Marked as "Limited Distribution": {{ limited_dist_percentage|round(2) }}%</p>
+    <!-- Additional metrics can be displayed here as they are added -->
+</div>
+{% endblock %}

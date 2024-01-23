@@ -903,3 +903,33 @@ def all_articles_alphabetized():
         articles=articles,
         article_count=article_count,
     )
+
+
+@app.route("/impact")
+def impact():
+    # Calculate total number of articles
+    total_articles_count = Article.query.count()
+
+    # Get the "Limited Distribution" article type
+    limited_dist_type = ArticleType.query.filter_by(name="Limited Distribution").first()
+
+    # Calculate total number of limited distribution articles
+    if limited_dist_type:
+        limited_dist_articles_count = len(limited_dist_type.articles)
+        limited_dist_percentage = (
+            (limited_dist_articles_count / total_articles_count) * 100
+            if total_articles_count > 0
+            else 0
+        )
+    else:
+        limited_dist_articles_count = 0
+        limited_dist_percentage = 0
+
+    # Render the template with the calculated metrics
+    return render_template(
+        "impact.html",
+        title="Impact Metrics",
+        total_articles_count=total_articles_count,
+        limited_dist_articles_count=limited_dist_articles_count,
+        limited_dist_percentage=limited_dist_percentage,
+    )
