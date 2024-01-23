@@ -152,6 +152,10 @@
 		color: white;
 	}
 
+	small {
+		color: #333;
+	}
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -302,6 +306,10 @@
 		color: white;
 	}
 
+	small {
+		color: white;
+	}
+
 }
 
 body {
@@ -393,6 +401,11 @@ body {
 
 .categories-list::-webkit-scrollbar {
     display: none;
+}
+
+input + small {
+	display: flex;
+	margin-top: -.325rem;
 }
 
 ul.categories-list {
@@ -612,6 +625,7 @@ button {
 	width: fit-content;
 	font-family: 'Atkinson Bold', sans-serif;
 	text-decoration: none;
+	background-color: transparent;
 }
 
 .btn:hover {
