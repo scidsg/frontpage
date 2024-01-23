@@ -15,7 +15,7 @@ from .models import Article, ArticleType, User
 load_dotenv()  # Load environment variables from .env file
 
 # Uploads
-UPLOAD_FOLDER = "/var/www/html/frontpage/static/uploads"
+UPLOAD_FOLDER = "/var/www/html/frontpage/frontpage/static/uploads"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 
 # Initialize Flask app and database
