@@ -960,3 +960,8 @@ def impact():
         top_country=top_country,
         top_type=top_type,
     )
+
+
+@app.route("/submit")
+def submit():
+    return render_template("submit.html", title="Submit")

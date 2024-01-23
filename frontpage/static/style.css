@@ -160,6 +160,11 @@
 	.metric.number .label {
 		color: #595959;
 	}
+	
+	.mono.block {
+		background-color: rgba(0,0,0,.04);
+		border: 1px solid rgba(0,0,0,0.1);
+	}
 
 }
 
@@ -319,6 +324,11 @@
 	.metric.number .label {
 		color: #ccc;
 	}
+	
+	.mono.block {
+		background-color: rgba(255,255,255,.04);
+		border: 1px solid rgba(255,255,255,0.1);
+	}
 
 }
 
@@ -470,6 +480,11 @@ p {
 	line-height: 1.5;
 	font-size: 1rem;
 	max-width: 640px;
+	margin: .5rem 0;
+}
+
+p:first-of-type {
+	margin-top: 1rem;
 }
 
 .btn-container {
@@ -571,7 +586,7 @@ header h1 a:hover {
 header nav {
 	display: flex;
 	align-items: center;
-	gap: 1.25rem;
+	gap: .5rem;
 }
 
 header nav a {
@@ -589,6 +604,7 @@ header nav ul {
 	font-size: .875rem;
 	margin: 0;
 	padding: 0;
+	align-items: center;
 }
 
 header .btn {
@@ -1070,37 +1086,34 @@ footer.content {
 }
 
 .metric-row:first-of-type {
-	margin-top: 1rem;
+	margin-top: 2rem;
 }
 
 .metric {
 	flex: 1 0 0;
 }
 
-.content .top-categories.metric {
-	flex-direction: row;
+.mono.block {
+	padding: .5rem;
+	border-radius: .25rem;
+	font-family: 'IBM Plex Mono', monospace;
+	font-size: .825rem;
+	word-break: break-word;
 	display: flex;
-	justify-content: space-around;
 }
 
-.content .top-categories.metric h3,
-.content .top-categories.metric p {
-	margin: 0;
+.mono.pgp {
+	padding: 1rem;
 }
 
-.content .top-categories.metric h3 + p {
-	margin: 0;
-	font-size: 2.25rem;
-	line-height: 1;
+ol .mono.block {
+	margin: 1rem 0;
+	width: fit-content;
 }
 
-.content .top-categories.metric h3 {
-	margin-bottom: .75rem;
-	font-size: .875rem;
-}
-
-.content.metrics {
-	gap: 1rem;
+.content.register form,
+.content.login form {
+	margin-bottom: 1.5rem;
 }
 
 @media only screen and (max-width: 1056px) {
@@ -1108,13 +1121,9 @@ footer.content {
 	.related-articles-group {
 		padding: 2rem .75rem;
 	}
-
-	.content .top-categories.metric h3 + p {
-		font-size: 2rem;
-	}
 }
 
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 768px) {
 
 	@media (prefers-color-scheme: light) {
 		header nav ul {
@@ -1204,15 +1213,6 @@ footer.content {
 	.related-articles-group.content {
 		padding-right: 0;
 		padding-left: 0;
-	}
-	
-	.content .top-categories.metric {
-		flex-direction: column;
-		gap: 2rem;
-	}
-
-	.content .top-categories.metric h3 + p {
-		font-size: 1.75rem;
 	}
 	
 }
