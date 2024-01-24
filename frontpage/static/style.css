@@ -429,7 +429,7 @@ body {
 
 .categories-list {
 	position: fixed;
-	top: 3.125rem;
+	top: 3.1rem;
 	left: 0;
 	right: 0;
 	z-index: 9;
@@ -810,7 +810,6 @@ textarea {
 
 .content li {
 	margin: .25rem 0;
-	max-width: 640px;
 }
 
 .content h3:not(.related-articles-group h3) {
@@ -1231,7 +1230,7 @@ nav.user-logged-in {
 	}
 
 	header nav {
-		gap: .25rem;
+		gap: 0;
 	}
 	
 	header {
@@ -1357,7 +1356,7 @@ nav.user-logged-in {
 
 @media only screen and (max-width: 467px) { 
 	.categories-list {
-		top: 3.5rem;
+		top: 3.4rem;
 	}
 
 	body {
