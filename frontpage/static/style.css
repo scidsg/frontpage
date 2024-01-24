@@ -1200,7 +1200,7 @@ nav.user-logged-in {
 }
 
 #quote-container {
-	padding: 2rem;
+	padding: 4rem 2rem;
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
@@ -1213,7 +1213,9 @@ nav.user-logged-in {
 
 #quote-container #quote p:first-of-type {
 	margin-bottom: 1rem;
-	font-family: 'Serif', serif;
+	font-family: 'Merriweather', serif;
+	font-size: 1.25rem;
+	line-height: 1.5;
 }
 
 #quote {
