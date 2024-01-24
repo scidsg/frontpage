@@ -1,7 +1,7 @@
 # 📰 Frontpage
 A self-hosted, privacy-focused publishing platform built for censorship resilience.
 
-![ddos-update](https://github.com/scidsg/frontpage/assets/28545431/dbe2bdf0-704e-4b29-9401-fd6f74528cf9)
+![ddos-update](https://github.com/scidsg/frontpage/assets/28545431/c30b0672-ba9b-45c4-8b8c-7c1b45f5f318)
 
 ## Features
 - Invite-only user registration

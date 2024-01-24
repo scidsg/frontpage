@@ -801,7 +801,7 @@ def user_settings():
 @app.route("/update_bio", methods=["POST"])
 @login_required
 def update_bio():
-    form = UserSettingsForm()
+    form = BioForm()
     user = current_user
 
     if form.validate_on_submit():
@@ -817,7 +817,7 @@ def update_bio():
 @app.route("/change_password", methods=["POST"])
 @login_required
 def change_password():
-    form = UserSettingsForm()
+    form = PasswordForm()
     user = current_user
 
     if form.validate_on_submit():
