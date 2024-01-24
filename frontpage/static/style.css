@@ -16,6 +16,12 @@
         url("fonts/mono/IBMPlexMono-Regular.woff2") format("woff2");
 }
 
+@font-face {
+    font-family: "Merriweather";
+    src: url("fonts/serif/Merriweather-Regular.woff") format("woff"),
+        url("fonts/serif/Merriweather-Regular.woff2") format("woff2");
+}
+
 @media (prefers-color-scheme: light) {
 	body {
 		background-color: rgba(25, 111, 164, 0.05);
@@ -166,7 +172,8 @@
 		border: 1px solid rgba(0,0,0,0.1);
 	}
 
-	.content.metrics .metric {
+	.content.metrics .metric,
+	#quote-container {
 		border: 1px solid rgba(0,0,0,0.1);
 		box-shadow: 0 6px 12px -6px rgba(0,0,0,0.1);
 	}
@@ -179,7 +186,6 @@
 		color: #333;	
 	}
 	
-
 }
 
 @media (prefers-color-scheme: dark) {
@@ -330,7 +336,8 @@
 		color: white;
 	}
 
-	.content.metrics .metric {
+	.content.metrics .metric,
+	#quote-container {
 		border: 1px solid rgba(255,255,255,0.2);
 		box-shadow: 0 6px 12px -6px rgba(0,0,0,0.5);
 	}
@@ -1192,6 +1199,26 @@ nav.user-logged-in {
     gap: 1.5rem;
 }
 
+#quote-container {
+	padding: 2rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	border-radius: .5rem;
+}
+
+#quote-container p {
+	margin: 0;
+}
+
+#quote-container #quote p:first-of-type {
+	margin-bottom: 1rem;
+	font-family: 'Serif', serif;
+}
+
+#quote {
+	margin-bottom: 0;
+}
 
 @media only screen and (max-width: 1056px) {
 
