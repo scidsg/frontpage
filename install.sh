@@ -42,18 +42,28 @@ sudo apt install -y \
     nginx \
     python3 \
     python3-pip \
-    python3-poetry \
     python3-venv
 
+# Install Poetry
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Source the profile file to update PATH
+source $HOME/.profile  # Replace with the appropriate file if different
+
+# Change to the project directory
 cd /var/www/html
 git clone https://github.com/scidsg/frontpage
 cd frontpage
+git switch device
 
 # Create and activate Python virtual environment
 python3 -m venv venv
 source venv/bin/activate
 
-# Install Flask and other dependencies
+# Add Poetry to PATH
+export PATH="/root/.local/bin:$PATH"
+
+# Now run poetry install
 poetry install
 
 # Generate and export Flask secret key
