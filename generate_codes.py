@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import secrets
 from datetime import datetime, timedelta
 

@@ -3,6 +3,7 @@ import os
 import re
 from collections import Counter
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
 from dotenv import load_dotenv
 from flask import Flask, flash, redirect, request, url_for
@@ -14,14 +15,16 @@ from .models import Article, ArticleType, User
 
 load_dotenv()  # Load environment variables from .env file
 
-# Uploads
-UPLOAD_FOLDER = "/var/www/html/frontpage/frontpage/static/uploads"
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
-
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///blog.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "SQLALCHEMY_DATABASE_URI", "sqlite:////var/www/html/frontpage/blog.db"
+)
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["UPLOAD_FOLDER"] = str(
+    Path(
+        os.environ.get("UPLOAD_FOLDER", "/var/www/html/frontpage/frontpage/static/uploads")
+    ).absolute()
+)
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -174,12 +177,4 @@ if not app.debug:
     app.logger.setLevel(logging.INFO)
 
 
-def initialize_database():
-    with app.app_context():
-        db.create_all()
-        initialize_article_types()
-
-
 from . import routes  # noqa: # import at end of module to force routes to populate
-
-initialize_database()
