@@ -501,7 +501,11 @@ p {
 	margin: .5rem 0;
 }
 
-p:first-of-type {
+li {
+	max-width: 640px;
+}
+
+p:first-of-type:not(footer p) {
 	margin-top: 1rem;
 }
 
