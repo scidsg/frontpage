@@ -73,11 +73,11 @@ def format_size(size_in_bytes):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    if not request.path.endpoint != "static":
-        flash("⛔️ That page doesn't exist", "warning")
-        return redirect(url_for("home"))
-    # If it's a static file, just return the default 404 response
-    return e
+    if request.path.startswith("/static/"):
+        # If it's a static file, just return the default 404 response
+        return e
+    flash("⛔️ That page doesn't exist", "warning")
+    return redirect(url_for("home"))
 
 
 @app.errorhandler(Exception)
