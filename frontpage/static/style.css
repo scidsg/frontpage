@@ -26,6 +26,11 @@
 	body {
 		background-color: rgba(25, 111, 164, 0.05);
 	}
+	
+	::selection {
+		background-color: #333;
+		color: white;
+	}
 
 	.login .brand,
 	.register .brand {
@@ -191,6 +196,11 @@
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: rgba(25, 25, 25, 1);
+	}
+	
+	::selection {
+		background-color: white;
+		color: #333;
 	}
 
 	.login .brand,
