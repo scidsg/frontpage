@@ -20,7 +20,6 @@ article_article_types = db.Table(
 )
 
 
-# User model
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)

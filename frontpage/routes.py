@@ -1,5 +1,4 @@
 import os
-import re
 from collections import Counter
 from datetime import datetime
 from itertools import groupby
@@ -12,7 +11,7 @@ from slugify import slugify
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 
-from . import app, inject_scopes, format_size, parse_size
+from . import app, format_size, inject_scopes, parse_size
 from .db import db
 from .forms import (
     AvatarForm,
@@ -137,37 +136,12 @@ def publish():
     article_types = ArticleType.query.all()  # Fetch article types from the database
 
     if request.method == "POST":
-        article_title = request.form["title"]
-        article_content = request.form["content"]
-        article_countries = request.form.getlist("countries")
-        article_country = ", ".join(article_countries)
-        selected_article_type_ids = request.form.getlist("article_types")
-        selected_article_types = ArticleType.query.filter(
-            ArticleType.id.in_(selected_article_type_ids)
-        ).all()
-        article_download_link = request.form["download_link"]
-        article_download_link2 = request.form["download_link2"]
-        article_download_link3 = request.form["download_link3"]
-        article_magnet_link = request.form["magnet_link"]
-        article_magnet_link2 = request.form["magnet_link2"]
-        article_magnet_link3 = request.form["magnet_link3"]
-        article_torrent_link = request.form["torrent_link"]
-        article_torrent_link2 = request.form["torrent_link2"]
-        article_torrent_link3 = request.form["torrent_link3"]
-        article_ipfs_link = request.form["ipfs_link"]
-        article_ipfs_link2 = request.form["ipfs_link2"]
-        article_ipfs_link3 = request.form["ipfs_link3"]
-        article_download_size = request.form["download_size"]
-        article_external_collaboration = request.form.get("external_collaboration")
-        article_external_collaboration2 = request.form.get("external_collaboration2")
-        article_external_collaboration3 = request.form.get("external_collaboration3")
-        article_source = request.form["source"]
-        requires_approval = current_user.requires_approval
-
         article_download_size_bytes = None  # Default to None if no size is provided
 
         # Only attempt conversion if a size is provided
-        if article_download_size.strip():  # Check if the string is not just whitespace
+        if article_download_size := request.form[
+            "article_download_size"
+        ].strip():  # Check if the string is not just whitespace
             try:
                 article_download_size_bytes = parse_size(article_download_size)
             except ValueError:
@@ -178,36 +152,36 @@ def publish():
                 return redirect(url_for("publish"))
 
         new_article = Article(
-            title=article_title,
-            content=article_content,
+            title=request.form["title"],
+            content=request.form["content"],
             author=current_user.username,
-            country=article_country,
-            download_link=article_download_link,
-            download_link2=article_download_link2,
-            download_link3=article_download_link3,
-            article_types=selected_article_types,
-            magnet_link=article_magnet_link,
-            magnet_link2=article_magnet_link2,
-            magnet_link3=article_magnet_link3,
-            torrent_link=article_torrent_link,
-            torrent_link2=article_torrent_link2,
-            torrent_link3=article_torrent_link3,
-            ipfs_link=article_ipfs_link,
-            ipfs_link2=article_ipfs_link2,
-            ipfs_link3=article_ipfs_link3,
+            country=", ".join(request.form.getlist("countries")),
+            download_link=request.form["download_link"],
+            download_link2=request.form["download_link2"],
+            download_link3=request.form["download_link3"],
+            article_types=ArticleType.query.filter(
+                ArticleType.id.in_(request.form.getlist("article_types"))
+            ).all(),
+            magnet_link=request.form["magnet_link"],
+            magnet_link2=request.form["magnet_link2"],
+            magnet_link3=request.form["magnet_link3"],
+            torrent_link=request.form["torrent_link"],
+            torrent_link2=request.form["torrent_link2"],
+            torrent_link3=request.form["torrent_link3"],
+            ipfs_link=request.form["ipfs_link"],
+            ipfs_link2=request.form["ipfs_link"],
+            ipfs_link3=request.form["ipfs_link"],
             download_size=article_download_size_bytes,  # Use the converted size in bytes or None
-            external_collaboration=article_external_collaboration,
-            external_collaboration2=article_external_collaboration2,
-            external_collaboration3=article_external_collaboration3,
-            source=article_source,
-            pending_approval=requires_approval,
+            external_collaboration=request.form.get("external_collaboration"),
+            external_collaboration2=request.form.get("external_collaboration2"),
+            external_collaboration3=request.form.get("external_collaboration3"),
+            source=request.form["source"],
+            pending_approval=current_user.requires_approval,
         )
 
         # Extract and handle the publication date
-        publish_date_str = request.form.get("publish_date")
-        if publish_date_str:
-            publish_date = datetime.strptime(publish_date_str, "%Y-%m-%dT%H:%M")
-            new_article.publish_date = publish_date
+        if publish_date_str := request.form.get("publish_date"):
+            new_article.publish_date = datetime.strptime(publish_date_str, "%Y-%m-%dT%H:%M")
         else:
             new_article.publish_date = datetime.utcnow()  # default to current time
 
@@ -215,15 +189,14 @@ def publish():
         new_article.set_slug()
 
         # Handle the last_edited date
-        last_edited_str = request.form.get("last_edited")
-        if last_edited_str:
+        if last_edited_str := request.form.get("last_edited"):
             last_edited = datetime.strptime(last_edited_str, "%Y-%m-%dT%H:%M")
             new_article.last_edited = last_edited
 
         # Handle article categories
-        selected_category_ids = request.form.getlist("categories")
-        selected_categories = Category.query.filter(Category.id.in_(selected_category_ids)).all()
-        new_article.categories = selected_categories
+        new_article.categories = Category.query.filter(
+            Category.id.in_(request.form.getlist("categories"))
+        ).all()
 
         try:
             db.session.add(new_article)
@@ -231,7 +204,7 @@ def publish():
 
             flash_message = (
                 "⏱️ Your article has been submitted for approval."
-                if requires_approval
+                if current_user.requires_approval
                 else "👍 Article published successfully."
             )
             flash(flash_message, "success")
