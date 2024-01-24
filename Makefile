@@ -1,5 +1,4 @@
 .DEFAULT_GOAL := help
-FLASK_APP = frontpage/__init__.py
 
 .PHONY: help
 help: ## Print the help message
@@ -9,7 +8,7 @@ help: ## Print the help message
 
 .PHONY: run
 run: ## Run the app
-	FLASK_APP=$(FLASK_APP) flask run --debug -h localhost -p 5000
+	FLASK_APP=frontpage/__init__.py flask run --debug -h localhost -p 5000
 
 .PHONY: lint
 lint: ## Lint the code
@@ -21,7 +20,3 @@ lint: ## Lint the code
 fmt: ## Format the code
 	isort . && \
 		black .
-
-.PHONY: db-init
-db-init: ## Initialize the database at the latest migration
-	FLASK_APP=$(FLASK_APP) flask db upgrade

@@ -4,23 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupPromoBlock();
     setupDeleteButtons();
     initializeUserPageLogic();
-    displayRandomQuote(); 
 });
-
-function displayRandomQuote() {
-    fetch('/static/quotes.json') 
-        .then(response => response.json())
-        .then(quotes => {
-            console.log(quotes); // Add this line for debugging
-            const quoteElement = document.getElementById('quote');
-            if (quoteElement && quotes.length) {
-                const randomIndex = Math.floor(Math.random() * quotes.length);
-                const quote = quotes[randomIndex];
-                quoteElement.innerHTML = `<p>"${quote.text}"</p><p>- ${quote.author}</p>`;
-            }
-        })
-        .catch(error => console.error('Error loading quotes:', error));
-}
 
 function hideFlashMessages() {
     const flashMessages = document.querySelectorAll('.flashes');

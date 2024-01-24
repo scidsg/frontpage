@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="content metrics">
-    <h1>Our Impact</h1>
+    <h1>Impact Metrics</h1>
     <div class="metric-row">
         <p class="number metric"><span class="label">Total Number of Articles</span> {{ total_articles_count }}</p>
         <p class="number metric"><span class="label">Limited Distribution %</span> {{ limited_dist_percentage|round(2) }}%</p>
@@ -22,13 +22,6 @@
                 <p>{{ top_type[0] }}<br><span class="meta">{{ top_type[1] }} Articles</span></p>
             </div>
         </div>
-    </div>
-
-    <!-- RANDOM QUOTE ON EVERY PAGE LOAD -->
-
-    <div id="quote-container">
-        <p id="quote"></p>
-        <small id="author"></small>
     </div>
 </div>
 {% endblock %}
