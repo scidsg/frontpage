@@ -93,11 +93,23 @@ def display_article_count(epd, count):
     epd.display(epd.getbuffer(image.rotate(90, expand=True)))
 
 
+def display_splash_screen(epd, image_path, display_time):
+    print("Displaying splash screen...")
+    image = Image.open(image_path)
+    image = image.convert("1")  # Convert image to black and white
+    image = image.resize((epd.height, epd.width), Image.BICUBIC)  # Resize to fit the screen
+    epd.display(epd.getbuffer(image))
+    time.sleep(display_time)
+
+
 def main():
     print("Starting blog display script")
     epd = epd2in13_V3.EPD()
     epd.init()
     print("EPD initialized")
+
+    # Display splash screen for 3 seconds
+    display_splash_screen(epd, "static/splash.png", 3)
 
     try:
         while True:
