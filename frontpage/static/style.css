@@ -449,7 +449,7 @@ body {
 	top: 3.1rem;
 	left: 0;
 	right: 0;
-	z-index: 9;
+	z-index: 1000;
 	-ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
@@ -465,7 +465,7 @@ ul.categories-list {
 	list-style: none;
 	gap: 1.5rem;
 	font-size: .875rem;
-	z-index: 99;
+	z-index: 1000;
 	overflow-y: scroll;
 	white-space: nowrap;
 }

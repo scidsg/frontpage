@@ -173,6 +173,7 @@ sleep 10
 # Get the Onion address
 ONION_ADDRESS=$(cat /var/lib/tor/hidden_service/hostname)
 
+cd /var/www/html/frontpage/frontpage
 sed -i "s|ONION_ADDRESS|$ONION_ADDRESS|g" display.py
 
 sudo ln -s /etc/nginx/sites-available/frontpage /etc/nginx/sites-enabled
@@ -183,3 +184,8 @@ sudo systemctl restart nginx
 sudo systemctl enable frontpage.service
 sudo systemctl start frontpage.service
 sudo systemctl restart frontpage.service
+
+cd /var/www/html/frontpage/frontpage/
+chmod +x install_display.sh
+./install_display.sh
+

@@ -6,7 +6,7 @@ from itertools import groupby
 
 import markdown
 import pycountry
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, redirect, render_template, request, url_for, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
 from slugify import slugify
 from sqlalchemy.exc import IntegrityError
