@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 def fetch_article_count():
     try:
-        response = requests.get("http://ddosecrets.local/api/article_count")
+        response = requests.get("https://ddosecrets.local/api/article_count")
         if response.status_code == 200:
             return response.json().get("count")
         else:
