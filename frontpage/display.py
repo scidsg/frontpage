@@ -33,7 +33,7 @@ def display_article_count(epd, count):
     )
     title_text = "Distributed Denial\nof Secrets"
     count_text = f"Articles: {count}"
-    instruction_text = "Scan the QR code to find your addresses"
+    instruction_text = "Scan the QR code for your addresses"
 
     # vCard data
     vcard = (
