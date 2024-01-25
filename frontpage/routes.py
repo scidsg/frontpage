@@ -965,3 +965,9 @@ def impact():
 @app.route("/submit")
 def submit():
     return render_template("submit.html", title="Submit")
+
+
+@app.route("/api/article_count")
+def article_count():
+    count = Article.query.count()
+    return jsonify({"count": count})

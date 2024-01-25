@@ -42,13 +42,17 @@ sudo apt install -y \
     nginx \
     python3 \
     python3-pip \
-    python3-venv
+    python3-venv \
+    tor
 
 # Install Poetry
 curl -sSL https://install.python-poetry.org | python3 -
 
+# Add Poetry to PATH in the profile file
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> $HOME/.profile
+
 # Source the profile file to update PATH
-source $HOME/.profile  # Replace with the appropriate file if different
+source $HOME/.profile
 
 # Change to the project directory
 cd /var/www/html
@@ -56,12 +60,30 @@ git clone https://github.com/scidsg/frontpage
 cd frontpage
 git switch device
 
+
+# Install mkcert and its dependencies
+echo "Installing mkcert and its dependencies..."
+apt install -y libnss3-tools
+wget https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-arm
+sleep 10
+chmod +x mkcert-v1.4.4-linux-arm
+mv mkcert-v1.4.4-linux-arm /usr/local/bin/mkcert
+export CAROOT="/var/www/html/frontpage/.local/share/mkcert"
+mkdir -p "$CAROOT"  # Ensure the directory exists
+mkcert -install
+
+# Create a certificate for hushline.local
+echo "Creating certificate for ddosecrets.local..."
+mkcert ddosecrets.local
+
+# Move and link the certificates to Nginx's directory (optional, modify as needed)
+mv ddosecrets.local.pem /etc/nginx/
+mv ddosecrets.local-key.pem /etc/nginx/
+echo "Certificate and key for ddosecrets.local have been created and moved to /etc/nginx/."
+
 # Create and activate Python virtual environment
 python3 -m venv venv
 source venv/bin/activate
-
-# Add Poetry to PATH
-export PATH="/root/.local/bin:$PATH"
 
 # Now run poetry install
 poetry install
@@ -89,15 +111,35 @@ sudo apt install nginx -y
 sudo tee /etc/nginx/sites-available/frontpage <<EOF
 server {
     listen 80;
-    server_name _;
+    server_name localhost ddosecrets.local;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name ddosecrets.local;
+
+    ssl_certificate /etc/nginx/ddosecrets.local.pem;
+    ssl_certificate_key /etc/nginx/ddosecrets.local-key.pem;
 
     location / {
         proxy_pass http://127.0.0.1:5000;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-NginX-Proxy true;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
     }
+
+    add_header Strict-Transport-Security "max-age=63072000; includeSubdomains";
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'";
+    add_header Permissions-Policy "geolocation=(), midi=(), notifications=(), push=(), sync-xhr=(), microphone=(), camera=(), magnetometer=(), gyroscope=(), speaker=(), vibrate=(), fullscreen=(), payment=(), interest-cohort=()";
+    add_header Referrer-Policy "no-referrer";
+    add_header X-XSS-Protection "1; mode=block";
 }
 EOF
 
@@ -116,6 +158,22 @@ ExecStart=/var/www/html/frontpage/venv/bin/gunicorn -w 1 -b 127.0.0.1:5000 front
 [Install]
 WantedBy=multi-user.target
 EOF
+
+# Tor Setup
+
+sudo tee /etc/tor/torrc <<EOF
+RunAsDaemon 1
+HiddenServiceDir /var/lib/tor/hidden_service/
+HiddenServicePort 80 127.0.0.1:5000
+EOF
+
+systemctl restart tor.service
+sleep 10
+
+# Get the Onion address
+ONION_ADDRESS=$(cat /var/lib/tor/hidden_service/hostname)
+
+sed -i "s|ONION_ADDRESS|$ONION_ADDRESS|g" display.py
 
 sudo ln -s /etc/nginx/sites-available/frontpage /etc/nginx/sites-enabled
 rm -f /etc/nginx/sites-available/default
