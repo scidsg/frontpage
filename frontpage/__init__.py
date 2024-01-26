@@ -80,12 +80,6 @@ def page_not_found(e):
     return redirect(url_for("home"))
 
 
-@app.errorhandler(Exception)
-def handle_exception(e):
-    app.logger.error("An error occurred: %s", e)
-    return "An internal error occurred", 500
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))

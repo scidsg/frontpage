@@ -138,10 +138,9 @@ def publish():
     if request.method == "POST":
         article_download_size_bytes = None  # Default to None if no size is provided
 
+        # TODO this form handling is bad UX because it will not save the user's current work
         # Only attempt conversion if a size is provided
-        if article_download_size := request.form[
-            "article_download_size"
-        ].strip():  # Check if the string is not just whitespace
+        if article_download_size := request.form.get("article_download_size", "").strip():
             try:
                 article_download_size_bytes = parse_size(article_download_size)
             except ValueError:
