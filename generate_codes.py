@@ -1,7 +1,10 @@
+#!/usr/bin/env python
+
 import secrets
 from datetime import datetime, timedelta
 
-from frontpage import InvitationCode, app, db
+from frontpage import app, db
+from frontpage.models import InvitationCode
 
 
 def create_invite_code():
