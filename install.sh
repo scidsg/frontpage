@@ -46,7 +46,9 @@ sudo apt install -y \
     python3-venv
 
 cd /var/www/html
-git clone https://github.com/scidsg/frontpage
+if [ ! -d frontpage ]; then
+    git clone https://github.com/scidsg/frontpage
+fi
 cd frontpage
 
 # Create and activate Python virtual environment
@@ -57,12 +59,14 @@ source venv/bin/activate
 poetry install
 
 # Generate and export Flask secret key
-FLASK_SECRET_KEY=$(openssl rand -hex 32)
-export FLASK_SECRET_KEY
-echo "FLASK_SECRET_KEY=$FLASK_SECRET_KEY" > /var/www/html/frontpage/.env
+if ! egrep -q '^FLASK_SECRET_KEY=' .env; then
+    echo 'Generating new secret key'
+    FLASK_SECRET_KEY=$(openssl rand -hex 32)
+    echo "FLASK_SECRET_KEY=$FLASK_SECRET_KEY" >> .env
+fi
 
 # Initialize the Flask app and create the database within application context
-python /var/www/html/frontpage/frontpage/db.py
+poetry run flask db migrate
 
 # Change owner and permissions of the SQLite database file
 sudo chown -R www-data:www-data /var/www/html/frontpage
@@ -72,45 +76,17 @@ mkdir /var/www/html/frontpage/frontpage/static/uploads
 sudo chown -R www-data:www-data /var/www/html/frontpage/frontpage/static/uploads
 sudo chmod -R 755 /var/www/html/frontpage/frontpage/static/uploads
 
+sudo cp files/frontpage.service /etc/systemd/system/frontpage.service
+
 # Install Nginx
 sudo apt install nginx -y
 
 # Set up Nginx to proxy requests to Flask
-sudo tee /etc/nginx/sites-available/frontpage <<EOF
-server {
-    listen 80;
-    server_name _;
-
-    location / {
-        proxy_pass http://127.0.0.1:5000;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-NginX-Proxy true;
-    }
-}
-EOF
-
-# Set up Nginx to proxy requests to Flask
-sudo tee /etc/systemd/system/frontpage.service <<EOF
-[Unit]
-Description=My Flask App
-After=network.target
-
-[Service]
-User=www-data
-Group=www-data
-WorkingDirectory=/var/www/html/frontpage/
-ExecStart=/var/www/html/frontpage/venv/bin/gunicorn -w 1 -b 127.0.0.1:5000 frontpage:app
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
+sudo cp files/nginx.conf /etc/nginx/sites-available/frontpage
 sudo ln -s /etc/nginx/sites-available/frontpage /etc/nginx/sites-enabled
 rm -f /etc/nginx/sites-available/default
 rm -f /etc/nginx/sites-enabled/default
-sudo systemctl restart nginx
+sudo systemctl reload nginx
 
 sudo systemctl enable frontpage.service
 sudo systemctl start frontpage.service
