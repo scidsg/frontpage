@@ -3,6 +3,7 @@ import os
 import re
 from collections import Counter
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
 from dotenv import load_dotenv
 from flask import Flask, flash, redirect, request, url_for
@@ -14,23 +15,20 @@ from .models import Article, ArticleType, User
 
 load_dotenv()  # Load environment variables from .env file
 
-# Uploads
-UPLOAD_FOLDER = "/var/www/html/frontpage/frontpage/static/uploads"
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
-
-# Initialize Flask app and database
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///blog.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "SQLALCHEMY_DATABASE_URI", "sqlite:////var/www/html/frontpage/blog.db"
+)
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-
+app.config["UPLOAD_FOLDER"] = str(
+    Path(
+        os.environ.get("UPLOAD_FOLDER", "/var/www/html/frontpage/frontpage/static/uploads")
+    ).absolute()
+)
 
 db.init_app(app)
 migrate = Migrate(app, db)
-
-# Initialize Flask-Login
-login_manager = LoginManager()
-login_manager.init_app(app)
+login_manager = LoginManager(app)
 
 
 # Utility function to convert size strings to bytes
@@ -75,15 +73,17 @@ def format_size(size_in_bytes):
 
 @app.errorhandler(404)
 def page_not_found(e):
-    path = request.path
-    # Check if the missing resource is not a static file
-    if not path.startswith("/static/"):
-        # Flash a message to the user
-        flash("⛔️ That page doesn't exist", "warning")
-        # Redirect to home page
-        return redirect(url_for("home"))
-    # If it's a static file, just return the default 404 response
-    return e
+    if request.path.startswith("/static/"):
+        # If it's a static file, just return the default 404 response
+        return e
+    flash("⛔️ That page doesn't exist", "warning")
+    return redirect(url_for("home"))
+
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    app.logger.error("An error occurred: %s", e)
+    return "An internal error occurred", 500
 
 
 @login_manager.user_loader
@@ -93,7 +93,6 @@ def load_user(user_id):
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    # Flash a message to inform the user
     flash("⛔️ You need to be logged in to view that page.")
     return redirect(url_for("home"))
 
@@ -137,13 +136,6 @@ def inject_team_link():
     return dict(show_team_link=show_team_link)
 
 
-# Error handler
-@app.errorhandler(Exception)
-def handle_exception(e):
-    app.logger.error("An error occurred: %s", e)
-    return "An internal error occurred", 500
-
-
 def initialize_article_types():
     existing_types = [atype.name for atype in ArticleType.query.all()]
     for atype in [
@@ -185,14 +177,4 @@ if not app.debug:
     app.logger.setLevel(logging.INFO)
 
 
-# Database initialization function
-def initialize_database():
-    with app.app_context():
-        db.create_all()
-        initialize_article_types()  # Initialize article types after creating all tables
-
-
 from . import routes  # noqa: # import at end of module to force routes to populate
-
-# Call the database initialization function
-initialize_database()

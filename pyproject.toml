@@ -23,6 +23,12 @@ python-slugify = "^8.0.1"
 black = "^23.12.1"
 flake8 = "^7.0.0"
 isort = "^5.13.2"
+mypy = "^1.8.0"
+types-flask-migrate = "^4.0.0.7"
+types-flask-sqlalchemy = "^2.5.9.4"
+types-markdown = "^3.5.0.20240106"
+types-passlib = "^1.7.7.20240106"
+types-python-slugify = "^8.0.0.3"
 
 [build-system]
 requires = ["poetry-core"]
@@ -34,3 +40,5 @@ line-length = 100
 [tool.isort]
 profile= "black"
 line_length = 100
+
+[tool.mypy]

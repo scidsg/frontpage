@@ -62,7 +62,7 @@ export FLASK_SECRET_KEY
 echo "FLASK_SECRET_KEY=$FLASK_SECRET_KEY" > /var/www/html/frontpage/.env
 
 # Initialize the Flask app and create the database within application context
-python /var/www/html/frontpage/init_db.py
+python /var/www/html/frontpage/frontpage/db.py
 
 # Change owner and permissions of the SQLite database file
 sudo chown -R www-data:www-data /var/www/html/frontpage
