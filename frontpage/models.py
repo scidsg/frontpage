@@ -28,7 +28,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(100), nullable=False)
     bio = db.Column(db.Text)
     include_in_team_page = db.Column(db.Boolean, server_default=text("FALSE"))
-    display_name = db.Column(db.String(100), nullable=False)
+    display_name = db.Column(db.String(100))
     custom_url = db.Column(db.String(255))
     avatar = db.Column(db.String(255))
     requires_approval = db.Column(db.Boolean, server_default=text("FALSE"), nullable=False)

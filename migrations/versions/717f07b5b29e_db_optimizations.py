@@ -114,7 +114,7 @@ def upgrade() -> None:
                 server_default=sa.text("FALSE"),
                 nullable=True,
             ),
-            sa.Column("display_name", sa.String(length=100), nullable=False),
+            sa.Column("display_name", sa.String(length=100), nullable=True),
             sa.Column("custom_url", sa.String(length=255), nullable=True),
             sa.Column("avatar", sa.String(length=255), nullable=True),
             sa.Column(
