@@ -22,3 +22,13 @@ A self-hosted, privacy-focused publishing platform built for censorship resilien
   - User accounts
   - Upload an avatar, set a bio, and include a personal URL
 - Easy global and contextual navigation
+
+## Development
+
+You will need `poetry` to manage the dependencies and the virtual environment.
+Run `make run` to launch the app.
+
+## Deployment
+
+- Clone this repo to a server
+- `./install.sh` on that server
