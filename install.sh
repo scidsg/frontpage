@@ -66,6 +66,7 @@ if ! egrep -q '^FLASK_SECRET_KEY=' .env; then
 fi
 
 # Initialize the Flask app and create the database within application context
+export FLASK_APP=frontpage:app
 poetry run flask db migrate
 
 # Change owner and permissions of the SQLite database file
