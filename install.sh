@@ -61,8 +61,8 @@ pip install -U poetry
 # Install Flask and other dependencies
 poetry self add poetry-plugin-export
 export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
-poetry export --only main -f requirements.txt
-pip install requirements.txt
+poetry export --only main -f requirements.txt --output requirements.txt
+pip install -r requirements.txt
 
 touch .env
 
