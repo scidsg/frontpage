@@ -43,7 +43,6 @@ apt install -y \
     nginx \
     python3 \
     python3-pip \
-    python3-poetry \
     python3-venv
 
 cd /var/www/html
@@ -56,8 +55,14 @@ cd frontpage
 python3 -m venv venv
 source venv/bin/activate
 
+# Debian only have 1.3.2, and we need 1.6.0 or higher
+pip install -U poetry
+
 # Install Flask and other dependencies
-poetry install --only main
+poetry self add poetry-plugin-export
+export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+poetry export --only main -f requirements.txt
+pip install requirements.txt
 
 touch .env
 
