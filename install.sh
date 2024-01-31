@@ -56,7 +56,7 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Install Flask and other dependencies
-poetry install
+poetry install --only main
 
 # Generate and export Flask secret key
 if ! egrep -q '^FLASK_SECRET_KEY=' .env; then

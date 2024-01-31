@@ -8,7 +8,7 @@ Group=www-data
 WorkingDirectory=/var/www/html/frontpage/
 EnvironmentFile=/vaw/ww/html/frontpage/.env
 Environment="FLASK_APP=frontpage:app"
-ExecStart=/var/www/html/frontpage/venv/bin/gunicorn -w 1 -b 127.0.0.1:5000 frontpage:app
+ExecStart=poetry run gunicorn -w 1 -b 127.0.0.1:5000 frontpage:app
 
 [Install]
 WantedBy=multi-user.target
