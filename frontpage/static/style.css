@@ -522,7 +522,7 @@ li {
 	max-width: 640px;
 }
 
-p:first-of-type:not(footer p) {
+p:first-of-type:not(footer p):not(p.meta) {
 	margin-top: 1rem;
 }
 
