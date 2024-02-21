@@ -6,7 +6,7 @@
     {% if articles %}
         {% for article in articles %}
             <div class="article">
-                <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
+                <h2><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h2>
                 <p class="meta">Submitted by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
                 <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
 
