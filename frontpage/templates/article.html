@@ -107,20 +107,16 @@
                 <p><span class="label">Torrent 3:</span> <a href="{{ article.torrent_link3 }}" target="_blank">Link</a></p>
             {% endif %}
 
-
             <!-- IPFS LINKS -->
-            <div class="ipfs">
-                {% if article.ipfs_link %}
-                    <p><span class="label">IPFS Link:</span> {{ article.ipfs_link }}</p>
-                {% endif %}
-                {% if article.ipfs_link2 %}
-                    <p><span class="label">IPFS Link 2:</span> {{ article.ipfs_link2 }}</p>
-                {% endif %}
-                {% if article.ipfs_link3 %}
-                    <p><span class="label">IPFS Link 3:</span> {{ article.ipfs_link3 }}</p>
-                {% endif %}
-            </div>
-
+            {% if article.ipfs_link %}
+                <p><span class="label">IPFS Link:</span> {{ article.ipfs_link }}</p>
+            {% endif %}
+            {% if article.ipfs_link2 %}
+                <p><span class="label">IPFS Link 2:</span> {{ article.ipfs_link2 }}</p>
+            {% endif %}
+            {% if article.ipfs_link3 %}
+                <p><span class="label">IPFS Link 3:</span> {{ article.ipfs_link3 }}</p>
+            {% endif %}
 
             <!-- EXTERNAL COLLAB LINK -->
 
