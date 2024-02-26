@@ -858,7 +858,8 @@ def all_articles(category):
 
 @app.route("/team")
 def team():
-    users = User.query.filter(User.include_in_team_page).all()
+    # Sort users by 'display_name' if you're displaying that, or use 'username' as a fallback
+    users = User.query.filter(User.include_in_team_page).order_by(User.display_name).all()
     return render_template("team.html", title="Our Team", users=users)
 
 
