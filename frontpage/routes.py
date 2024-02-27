@@ -349,6 +349,25 @@ def article(slug):
                 related_by_country_dict[country] = []
             related_by_country_dict[country].extend(related_articles)
 
+    # Convert Markdown to HTML for snippets in related groups
+    for type_group in related_by_type_grouped.values():
+        for article in type_group:
+            article.snippet_html = markdown.markdown(
+                article.content[:200] + ("..." if len(article.content) > 200 else "")
+            )
+
+    for source_group in related_by_source_grouped.values():
+        for article in source_group:
+            article.snippet_html = markdown.markdown(
+                article.content[:200] + ("..." if len(article.content) > 200 else "")
+            )
+
+    for country_group in related_by_country_dict.values():
+        for article in country_group:
+            article.snippet_html = markdown.markdown(
+                article.content[:200] + ("..." if len(article.content) > 200 else "")
+            )
+
     # Collect all articles to determine top scopes
     all_articles = Article.query.all()
     counter = Counter()
@@ -366,10 +385,7 @@ def article(slug):
     if article.pending_approval:
         # If the article is pending, only allow access to admins
         if not current_user.is_authenticated or not current_user.is_admin:
-            flash(
-                "⛔️ Nuh uh uh, you didn't say the magic word...",
-                "warning",
-            )
+            flash("⛔️ Nuh uh uh, you didn't say the magic word...", "warning")
             return redirect(url_for("home"))
 
     # Get the top 5 scopes
