@@ -489,6 +489,7 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
 p, a {
 	font-weight: normal;
 	font-family: 'Atkinson Hyperlegible', sans-serif;
+	word-break: break-word;
 }
 
 h1 {
