@@ -27,6 +27,13 @@
 		background-color: rgba(25, 111, 164, 0.05);
 	}
 	
+	code {
+		background-color: #f1f1f2;
+		background-color: #f8f9fa;
+    color: #000;
+    border: 1px solid #eaecf0;
+	}
+	
 	::selection {
 		background-color: #333;
 		color: white;
@@ -196,6 +203,12 @@
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: rgba(25, 25, 25, 1);
+	}
+	
+	code {
+		background-color: #444;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.1);
 	}
 	
 	::selection {
@@ -371,6 +384,17 @@ body {
 	font-family: 'Atkinson Hyperlegible', sans-serif;
 	padding: 8.25rem 1rem 1rem 1rem;
 	margin: 0;
+}
+
+code {
+	padding: 1em;
+	white-space: pre-wrap;
+	overflow-x: hidden;
+	word-wrap: break-word;
+	display:  flex;
+	font-size: .9125rem;
+	border-radius: .25rem;
+	font-family: 'IBM Plex Mono', monospace;
 }
 
 .login .brand,
