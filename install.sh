@@ -76,6 +76,7 @@ fi
 # Initialize the Flask app and create the database within application context
 export FLASK_APP=frontpage:app
 poetry run flask db upgrade
+poetry run flask db-extras add-article-types
 
 # Change owner and permissions of the SQLite database file
 chown -R www-data:www-data /var/www/html/frontpage

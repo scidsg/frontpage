@@ -5,6 +5,7 @@ __pycache__
 # flask
 instance/
 app.log
+blog.db
 
 # configs
 .env

@@ -17,7 +17,7 @@ load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-    "SQLALCHEMY_DATABASE_URI", "sqlite:////var/www/html/frontpage/blog.db"
+    "SQLALCHEMY_DATABASE_URI", f"sqlite:///{os.getcwd()}/blog.db"
 )
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
 app.config["UPLOAD_FOLDER"] = str(
@@ -130,7 +130,17 @@ def inject_team_link():
     return dict(show_team_link=show_team_link)
 
 
-def initialize_article_types():
+@app.cli.group(
+    help="More DB management besides migration",
+)
+def db_extras() -> None:
+    pass
+
+
+@db_extras.command(
+    help="Ensures all defaut article types are present",
+)
+def add_article_types() -> None:
     existing_types = [atype.name for atype in ArticleType.query.all()]
     for atype in [
         "Allegations of State Sponsorship",
