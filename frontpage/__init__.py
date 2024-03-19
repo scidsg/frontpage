@@ -4,11 +4,14 @@ import re
 from collections import Counter
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
+import click
+import sys
 
 from dotenv import load_dotenv
 from flask import Flask, flash, redirect, request, url_for
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
+from sqlalchemy.exc import IntegrityError
 
 from .db import db
 from .models import Article, ArticleType, User
@@ -17,7 +20,7 @@ load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-    "SQLALCHEMY_DATABASE_URI", f"sqlite:///{os.getcwd()}/blog.db"
+    "SQLALCHEMY_DATABASE_URI", f"sqlite:///{os.getcwd()}/frontpage.db"
 )
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
 app.config["UPLOAD_FOLDER"] = str(
@@ -170,6 +173,36 @@ def add_article_types() -> None:
             new_type = ArticleType(name=atype)
             db.session.add(new_type)
     db.session.commit()
+
+
+@app.cli.group(help="Database management commands")
+def db_manage():
+    pass
+
+
+@app.cli.command("add-type")
+@click.argument("type_name")
+def add_type(type_name):
+    """Adds a new article type to the database using SQLAlchemy ORM."""
+    if not type_name:
+        click.echo("You must provide an article type name.", err=True)
+        sys.exit(1)  # Properly exit with code 1 to indicate failure
+
+    new_type = ArticleType(name=type_name)
+    db.session.add(new_type)
+    try:
+        db.session.commit()
+        click.echo(f"Successfully added new article type: '{type_name!r}'.")
+    except IntegrityError as e:
+        db.session.rollback()
+        if "unique constraint" in str(e.orig).lower():
+            click.echo(
+                f"Failed to add new article type '{type_name!r}'. A type with this name already exists.",
+                err=True,
+            )
+        else:
+            click.echo(f"An unexpected database error occurred: {e}", err=True)
+        sys.exit(1)  # Exit with code 1 on failure due to database errors
 
 
 # Initialize logging
