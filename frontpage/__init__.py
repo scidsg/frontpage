@@ -152,7 +152,6 @@ def add_article_types() -> None:
         "Extractivist Leaks",
         "Fascist",
         "Fuerzas Represivas",
-        "Greenhouse Project",
         "Hack",
         "Leak",
         "Leak Markets",
