@@ -306,7 +306,7 @@ def article(slug):
 
     # Convert the download size to a human-readable format for the template
     download_size_formatted = (
-        format_size(int(article.download_size)) if article.download_size is not None else None
+        format_size(int(article.download_size)) if article.download_size else None
     )
 
     content_html = markdown.markdown(article.content)
