@@ -1,0 +1,9 @@
+.git
+.gitignore
+Dockerfile
+.dockerignore
+README.md
+LICENSE
+Makefile
+*.md
+*.log
