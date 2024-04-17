@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        FLASK_SECRET_KEY: ${FLASK_SECRET_KEY}
+        FERNET_KEY: ${FERNET_KEY}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../:/frontpage  # Mounts the root directory to /frontpage inside the container
+      - static_volume:/frontpage/frontpage/static
+      - upload_volume:/frontpage/frontpage/static/uploads
+      - sqlite_data:/frontpage/db
+    env_file:
+      - .env  # Assuming the .env file is at the project root
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ../files/nginx.conf:/etc/nginx/nginx.conf  # Assuming files directory is at the project root
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+    restart: unless-stopped
+
+volumes:
+  static_volume: {}
+  upload_volume: {}
+  sqlite_data: {}
+
+networks:
+  default:
+    driver: bridge

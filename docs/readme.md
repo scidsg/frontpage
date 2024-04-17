@@ -8,7 +8,11 @@ Docker comes in many flavors. You can download the desktop application from [Doc
 
 **Step 2:** Run Frontpage
 
-From the app's root directory:
+1. From the app's root directory:
+`cd docker/`
 
-`docker build -t frontpage .`
-`docker run -d -p 80:80 --name frontpage-container frontpage`
+2. Build the containers:
+`docker-compose build`
+
+3. Run the containers:
+`docker-compose up -d`

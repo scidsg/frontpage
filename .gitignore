@@ -11,3 +11,5 @@ blog.db
 .env
 /venv
 .DS_Store
+supervisord.log
+supervisord.pid
