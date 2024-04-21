@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupDeleteButtons();
     initializeUserPageLogic();
     displayRandomQuote();
-    initializeTabs();
 });
 
 function displayRandomQuote() {
@@ -103,23 +102,4 @@ function toggleApprovalCheckbox(adminCheckbox) {
     } else {
         approvalCheckbox.disabled = false;
     }
-}
-
-function initializeTabs() {
-    const tabs = document.querySelectorAll('.tab-link');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-            let activeTab = document.querySelector('.tab-link.current');
-            let activeContent = document.querySelector('.tab-content.current');
-
-            if (activeTab) { activeTab.classList.remove('current'); }
-            if (activeContent) { activeContent.classList.remove('current'); }
-
-            this.classList.add('current');
-            let currentId = this.getAttribute('data-tab');
-            document.getElementById(currentId).classList.add('current');
-        });
-    });
 }

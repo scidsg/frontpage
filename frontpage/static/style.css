@@ -1257,8 +1257,25 @@ nav.user-logged-in {
 	margin-bottom: 0;
 }
 
+.media-section {
+	margin-bottom: 2rem;
+}
+
 .logos img {
 	max-width: 200px;
+	border-radius: .25rem;
+	border: 1px solid rgba(0,0,0,0.1);
+}
+
+.logos p {
+	max-width: 200px;
+}
+
+.logo-section {
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+	flex-wrap: wrap;
 }
 
 @media only screen and (max-width: 1056px) {
