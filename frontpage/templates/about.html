@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <h1>About Us</h1>
+    <ul class="tabs">
+        <li class="tab-link current" data-tab="tab-1">Team</li>
+        <li class="tab-link" data-tab="tab-2">Media</li>
+    </ul>
+
+    <div id="tab-1" class="tab-content current">
+        <div class="team-members">
+            {% for user in users %}
+            <div class="team-member">
+                {% if user.avatar %}
+                    <img class="avatar" src="{{ url_for('static', filename='uploads/' + user.avatar) }}" alt="Avatar of {{ user.display_name or user.username }}">
+                {% else %}
+                    <img class="avatar" src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="Default Avatar">
+                {% endif %}
+                <h2>{{ user.display_name or user.username }}</h2>
+                {% if user.bio %}
+                    <p>{{ user.bio }}</p>
+                {% else %}
+                    <p>No bio available.</p>
+                {% endif %}
+                {% if user.custom_url %}
+                    <p class="meta"><a href="{{ user.custom_url }}" target="_blank">Personal Website</a></p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="tab-2" class="tab-content">
+        <div class="media-section">
+            <h2>Media</h2>
+            <div class="logos">
+                <h3>Logos</h3>
+                {% for logo in logos %}
+                <div>
+                    <img src="{{ url_for('static', filename='uploads/logos/' + logo.file) }}" alt="Logo - {{ logo.description }}">
+                    <p>{{ logo.description }}</p>
+                    <p>{{ logo.width }} x {{ logo.height }} px</p>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="citations">
+                <h3>Citations</h3>
+                {% for citation in citations %}
+                <p>{{ citation.article }}: <a href="{{ citation.link }}" target="_blank">{{ citation.link }}</a></p>
+                {% endfor %}
+            </div>
+        </div>
+        {% if current_user.is_admin %}
+        <div class="admin-tools">
+            <h2>Admin Tools</h2>
+            <div class="upload-logo">
+                <h3>Upload a Logo</h3>
+                <form action="{{ url_for('add_logo') }}" method="post" enctype="multipart/form-data">
+                    {{ logo_form.hidden_tag() }}
+                    <div>
+                        <label for="logo_file">Logo File:</label>
+                        {{ logo_form.file(id='logo_file') }}
+                    </div>
+                    <div>
+                        <label for="logo_description">Description:</label>
+                        {{ logo_form.description(id='logo_description') }}
+                    </div>
+                    <button type="submit" name="logo_submit">Upload</button>
+                </form>
+            </div>
+            <div class="add-citation">
+                <h3>Add a Citation</h3>
+                <form action="{{ url_for('add_citation') }}" method="post">
+                    {{ citation_form.hidden_tag() }}
+                    <div>
+                        <label for="citation_article">Article Name:</label>
+                        {{ citation_form.article(id='citation_article') }}
+                    </div>
+                    <div>
+                        <label for="citation_link">Citation Link:</label>
+                        {{ citation_form.link(id='citation_link') }}
+                    </div>
+                    <button type="submit" name="citation_submit">Add Citation</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

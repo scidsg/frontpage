@@ -1257,6 +1257,10 @@ nav.user-logged-in {
 	margin-bottom: 0;
 }
 
+.logos img {
+	max-width: 200px;
+}
+
 @media only screen and (max-width: 1056px) {
 
 	.related-articles-group {
