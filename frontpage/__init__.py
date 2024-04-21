@@ -23,11 +23,11 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "SQLALCHEMY_DATABASE_URI", f"sqlite:///{os.getcwd()}/frontpage.db"
 )
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
-app.config["UPLOAD_FOLDER"] = str(
-    Path(
-        os.environ.get("UPLOAD_FOLDER", "/var/www/html/frontpage/frontpage/static/uploads")
-    ).absolute()
-)
+
+# Setup the upload directory within the project directory
+project_dir = os.path.dirname(os.path.abspath(__file__))  # Directory where this file exists
+app.config["UPLOAD_FOLDER"] = os.path.join(project_dir, "static", "uploads")
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)  # Ensure the directory exists
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -36,22 +36,13 @@ login_manager = LoginManager(app)
 
 # Utility function to convert size strings to bytes
 def parse_size(size_str):
-    # Units for binary (base 2) and decimal (base 10) formats
     units_binary = {"B": 1, "KIB": 1024, "MIB": 1024**2, "GIB": 1024**3, "TIB": 1024**4}
     units_decimal = {"KB": 1000, "MB": 1000**2, "GB": 1000**3, "TB": 1000**4}
-
-    # Make the string uppercase and remove spaces
     size_str = size_str.upper().replace(" ", "")
-
-    # Regular expression to parse the size string
     matches = re.match(r"([0-9]*\.?[0-9]+)\s*([A-Z]+)", size_str)
-
     if not matches:
         raise ValueError("Invalid size format")
-
     size, unit = matches.groups()
-
-    # Check if the unit is binary or decimal and calculate accordingly
     if unit in units_binary:
         return int(float(size) * units_binary[unit])
     elif unit in units_decimal:
@@ -77,7 +68,6 @@ def format_size(size_in_bytes):
 @app.errorhandler(404)
 def page_not_found(e):
     if request.path.startswith("/static/"):
-        # If it's a static file, just return the default 404 response
         return e
     flash("⛔️ That page doesn't exist", "warning")
     return redirect(url_for("home"))
@@ -98,25 +88,16 @@ def unauthorized():
 def inject_scopes():
     all_articles = Article.query.all()
     counter = Counter()
-
     for article in all_articles:
-        # Count article types using the new many-to-many relationship
         for atype in article.article_types:
             counter[("type", atype.name)] += 1
-
-        # Count countries (no change here)
         if article.country:
             for country in article.country.split(", "):
                 counter[("country", country)] += 1
-
-        # Count sources (no change here)
         if article.source:
             counter[("source", article.source)] += 1
-
-    # Retrieve the top 5 scopes
     top_scopes = counter.most_common(5)
-    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
-    return {"all_scopes": all_scopes}
+    return {"all_scopes": [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]}
 
 
 @app.context_processor
@@ -141,7 +122,7 @@ def db_extras() -> None:
 
 
 @db_extras.command(
-    help="Ensures all defaut article types are present",
+    help="Ensures all default article types are present",
 )
 def add_article_types() -> None:
     existing_types = [atype.name for atype in ArticleType.query.all()]
@@ -187,7 +168,6 @@ def add_type(type_name):
     if not type_name:
         click.echo("You must provide an article type name.", err=True)
         sys.exit(1)  # Properly exit with code 1 to indicate failure
-
     new_type = ArticleType(name=type_name)
     db.session.add(new_type)
     try:
@@ -215,5 +195,4 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
 
-
-from . import routes  # noqa: # import at end of module to force routes to populate
+from . import routes  # noqa: F401 Import at end to avoid circular dependency issues

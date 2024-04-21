@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileAllowed, FileField
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField
 from wtforms.validators import URL, DataRequired, EqualTo, Length, Optional, Regexp, ValidationError
 
@@ -100,3 +100,17 @@ class CustomUrlForm(FlaskForm):
 class AvatarForm(FlaskForm):
     avatar = FileField("Avatar", validators=[FileAllowed(["jpg", "png"], "Images only!")])
     submit_avatar = SubmitField("Upload Avatar")
+
+
+class LogoForm(FlaskForm):
+    file = FileField(
+        "Logo", validators=[FileRequired(), FileAllowed(["jpg", "jpeg", "png"], "Images only!")]
+    )
+    description = StringField("Description", validators=[DataRequired()])
+    submit = SubmitField("Upload Logo")
+
+
+class CitationForm(FlaskForm):
+    article = StringField("Article Name", validators=[DataRequired()])
+    link = StringField("Article Link", validators=[DataRequired()])
+    submit = SubmitField("Add Citation")
