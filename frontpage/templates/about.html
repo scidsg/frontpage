@@ -43,11 +43,11 @@
                     <form action="{{ url_for('add_logo') }}" method="post" enctype="multipart/form-data">
                         {{ logo_form.hidden_tag() }}
                         <div>
-                            <label for="logo_file">Logo File:</label>
+                            <label for="logo_file">Logo File</label>
                             {{ logo_form.file(id='logo_file') }}
                         </div>
                         <div>
-                            <label for="logo_description">Description:</label>
+                            <label for="logo_description">Description</label>
                             {{ logo_form.description(id='logo_description') }}
                         </div>
                         <button type="submit" name="logo_submit">Upload</button>
@@ -58,11 +58,11 @@
                     <form action="{{ url_for('add_citation') }}" method="post">
                         {{ citation_form.hidden_tag() }}
                         <div>
-                            <label for="citation_article">Article Name:</label>
+                            <label for="citation_article">Article Name</label>
                             {{ citation_form.article(id='citation_article') }}
                         </div>
                         <div>
-                            <label for="citation_link">Citation Link:</label>
+                            <label for="citation_link">Citation Link</label>
                             {{ citation_form.link(id='citation_link') }}
                         </div>
                         <button type="submit" name="citation_submit">Add Citation</button>
