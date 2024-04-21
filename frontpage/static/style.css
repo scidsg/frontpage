@@ -26,6 +26,15 @@
 	body {
 		background-color: rgba(25, 111, 164, 0.05);
 	}
+
+	.arrow {
+		background-image: url('icon-chevron-lm.png');
+	}
+
+	/* Create an active/current tablink class */
+	.tab .active {
+		border-bottom: 3px solid #333;
+	}
 	
 	code {
 		background-color: #f1f1f2;
@@ -203,6 +212,14 @@
 @media (prefers-color-scheme: dark) {
 	body {
 		background-color: rgba(25, 25, 25, 1);
+	}
+
+	.arrow {
+		background-image: url('icon-chevron-dm.png');
+	}
+
+	.tab .active {
+		border-bottom: 3px solid #fff;
 	}
 	
 	code {
@@ -1278,8 +1295,60 @@ nav.user-logged-in {
 	flex-wrap: wrap;
 }
 
-@media only screen and (max-width: 1056px) {
+/* Style the tab */
+.tab {
+	display: flex;
+	margin-top: 1.5rem;
+	margin-bottom: 1.25rem;
+}
 
+.tab li {
+	list-style: none;
+}
+
+/* Style the buttons inside the tab */
+.tab a {
+  cursor: pointer;
+  padding: 14px 16px;
+}
+
+/* Change background color of buttons on hover */
+.tab a:hover {
+  text-decoration: underline;
+}
+
+#Media h2 {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+#Media h2:hover {
+	text-decoration: none;
+}
+
+.admin-tools h2{
+    cursor: pointer;
+}
+
+.arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+    background-size: contain;
+    height: 14px;
+  	width: 24px;
+}
+
+.admin-tools.open .arrow {
+    transform: rotate(-180deg);
+}
+
+.tools-content {
+	display: none;
+}
+
+
+@media only screen and (max-width: 1056px) {
 	.related-articles-group {
 		padding: 2rem .75rem;
 	}

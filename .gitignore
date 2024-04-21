@@ -13,3 +13,4 @@ blog.db
 .DS_Store
 /frontpage/static/uploads
 frontpage.db
+docs/dev.md
