@@ -86,17 +86,15 @@ mkdir -p /var/www/html/frontpage/frontpage/static/uploads
 chown -R www-data:www-data /var/www/html/frontpage/frontpage/static/uploads
 chmod -R 755 /var/www/html/frontpage/frontpage/static/uploads
 
-cp files/frontpage.service /etc/systemd/system/frontpage.service
-
-# Install Nginx
-apt install nginx -y
+cp -n files/frontpage.service /etc/systemd/system/frontpage.service
 
 # Set up Nginx to proxy requests to Flask
 cp files/nginx.conf /etc/nginx/sites-available/frontpage
 ln -sf /etc/nginx/sites-available/frontpage /etc/nginx/sites-enabled
 rm -f /etc/nginx/sites-available/default
 rm -f /etc/nginx/sites-enabled/default
-systemctl reload nginx
+pkill -9 nginx
+systemctl restart nginx.service
 
 systemctl enable frontpage.service
 systemctl start frontpage.service
