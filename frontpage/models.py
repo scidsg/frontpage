@@ -46,6 +46,28 @@ class User(UserMixin, db.Model):
             return check_password_hash(self.password_hash, password)
 
 
+class Logo(db.Model):
+    __tablename__ = "logos"
+
+    id = db.Column(db.Integer, primary_key=True)
+    file = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String(255), nullable=True)
+
+    def __repr__(self):
+        return f"<Logo {self.file}>"
+
+
+class Citation(db.Model):
+    __tablename__ = "citations"
+
+    id = db.Column(db.Integer, primary_key=True)
+    article = db.Column(db.String(255), nullable=False)
+    link = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f"<Citation {self.article}>"
+
+
 class Category(db.Model):
     __tablename__ = "categories"
 
@@ -72,7 +94,7 @@ class Article(db.Model):
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     author = db.Column(db.String(50), nullable=False)
-    publish_date = db.Column(db.DateTime, server_default=text("NOW"), nullable=False)
+    publish_date = db.Column(db.DateTime, nullable=False)
     country = db.Column(db.String(50))
     download_link = db.Column(db.String(255))
     download_link2 = db.Column(db.String(255))

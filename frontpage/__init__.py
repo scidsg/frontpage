@@ -4,11 +4,14 @@ import re
 from collections import Counter
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
+import click
+import sys
 
 from dotenv import load_dotenv
 from flask import Flask, flash, redirect, request, url_for
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
+from sqlalchemy.exc import IntegrityError
 
 from .db import db
 from .models import Article, ArticleType, User
@@ -17,38 +20,64 @@ load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-    "SQLALCHEMY_DATABASE_URI", f"sqlite:///{os.getcwd()}/blog.db"
+    "SQLALCHEMY_DATABASE_URI", f"sqlite:///{os.getcwd()}/frontpage.db"
 )
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
-app.config["UPLOAD_FOLDER"] = str(
-    Path(
-        os.environ.get("UPLOAD_FOLDER", "/var/www/html/frontpage/frontpage/static/uploads")
-    ).absolute()
-)
+
+# Setup the upload directory within the project directory
+project_dir = os.path.dirname(os.path.abspath(__file__))  # Directory where this file exists
+app.config["UPLOAD_FOLDER"] = os.path.join(project_dir, "static", "uploads")
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)  # Ensure the directory exists
 
 db.init_app(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 
 
+def initialize_article_types():
+    if not database_exists(app.config["SQLALCHEMY_DATABASE_URI"]):
+        create_database(app.config["SQLALCHEMY_DATABASE_URI"])
+    else:
+        with app.app_context():
+            if not ArticleType.query.first():  # This will check if the table is empty
+                types = [
+                    "Allegations of State Sponsorship",
+                    "Banker's Box",
+                    "Corporate",
+                    "Cyberwar",
+                    "Environmental",
+                    "European Union",
+                    "Extractivist Leaks",
+                    "Fascist",
+                    "Fuerzas Represivas",
+                    "Hack",
+                    "Leak",
+                    "Leak Markets",
+                    "Limited Distribution",
+                    "MilicoLeaks",
+                    "News",
+                    "Official",
+                    "Opinion",
+                    "Organization",
+                    "Other",
+                    "Ransomware",
+                    "Researchers",
+                    "Scrape",
+                ]
+                for type_name in types:
+                    db.session.add(ArticleType(name=type_name))
+                db.session.commit()
+
+
 # Utility function to convert size strings to bytes
 def parse_size(size_str):
-    # Units for binary (base 2) and decimal (base 10) formats
     units_binary = {"B": 1, "KIB": 1024, "MIB": 1024**2, "GIB": 1024**3, "TIB": 1024**4}
     units_decimal = {"KB": 1000, "MB": 1000**2, "GB": 1000**3, "TB": 1000**4}
-
-    # Make the string uppercase and remove spaces
     size_str = size_str.upper().replace(" ", "")
-
-    # Regular expression to parse the size string
     matches = re.match(r"([0-9]*\.?[0-9]+)\s*([A-Z]+)", size_str)
-
     if not matches:
         raise ValueError("Invalid size format")
-
     size, unit = matches.groups()
-
-    # Check if the unit is binary or decimal and calculate accordingly
     if unit in units_binary:
         return int(float(size) * units_binary[unit])
     elif unit in units_decimal:
@@ -74,7 +103,6 @@ def format_size(size_in_bytes):
 @app.errorhandler(404)
 def page_not_found(e):
     if request.path.startswith("/static/"):
-        # If it's a static file, just return the default 404 response
         return e
     flash("⛔️ That page doesn't exist", "warning")
     return redirect(url_for("home"))
@@ -95,25 +123,16 @@ def unauthorized():
 def inject_scopes():
     all_articles = Article.query.all()
     counter = Counter()
-
     for article in all_articles:
-        # Count article types using the new many-to-many relationship
         for atype in article.article_types:
             counter[("type", atype.name)] += 1
-
-        # Count countries (no change here)
         if article.country:
             for country in article.country.split(", "):
                 counter[("country", country)] += 1
-
-        # Count sources (no change here)
         if article.source:
             counter[("source", article.source)] += 1
-
-    # Retrieve the top 5 scopes
     top_scopes = counter.most_common(5)
-    all_scopes = [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]
-    return {"all_scopes": all_scopes}
+    return {"all_scopes": [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]}
 
 
 @app.context_processor
@@ -137,39 +156,38 @@ def db_extras() -> None:
     pass
 
 
-@db_extras.command(
-    help="Ensures all defaut article types are present",
-)
-def add_article_types() -> None:
-    existing_types = [atype.name for atype in ArticleType.query.all()]
-    for atype in [
-        "Allegations of State Sponsorship",
-        "Banker's Box",
-        "Corporate",
-        "Cyberwar",
-        "Environmental",
-        "European Union",
-        "Extractivist Leaks",
-        "Fascist",
-        "Fuerzas Represivas",
-        "Hack",
-        "Leak",
-        "Leak Markets",
-        "Limited Distribution",
-        "MilicoLeaks",
-        "News",
-        "Official",
-        "Opinion",
-        "Organization",
-        "Other",
-        "Ransomware",
-        "Researchers",
-        "Scrape",
-    ]:
-        if atype not in existing_types:
-            new_type = ArticleType(name=atype)
-            db.session.add(new_type)
-    db.session.commit()
+@db_extras.command(help="Ensures all default article types are present")
+def add_article_types():
+    initialize_article_types()
+
+
+@app.cli.group(help="Database management commands")
+def db_manage():
+    pass
+
+
+@app.cli.command("add-type")
+@click.argument("type_name")
+def add_type(type_name):
+    """Adds a new article type to the database using SQLAlchemy ORM."""
+    if not type_name:
+        click.echo("You must provide an article type name.", err=True)
+        sys.exit(1)  # Properly exit with code 1 to indicate failure
+    new_type = ArticleType(name=type_name)
+    db.session.add(new_type)
+    try:
+        db.session.commit()
+        click.echo(f"Successfully added new article type: '{type_name!r}'.")
+    except IntegrityError as e:
+        db.session.rollback()
+        if "unique constraint" in str(e.orig).lower():
+            click.echo(
+                f"Failed to add new article type '{type_name!r}'. A type with this name already exists.",
+                err=True,
+            )
+        else:
+            click.echo(f"An unexpected database error occurred: {e}", err=True)
+        sys.exit(1)  # Exit with code 1 on failure due to database errors
 
 
 # Initialize logging
@@ -182,5 +200,4 @@ if not app.debug:
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.INFO)
 
-
-from . import routes  # noqa: # import at end of module to force routes to populate
+from . import routes  # noqa: F401 Import at end to avoid circular dependency issues

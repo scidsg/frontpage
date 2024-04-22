@@ -28,7 +28,7 @@
             <a class="mobileNav btnIcon" aria-label="Navigation menu">Menu</a>
             <ul>
                 {% if show_team_link %}
-                    <li><a href="{{ url_for('team') }}">Team</a></li>
+                    <li><a href="{{ url_for('about') }}">About Us</a></li>
                 {% endif %}
                 {% if current_user.is_authenticated %}
                     <li><a href="{{ url_for('impact') }}">Impact</a></li>
