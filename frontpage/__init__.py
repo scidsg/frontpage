@@ -34,6 +34,41 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 
 
+def initialize_article_types():
+    if not database_exists(app.config["SQLALCHEMY_DATABASE_URI"]):
+        create_database(app.config["SQLALCHEMY_DATABASE_URI"])
+    else:
+        with app.app_context():
+            if not ArticleType.query.first():  # This will check if the table is empty
+                types = [
+                    "Allegations of State Sponsorship",
+                    "Banker's Box",
+                    "Corporate",
+                    "Cyberwar",
+                    "Environmental",
+                    "European Union",
+                    "Extractivist Leaks",
+                    "Fascist",
+                    "Fuerzas Represivas",
+                    "Hack",
+                    "Leak",
+                    "Leak Markets",
+                    "Limited Distribution",
+                    "MilicoLeaks",
+                    "News",
+                    "Official",
+                    "Opinion",
+                    "Organization",
+                    "Other",
+                    "Ransomware",
+                    "Researchers",
+                    "Scrape",
+                ]
+                for type_name in types:
+                    db.session.add(ArticleType(name=type_name))
+                db.session.commit()
+
+
 # Utility function to convert size strings to bytes
 def parse_size(size_str):
     units_binary = {"B": 1, "KIB": 1024, "MIB": 1024**2, "GIB": 1024**3, "TIB": 1024**4}
@@ -121,39 +156,9 @@ def db_extras() -> None:
     pass
 
 
-@db_extras.command(
-    help="Ensures all default article types are present",
-)
-def add_article_types() -> None:
-    existing_types = [atype.name for atype in ArticleType.query.all()]
-    for atype in [
-        "Allegations of State Sponsorship",
-        "Banker's Box",
-        "Corporate",
-        "Cyberwar",
-        "Environmental",
-        "European Union",
-        "Extractivist Leaks",
-        "Fascist",
-        "Fuerzas Represivas",
-        "Hack",
-        "Leak",
-        "Leak Markets",
-        "Limited Distribution",
-        "MilicoLeaks",
-        "News",
-        "Official",
-        "Opinion",
-        "Organization",
-        "Other",
-        "Ransomware",
-        "Researchers",
-        "Scrape",
-    ]:
-        if atype not in existing_types:
-            new_type = ArticleType(name=atype)
-            db.session.add(new_type)
-    db.session.commit()
+@db_extras.command(help="Ensures all default article types are present")
+def add_article_types():
+    initialize_article_types()
 
 
 @app.cli.group(help="Database management commands")
