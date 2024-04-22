@@ -12,6 +12,7 @@ from flask import Flask, flash, redirect, request, url_for
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy_utils import database_exists
 
 from .db import db
 from .models import Article, ArticleType, User
