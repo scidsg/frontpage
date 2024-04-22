@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById("defaultOpen").click();
     hideFlashMessages();
     setupMobileNav();
     setupPromoBlock();
     setupDeleteButtons();
     initializeUserPageLogic();
-    displayRandomQuote(); 
+    displayRandomQuote();
+    toggleAdminTools();
 });
 
 function displayRandomQuote() {
@@ -103,3 +105,33 @@ function toggleApprovalCheckbox(adminCheckbox) {
         approvalCheckbox.disabled = false;
     }
 }
+
+function openSection(evt, sectionName) {
+    var i, tabcontent, tablinks;
+
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+
+    document.getElementById(sectionName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+function toggleAdminTools() {
+    const adminHeader = document.querySelector('h2[onclick="toggleAdminTools()"]');
+    const toolsContent = document.querySelector('.tools-content');
+    const arrow = document.querySelector('.arrow'); // Select the arrow span
+
+    adminHeader.onclick = function() {
+        const isDisplayed = toolsContent.style.display === 'none';
+        toolsContent.style.display = isDisplayed ? 'block' : 'none';
+        arrow.style.transform = isDisplayed ? 'rotate(-180deg)' : 'rotate(0deg)'; // Rotate the arrow
+    }
+}
+

@@ -11,3 +11,6 @@ blog.db
 .env
 /venv
 .DS_Store
+/frontpage/static/uploads
+frontpage.db
+docs/dev.md

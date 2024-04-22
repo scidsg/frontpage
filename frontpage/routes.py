@@ -10,6 +10,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 from slugify import slugify
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
+from PIL import Image
 
 from . import app, format_size, inject_scopes, parse_size
 from .db import db
@@ -21,8 +22,11 @@ from .forms import (
     PasswordForm,
     RegistrationForm,
     TeamPageForm,
+    LogoForm,
+    CitationForm,
 )
-from .models import Article, ArticleType, Category, InvitationCode, User
+
+from .models import Article, ArticleType, Category, InvitationCode, User, Logo, Citation
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -856,11 +860,129 @@ def all_articles(category):
     )
 
 
-@app.route("/team")
-def team():
-    # Sort users by 'display_name' if you're displaying that, or use 'username' as a fallback
-    users = User.query.filter(User.include_in_team_page).order_by(User.display_name).all()
-    return render_template("team.html", title="Our Team", users=users)
+@app.route("/about", methods=["GET", "POST"])
+def about():
+    users = User.query.filter_by(include_in_team_page=True).all()
+    logos = Logo.query.all()
+    citations = Citation.query.all()
+
+    logo_form = LogoForm()  # Always instantiate the logo form
+    citation_form = CitationForm()  # Always instantiate the citation form
+
+    # Attempt to handle POST requests
+    if request.method == "POST":
+        if "logo_submit" in request.form and current_user.is_admin:
+            if logo_form.validate_on_submit():
+                file = logo_form.file.data
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(app.config["UPLOAD_FOLDER"], "logos", filename)
+
+                if not os.path.exists(os.path.dirname(filepath)):
+                    os.makedirs(os.path.dirname(filepath))
+
+                file.save(filepath)
+                new_logo = Logo(file=filename, description=logo_form.description.data)
+                db.session.add(new_logo)
+                db.session.commit()
+                flash("Logo added successfully.", "success")
+            else:
+                flash("Failed to add logo. Please check the form data.", "danger")
+
+        elif "citation_submit" in request.form and current_user.is_admin:
+            if citation_form.validate_on_submit():
+                new_citation = Citation(
+                    article=citation_form.article.data, link=citation_form.link.data
+                )
+                db.session.add(new_citation)
+                db.session.commit()
+                flash("Citation added successfully.", "success")
+            else:
+                flash("Failed to add citation. Please check the form data.", "danger")
+
+    # Reading dimensions for logos
+    for logo in logos:
+        image_path = os.path.join(app.config["UPLOAD_FOLDER"], "logos", logo.file)
+        with Image.open(image_path) as img:
+            logo.width, logo.height = img.size  # Store dimensions
+
+    # Render the template with all necessary forms and objects
+    return render_template(
+        "about.html",
+        users=users,
+        logos=logos,
+        citations=citations,
+        logo_form=logo_form,
+        citation_form=citation_form,
+    )
+
+
+@app.route("/about/add_logo", methods=["POST"])
+@login_required
+def add_logo():
+    if not current_user.is_admin:
+        flash("Unauthorized access. Admins only.", "danger")
+        return redirect(url_for("about"))
+
+    logo_form = LogoForm()  # No need to pass request.form
+    if logo_form.validate_on_submit():
+        file = logo_form.file.data
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], "logos", filename)
+
+        if not os.path.exists(os.path.dirname(filepath)):
+            os.makedirs(os.path.dirname(filepath))
+
+        file.save(filepath)
+        new_logo = Logo(file=filename, description=logo_form.description.data)
+        db.session.add(new_logo)
+        db.session.commit()
+        flash("Logo added successfully.", "success")
+        return redirect(url_for("about"))
+    else:
+        for fieldName, errorMessages in logo_form.errors.items():
+            for err in errorMessages:
+                flash(f"{fieldName}: {err}", "danger")
+        return redirect(url_for("about"))
+
+
+@app.route("/about/add_citation", methods=["POST"])
+@login_required
+def add_citation():
+    citation_form = CitationForm()
+    if citation_form.validate_on_submit():
+        new_citation = Citation(article=citation_form.article.data, link=citation_form.link.data)
+        db.session.add(new_citation)
+        db.session.commit()
+        flash("Citation added successfully.", "success")
+    else:
+        flash("Failed to add citation. Please check the form data.", "danger")
+    return redirect(url_for("about"))
+
+
+@app.route("/about/delete_logo/<int:logo_id>", methods=["POST"])
+@login_required
+def delete_logo(logo_id):
+    logo = Logo.query.get_or_404(logo_id)
+    if current_user.is_admin:
+        db.session.delete(logo)
+        db.session.commit()
+        flash("Logo removed successfully.", "success")
+    else:
+        flash("Unauthorized attempt to delete logo.", "danger")
+    return redirect(url_for("about"))
+
+
+@app.route("/about/delete_citation/<int:citation_id>", methods=["POST"])
+@login_required
+def delete_citation(citation_id):
+    citation = Citation.query.get_or_404(citation_id)
+    if current_user.is_admin:
+        db.session.delete(citation)
+        db.session.commit()
+        flash("Citation removed successfully.", "success")
+    else:
+        flash("Unauthorized attempt to delete citation.", "danger")
+    return redirect(url_for("about"))
 
 
 @app.route("/all_articles/a-z")
