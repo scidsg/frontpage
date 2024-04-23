@@ -21,7 +21,7 @@ load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-    "SQLALCHEMY_DATABASE_URI", f"sqlite:///{os.getcwd()}/frontpage.db"
+    "SQLALCHEMY_DATABASE_URI", f"sqlite:///{os.getcwd()}/blog.db"
 )
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
 
