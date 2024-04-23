@@ -22,6 +22,7 @@ article_cols = (
     "external_collaboration2, external_collaboration3, source, last_edited, slug, pending_approval"
 )
 
+
 @contextmanager
 def transfer(new: str, old: str | None = None, cols: str | None = None) -> None:
     if not old:
@@ -31,6 +32,7 @@ def transfer(new: str, old: str | None = None, cols: str | None = None) -> None:
     if not cols:
         cols = "*"
     op.execute(f"INSERT INTO {new} SELECT {cols} FROM {old}")
+
 
 def upgrade() -> None:
     # Create and transfer to new 'article_types' table
@@ -42,39 +44,40 @@ def upgrade() -> None:
             sa.PrimaryKeyConstraint("id", name=op.f("pk_article_types")),
             sa.UniqueConstraint("name", name=op.f("uq_article_types_name")),
         )
-    
+
     # Create and transfer to new 'articles' table
-    with transfer("articles", "article", cols=article_cols):
+    with transfer("article", "articles", cols=article_cols + ", 0 AS pending_approval"):
         op.create_table(
-            "articles",
-            sa.Column("id", sa.Integer(), nullable=False),
-            sa.Column("title", sa.String(length=100), nullable=False),
-            sa.Column("content", sa.Text(), nullable=False),
-            sa.Column("author", sa.String(length=50), nullable=False),
-            sa.Column("publish_date", sa.DateTime(), nullable=False),
-            sa.Column("country", sa.String(length=50), nullable=True),
-            sa.Column("download_link", sa.String(length=255), nullable=True),
-            sa.Column("download_link2", sa.String(length=255), nullable=True),
-            sa.Column("download_link3", sa.String(length=255), nullable=True),
-            sa.Column("magnet_link", sa.String(length=255), nullable=True),
-            sa.Column("magnet_link2", sa.String(length=255), nullable=True),
-            sa.Column("magnet_link3", sa.String(length=255), nullable=True),
-            sa.Column("torrent_link", sa.String(length=255), nullable=True),
-            sa.Column("torrent_link2", sa.String(length=255), nullable=True),
-            sa.Column("torrent_link3", sa.String(length=255), nullable=True),
-            sa.Column("ipfs_link", sa.String(length=255), nullable=True),
-            sa.Column("ipfs_link2", sa.String(length=255), nullable=True),
-            sa.Column("ipfs_link3", sa.String(length=255), nullable=True),
-            sa.Column("download_size", sa.String(length=255), nullable=True),
-            sa.Column("external_collaboration", sa.String(length=255), nullable=True),
-            sa.Column("external_collaboration2", sa.String(length=255), nullable=True),
-            sa.Column("external_collaboration3", sa.String(length=255), nullable=True),
-            sa.Column("source", sa.String(length=255), nullable=True),
-            sa.Column("last_edited", sa.DateTime(), nullable=True),
-            sa.Column("slug", sa.String(length=255), nullable=False),
-            sa.Column("pending_approval", sa.Boolean(), nullable=False),
-            sa.PrimaryKeyConstraint("id", name=op.f("pk_articles")),
-            sa.UniqueConstraint("slug", name=op.f("uq_articles_slug")),
+            "article",
+            sa.Column("id", sa.INTEGER(), nullable=False),
+            sa.Column("title", sa.VARCHAR(length=100), nullable=False),
+            sa.Column("content", sa.TEXT(), nullable=False),
+            sa.Column("author", sa.VARCHAR(length=50), nullable=False),
+            sa.Column("publish_date", sa.DATETIME(), nullable=True),
+            sa.Column("country", sa.VARCHAR(length=50), nullable=True),
+            sa.Column("download_link", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("download_link2", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("download_link3", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("magnet_link", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("magnet_link2", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("magnet_link3", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("torrent_link", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("torrent_link2", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("torrent_link3", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("ipfs_link", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("ipfs_link2", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("ipfs_link3", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("download_size", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("external_collaboration", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("external_collaboration2", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("external_collaboration3", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("article_type", sa.VARCHAR(length=50), nullable=True),
+            sa.Column("source", sa.VARCHAR(length=255), nullable=True),
+            sa.Column("last_edited", sa.DATETIME(), nullable=True),
+            sa.Column("slug", sa.VARCHAR(length=255), nullable=False),
+            sa.Column("pending_approval", sa.BOOLEAN(), nullable=False, server_default="0"),
+            sa.PrimaryKeyConstraint("id", name="pk_article"),
+            sa.UniqueConstraint("slug", name="uq_article_slug"),
         )
 
     # New table definitions as per the latest migration file `969132890ea8_.py`
@@ -92,7 +95,6 @@ def upgrade() -> None:
         sa.Column("description", sa.String(length=255), nullable=True),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_logos")),
     )
-
     with transfer("categories", "category"):
         op.create_table(
             "categories",
@@ -189,6 +191,16 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    # Explicitly drop tables if they exist before recreating them
+    op.execute("DROP TABLE IF EXISTS invitation_code")
+    op.execute("DROP TABLE IF EXISTS category")
+    op.execute("DROP TABLE IF EXISTS article_type")
+    op.execute("DROP TABLE IF EXISTS user")
+    op.execute("DROP TABLE IF EXISTS article")
+    op.execute("DROP TABLE IF EXISTS article_article_types")
+    op.execute("DROP TABLE IF EXISTS article_categories")
+
+    # Recreate the original tables with the original schema
     with transfer("invitation_code", "invitation_codes"):
         op.create_table(
             "invitation_code",
@@ -235,7 +247,7 @@ def downgrade() -> None:
             sa.UniqueConstraint("username", name="uq_user_username"),
         )
 
-    with transfer("article", "articles", cols=article_cols + ", NULL AS article_type"):
+    with transfer("article", "articles", cols=article_cols + ", 0 AS pending_approval"):
         op.create_table(
             "article",
             sa.Column("id", sa.INTEGER(), nullable=False),
@@ -264,7 +276,7 @@ def downgrade() -> None:
             sa.Column("source", sa.VARCHAR(length=255), nullable=True),
             sa.Column("last_edited", sa.DATETIME(), nullable=True),
             sa.Column("slug", sa.VARCHAR(length=255), nullable=False),
-            sa.Column("pending_approval", sa.BOOLEAN(), nullable=False),
+            sa.Column("pending_approval", sa.BOOLEAN(), nullable=False, server_default="0"),
             sa.PrimaryKeyConstraint("id", name="pk_article"),
             sa.UniqueConstraint("slug", name="uq_article_slug"),
         )
