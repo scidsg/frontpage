@@ -714,7 +714,7 @@ header nav {
 	display: flex;
 	align-items: center;
 	gap: 0;
-	margin-left: 1rem;
+	margin-left: 0;
 }
 
 header nav a {
@@ -1519,7 +1519,7 @@ header input[type="search"] {
 	transition: .3s;
 }
 
-@media only screen and (max-width: 1056px) {
+@media only screen and (max-width: 1100px) {
 
 	@media (prefers-color-scheme: light) {
 		header nav ul {
@@ -1550,11 +1550,6 @@ header input[type="search"] {
 	.show {
 		display: flex;
 		z-index: 999999;
-	}
-
-	header nav {
-		gap: 0;
-		margin-left: 1.5rem;
 	}
 	
 	header {
@@ -1657,6 +1652,11 @@ header input[type="search"] {
    .content.promo {
    	 background-image: none;
    }
+
+   	header nav {
+		gap: 0;
+		margin-left: 1.5rem;
+	}
 }
 
 @media only screen and (max-width: 640px) { 
