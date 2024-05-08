@@ -27,15 +27,15 @@
         <div class="search-content">
             <span class="close"></span>
             <form class="search-form" action="{{ url_for('search') }}" method="get">
-                <input type="search" name="query" placeholder="Search articles..." required>
-                <button class="search-input-button" type="submit"></button>
+            <input type="search" id="searchInput" name="query" placeholder="Search articles..." required>
+            <button class="search-input-button" type="submit"></button>
             </form>
         </div>
     </div>
     <header>
         <h1><a href="{{ url_for('home') }}">Distributed Denial of Secrets</a></h1>
         <form class="search-form" action="{{ url_for('search') }}" method="get">
-            <input type="search" name="query" placeholder="Search articles..." required>
+            <input type="search" id="searchInput" name="query" placeholder="Search articles..." required>
             <button class="search-input-button"  type="submit"></button>
         </form>
         <nav class="{% if current_user.is_authenticated %}user-logged-in{% else %}user-logged-out{% endif %}">

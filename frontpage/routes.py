@@ -2,10 +2,11 @@ import os
 from collections import Counter
 from datetime import datetime
 from itertools import groupby
+import json
 
 import markdown
 import pycountry
-from flask import flash, redirect, render_template, request, url_for
+from flask import Flask, jsonify, flash, redirect, render_template, request, url_for, current_app
 from flask_login import current_user, login_required, login_user, logout_user
 from slugify import slugify
 from sqlalchemy.exc import IntegrityError
@@ -1062,20 +1063,71 @@ def submit():
     return render_template("submit.html", title="Submit")
 
 
+@app.route("/generate_articles_json")
+def generate_articles_json():
+    print("Generating articles JSON...")  # Console output for debugging
+    try:
+        articles = Article.query.all()
+        articles_data = [
+            {
+                "title": article.title,
+                "content": article.content,
+                "metadata": {
+                    "author": article.author,
+                    "publish_date": article.publish_date.strftime("%Y-%m-%d %H:%M"),
+                    "slug": article.slug,
+                },
+            }
+            for article in articles
+        ]
+
+        # Define the full file path using the Flask app's static directory
+        json_file_path = os.path.join(current_app.static_folder, "articles.json")
+
+        # Write the JSON data to the file
+        with open(json_file_path, "w") as f:
+            json.dump(articles_data, f, indent=4)
+
+        print("JSON file created successfully.")  # Console output for debugging
+        return jsonify({"message": "JSON file created successfully", "data": articles_data})
+
+    except Exception as e:
+        error_msg = f"Failed to generate JSON: {str(e)}"
+        print(error_msg)  # Console output for debugging
+        return jsonify({"error": "Failed to generate JSON", "details": error_msg}), 500
+
+
 @app.route("/search", methods=["GET"])
 def search():
-    query = request.args.get("query", "")
+    query = request.args.get("query", "").strip()
     if query:
-        articles = Article.query.filter(Article.title.ilike(f"%{query}%")).all()
-        article_count = len(articles)
+        # Load the JSON data
+        json_file_path = os.path.join(current_app.static_folder, "articles.json")
+        try:
+            with open(json_file_path, "r") as f:
+                articles_data = json.load(f)
+
+            # Filter articles based on query
+            filtered_articles = [
+                article
+                for article in articles_data
+                if query.lower() in article["title"].lower()
+                or query.lower() in article["content"].lower()
+            ]
+            article_count = len(filtered_articles)
+        except FileNotFoundError:
+            filtered_articles = []
+            article_count = 0
+            print("Failed to load articles JSON file.")
+
     else:
-        articles = []
+        filtered_articles = []
         article_count = 0
 
     return render_template(
         "search_results.html",
         title=f"Search Results for '{query}'",
-        articles=articles,
+        articles=filtered_articles,
         article_count=article_count,
         query=query,
     )
