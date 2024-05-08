@@ -24,6 +24,10 @@
 <body>
     <header>
         <h1><a href="{{ url_for('home') }}">Distributed Denial of Secrets</a></h1>
+        <form id="search" action="{{ url_for('search') }}" method="get">
+            <input type="text" name="query" placeholder="Search articles..." required>
+            <button type="submit"></button>
+        </form>
         <nav class="{% if current_user.is_authenticated %}user-logged-in{% else %}user-logged-out{% endif %}">
             <a class="mobileNav btnIcon" aria-label="Navigation menu">Menu</a>
             <ul>

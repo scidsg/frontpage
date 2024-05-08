@@ -1060,3 +1060,22 @@ def impact():
 @app.route("/submit")
 def submit():
     return render_template("submit.html", title="Submit")
+
+
+@app.route("/search", methods=["GET"])
+def search():
+    query = request.args.get("query", "")
+    if query:
+        articles = Article.query.filter(Article.title.ilike(f"%{query}%")).all()
+        article_count = len(articles)
+    else:
+        articles = []
+        article_count = 0
+
+    return render_template(
+        "search_results.html",
+        title=f"Search Results for '{query}'",
+        articles=articles,
+        article_count=article_count,
+        query=query,
+    )
