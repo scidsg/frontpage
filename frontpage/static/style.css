@@ -240,6 +240,10 @@
 		color: #333;
 	}
 
+	input:focus {
+		outline: 2px solid black;
+	}
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -454,6 +458,19 @@
 
 	.close {
 		color: rgba(255,255,255,.8);
+	}
+
+	input:focus {
+		outline: 2px solid white;
+	}
+
+	mark {
+	    background-color: rgb(255,193,193);
+	    color: #333;
+	}
+
+	a mark {
+	    text-decoration-color: #333;
 	}
 
 }
