@@ -27,6 +27,24 @@
 		background-color: rgba(25, 111, 164, 0.05);
 	}
 
+	.close {
+		background-image: url('close-lm.png');
+	}
+
+	button.search-input-button {
+		background-image: url('search-lm.png');
+	}
+
+	.search-modal {
+	    background-color: rgb(0,0,0); /* Fallback color */
+	    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	}
+
+	.search-content {
+	    background-color: #fefefe;
+	    box-shadow: 0px .5rem 1rem -.5rem rgba(0,0,0,0.5);
+	}
+
 	.arrow {
 		background-image: url('icon-chevron-lm.png');
 	}
@@ -219,6 +237,19 @@
 		background-color: rgba(25, 25, 25, 1);
 	}
 
+	.close {
+		background-image: url('close-dm.png');
+	}
+
+	button.search-input-button {
+		background-image: url('search-dm.png');
+	}
+
+	.search-content {
+	    background-color: #333;
+	    box-shadow: 0px .5rem 1rem -.5rem rgba(0,0,0,0.5);
+	}
+
 	.arrow {
 		background-image: url('icon-chevron-dm.png');
 	}
@@ -229,8 +260,8 @@
 	
 	code {
 		background-color: #444;
-    color: #fff;
-    border: 1px solid rgba(255,255,255,.1);
+  		color: #fff;
+  	  	border: 1px solid rgba(255,255,255,.1);
 	}
 	
 	::selection {
@@ -1404,7 +1435,6 @@ header .search-form input {
 }
 
 button.search-input-button {
-	background-image: url('search.png');
 	background-size: contain;
 	background-repeat: no-repeat;
 	height: 20px;
@@ -1429,13 +1459,10 @@ button.search-input-button {
     width: 100%; /* Full width */
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
     z-index: 9999;
 }
 
 .search-content {
-    background-color: #fefefe;
     margin: 0 auto;
     padding: 1rem;
     box-shadow: 0px .5rem 1rem -.5rem rgba(0,0,0,0.5);
@@ -1467,7 +1494,6 @@ button.search-input-button {
 }
 
 .close {
-	background-image: url('close.png');
 	background-size: contain;
 	background-repeat: no-repeat;
 	height: 24px;
@@ -1478,6 +1504,11 @@ button.search-input-button {
 
 .search-modal .search-content input {
 	margin: 0;
+}
+
+header input[type="search"] {
+	margin: 0;
+	width: 333px;
 }
 
 
@@ -1527,6 +1558,11 @@ button.search-input-button {
 	header {
 		padding-top: .75rem;
 		padding-bottom: .75rem;
+	}
+
+	header input[type="search"] {
+		margin: 0;
+		width: 260px;
 	}
 	
 	.categories-list {
@@ -1591,6 +1627,10 @@ button.search-input-button {
 
 	p.mission {
 		font-size: 1.5rem;
+	}
+
+	.mobileNav {
+		margin-right: .5rem;
 	}
 	
 }
