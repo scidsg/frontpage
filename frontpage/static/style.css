@@ -694,6 +694,7 @@ header {
     cursor: pointer;
     min-width: 48px;
     display: none;
+    padding: 0 0 0 2.5rem;
 	align-content: center;
 }
 
@@ -1553,6 +1554,7 @@ header input[type="search"] {
 
 	header nav {
 		gap: 0;
+		margin-left: 1.5rem;
 	}
 	
 	header {
@@ -1660,6 +1662,14 @@ header input[type="search"] {
 @media only screen and (max-width: 640px) { 
 	.content.home {
 		flex-direction: column;
+	}
+
+	.btnIcon {
+	    padding: 0;
+	}
+
+	.menu-tag {
+		display: none;
 	}
 
 	.content.home .column {

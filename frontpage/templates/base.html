@@ -40,7 +40,7 @@
         </form>
         <nav class="{% if current_user.is_authenticated %}user-logged-in{% else %}user-logged-out{% endif %}">
             <button id="searchButton" class="search-button search-input-button search-trigger"></button>
-            <a class="mobileNav btnIcon" aria-label="Navigation menu"></a>
+            <a class="mobileNav btnIcon" aria-label="Navigation menu"><span class="menu-tag">Menu</span></a>
             <ul>
                 {% if show_team_link %}
                     <li><a href="{{ url_for('about') }}">About Us</a></li>
