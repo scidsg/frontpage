@@ -3,6 +3,7 @@ from collections import Counter
 from datetime import datetime
 from itertools import groupby
 import json
+import re
 
 import markdown
 import pycountry
@@ -12,6 +13,7 @@ from slugify import slugify
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 from PIL import Image
+from markupsafe import Markup
 
 from . import app, format_size, inject_scopes, parse_size
 from .db import db
@@ -1107,9 +1109,13 @@ def search():
             with open(json_file_path, "r") as f:
                 articles_data = json.load(f)
 
-            # Filter articles based on query
+            # Filter articles based on query and highlight matches
             filtered_articles = [
-                article
+                {
+                    "title": highlight_match(article["title"], query),
+                    "content": highlight_match(article["content"], query),
+                    "metadata": article["metadata"],
+                }
                 for article in articles_data
                 if query.lower() in article["title"].lower()
                 or query.lower() in article["content"].lower()
@@ -1119,7 +1125,6 @@ def search():
             filtered_articles = []
             article_count = 0
             print("Failed to load articles JSON file.")
-
     else:
         filtered_articles = []
         article_count = 0
@@ -1131,3 +1136,11 @@ def search():
         article_count=article_count,
         query=query,
     )
+
+
+def highlight_match(text, search_query):
+    """Highlights all occurrences of search_query in text by wrapping them in HTML <mark> tags."""
+    highlighted = re.sub(
+        f"({re.escape(search_query)})", r"<mark>\1</mark>", text, flags=re.IGNORECASE
+    )
+    return Markup(highlighted)

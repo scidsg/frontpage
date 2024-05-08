@@ -231,8 +231,8 @@
  	}
 
 	mark {
-	    background-color: yellow;
-	    color: black;
+	    background-color: rgb(255,193,193);
+	    color: #333;
 	}
 	
 }
@@ -1517,6 +1517,11 @@ header input[type="search"] {
 	margin: 0;
 	width: 333px;
 	transition: .3s;
+}
+
+mark {
+    border-radius: .125rem;
+    font-family: 'Atkinson Bold', sans-serif;
 }
 
 @media only screen and (max-width: 1100px) {
