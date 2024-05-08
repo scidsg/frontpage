@@ -229,6 +229,11 @@
 		border-top: 1px solid rgba(0,0,0,0.1);
 		border-bottom: 1px solid rgba(0,0,0,0.1);
  	}
+
+	mark {
+	    background-color: yellow;
+	    color: black;
+	}
 	
 }
 
@@ -689,7 +694,6 @@ header {
     cursor: pointer;
     min-width: 48px;
     display: none;
-    padding: 0 0 0 2.5rem;
 	align-content: center;
 }
 
@@ -709,6 +713,7 @@ header nav {
 	display: flex;
 	align-items: center;
 	gap: 0;
+	margin-left: 1rem;
 }
 
 header nav a {
@@ -1443,7 +1448,7 @@ button.search-input-button {
 	background-color: transparent;
 	border: none;
 	position: absolute;
-	right: .5rem;
+	right: .25rem;
 	top: 25%;
 	z-index: 99;
 	cursor: pointer;
@@ -1625,7 +1630,7 @@ header input[type="search"] {
 	}
 
 	.mobileNav {
-		margin-right: .5rem;
+		margin-right: .25rem;
 	}
 	
 }
