@@ -1392,17 +1392,18 @@ p.mission {
 	width: fit-content;
 }
 
-#search {
+#search,
+.search-form {
 	position: relative;
 	margin: 0;
 }
 
-#search input {
+header .search-form input {
 	margin: 0;
 	padding: .5rem 1.5rem .5rem .75rem;
 }
 
-#search button {
+button.search-input-button {
 	background-image: url('search.png');
 	background-size: contain;
 	background-repeat: no-repeat;
@@ -1416,7 +1417,69 @@ p.mission {
 	z-index: 99;
 	cursor: pointer;
 	padding: 0;
+	opacity: 0;
 }
+
+.search-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 200; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    z-index: 9999;
+}
+
+.search-content {
+    background-color: #fefefe;
+    margin: 0 auto;
+    padding: 1rem;
+    box-shadow: 0px .5rem 1rem -.5rem rgba(0,0,0,0.5);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.search-button {
+    display: none; /* Hide button by default */
+    z-index: 100; /* Make sure it's above other content */
+}
+
+.search-button.search-trigger {
+	opacity: 1;
+	position: relative;
+}
+
+.close {
+	background-image: url('close.png');
+	background-size: contain;
+	background-repeat: no-repeat;
+	height: 24px;
+	width: 24px;
+	position: relative;
+	z-index: 99999;
+}
+
+.search-modal .search-content input {
+	margin: 0;
+}
+
 
 @media only screen and (max-width: 1056px) {
 	.related-articles-group {
@@ -1424,7 +1487,7 @@ p.mission {
 	}
 }
 
-@media only screen and (max-width: 820px) {
+@media only screen and (max-width: 1024px) {
 
 	@media (prefers-color-scheme: light) {
 		header nav ul {
@@ -1530,6 +1593,16 @@ p.mission {
 		font-size: 1.5rem;
 	}
 	
+}
+
+@media (max-width: 768px) {
+    .search-button {
+        display: block; /* Show button on small screens */
+    }
+
+    .search-form:not(.search-modal .search-form) {
+    	display: none;
+    }
 }
 
 @media only screen and (max-width: 640px) { 

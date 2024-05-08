@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById("defaultOpen").click();
+    // Click on the default tab
+    const defaultOpenTab = document.getElementById("defaultOpen");
+    if (defaultOpenTab) {
+        defaultOpenTab.click();
+    }
+
+    // Initialize core functions
     hideFlashMessages();
     setupMobileNav();
     setupPromoBlock();
@@ -7,13 +13,39 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeUserPageLogic();
     displayRandomQuote();
     toggleAdminTools();
+
+    // Search modal functionality
+    const searchButton = document.getElementById('searchButton');
+    const searchModal = document.getElementById('searchModal');
+    const closeModalButton = document.getElementsByClassName('close')[0];
+
+    // Ensure all necessary modal elements are available
+    if (searchButton && searchModal && closeModalButton) {
+        // Show the search modal when the search button is clicked
+        searchButton.onclick = function() {
+            searchModal.style.display = 'block';
+        };
+
+        // Close the modal when the close button is clicked
+        closeModalButton.onclick = function() {
+            searchModal.style.display = 'none';
+        };
+
+        // Close the modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target === searchModal) {
+                searchModal.style.display = 'none';
+            }
+        };
+    } else {
+        console.error('Search modal elements are missing.');
+    }
 });
 
 function displayRandomQuote() {
-    fetch('/static/quotes.json') 
+    fetch('/static/quotes.json')
         .then(response => response.json())
         .then(quotes => {
-            console.log(quotes); // Add this line for debugging
             const quoteElement = document.getElementById('quote');
             if (quoteElement && quotes.length) {
                 const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -29,7 +61,7 @@ function hideFlashMessages() {
     flashMessages.forEach(msg => {
         setTimeout(() => {
             msg.classList.add('fadeOut');
-        }, 5000); // Delay before starting the fade out
+        }, 5000);
     });
 }
 
@@ -37,7 +69,7 @@ function setupMobileNav() {
     const mobileNavButton = document.querySelector('.btnIcon');
     const navMenu = document.querySelector('header nav ul');
 
-    if (mobileNavButton) {
+    if (mobileNavButton && navMenu) {
         mobileNavButton.addEventListener('click', function() {
             const isExpanded = this.getAttribute('aria-expanded') === 'true' || false;
             this.setAttribute('aria-expanded', !isExpanded);
@@ -60,10 +92,10 @@ function setupPromoBlock() {
 }
 
 function setupDeleteButtons() {
-    var deleteArticleButtons = document.querySelectorAll('.delete-article-button');
-    var deleteUserButtons = document.querySelectorAll('.btn.destruct');
+    const deleteArticleButtons = document.querySelectorAll('.delete-article-button');
+    const deleteUserButtons = document.querySelectorAll('.btn.destruct');
 
-    deleteArticleButtons.forEach(function(button) {
+    deleteArticleButtons.forEach(button => {
         button.addEventListener('click', function(event) {
             if (!confirm('Are you sure you want to delete this article?')) {
                 event.preventDefault();
@@ -71,9 +103,9 @@ function setupDeleteButtons() {
         });
     });
 
-    deleteUserButtons.forEach(function(button) {
+    deleteUserButtons.forEach(button => {
         button.addEventListener('click', function(event) {
-            var username = button.getAttribute('data-username');
+            const username = button.getAttribute('data-username');
             if (!confirm('Are you sure you want to delete the user: ' + username + '?')) {
                 event.preventDefault();
             }
@@ -81,11 +113,10 @@ function setupDeleteButtons() {
     });
 }
 
-
 function initializeUserPageLogic() {
     const adminCheckboxes = document.querySelectorAll('.admin-checkbox');
 
-    adminCheckboxes.forEach(function(adminCheckbox) {
+    adminCheckboxes.forEach(adminCheckbox => {
         toggleApprovalCheckbox(adminCheckbox);
 
         adminCheckbox.addEventListener('change', function() {
@@ -98,40 +129,45 @@ function toggleApprovalCheckbox(adminCheckbox) {
     const userId = adminCheckbox.name.split('_')[1];
     const approvalCheckbox = document.getElementById('approval_' + userId);
 
-    if (adminCheckbox.checked) {
-        approvalCheckbox.checked = false;
-        approvalCheckbox.disabled = true;
-    } else {
-        approvalCheckbox.disabled = false;
+    if (approvalCheckbox) {
+        if (adminCheckbox.checked) {
+            approvalCheckbox.checked = false;
+            approvalCheckbox.disabled = true;
+        } else {
+            approvalCheckbox.disabled = false;
+        }
     }
 }
 
 function openSection(evt, sectionName) {
-    var i, tabcontent, tablinks;
-
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
+    const tabcontent = document.getElementsByClassName("tabcontent");
+    for (let i = 0; i < tabcontent.length; i++) {
         tabcontent[i].style.display = "none";
     }
 
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
+    const tablinks = document.getElementsByClassName("tablinks");
+    for (let i = 0; i < tablinks.length; i++) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
 
-    document.getElementById(sectionName).style.display = "block";
+    const section = document.getElementById(sectionName);
+    if (section) {
+        section.style.display = "block";
+    }
+
     evt.currentTarget.className += " active";
 }
 
 function toggleAdminTools() {
     const adminHeader = document.querySelector('h2[onclick="toggleAdminTools()"]');
     const toolsContent = document.querySelector('.tools-content');
-    const arrow = document.querySelector('.arrow'); // Select the arrow span
+    const arrow = document.querySelector('.arrow');
 
-    adminHeader.onclick = function() {
-        const isDisplayed = toolsContent.style.display === 'none';
-        toolsContent.style.display = isDisplayed ? 'block' : 'none';
-        arrow.style.transform = isDisplayed ? 'rotate(-180deg)' : 'rotate(0deg)'; // Rotate the arrow
+    if (adminHeader && toolsContent && arrow) {
+        adminHeader.onclick = function() {
+            const isDisplayed = toolsContent.style.display === 'none';
+            toolsContent.style.display = isDisplayed ? 'block' : 'none';
+            arrow.style.transform = isDisplayed ? 'rotate(-180deg)' : 'rotate(0deg)';
+        };
     }
 }
-

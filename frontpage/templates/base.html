@@ -22,13 +22,24 @@
     <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
+
+    <div id="searchModal" class="search-modal">
+        <div class="search-content">
+            <span class="close"></span>
+            <form class="search-form" action="{{ url_for('search') }}" method="get">
+                <input type="search" name="query" placeholder="Search articles..." required>
+                <button class="search-input-button" type="submit"></button>
+            </form>
+        </div>
+    </div>
     <header>
         <h1><a href="{{ url_for('home') }}">Distributed Denial of Secrets</a></h1>
-        <form id="search" action="{{ url_for('search') }}" method="get">
-            <input type="text" name="query" placeholder="Search articles..." required>
-            <button type="submit"></button>
+        <form class="search-form" action="{{ url_for('search') }}" method="get">
+            <input type="search" name="query" placeholder="Search articles..." required>
+            <button class="search-input-button"  type="submit"></button>
         </form>
         <nav class="{% if current_user.is_authenticated %}user-logged-in{% else %}user-logged-out{% endif %}">
+            <button id="searchButton" class="search-button search-input-button search-trigger"></button>
             <a class="mobileNav btnIcon" aria-label="Navigation menu">Menu</a>
             <ul>
                 {% if show_team_link %}
