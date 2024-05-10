@@ -71,19 +71,27 @@ def initialize_article_types():
 
 
 def parse_size(size_str):
+    # Limit the maximum length of size_str to prevent abuse
+    if len(size_str) > 100:
+        raise ValueError("Size string too long")
+
     units_binary = {"B": 1, "KIB": 1024, "MIB": 1024**2, "GIB": 1024**3, "TIB": 1024**4}
     units_decimal = {"KB": 1000, "MB": 1000**2, "GB": 1000**3, "TB": 1000**4}
+
     size_str = size_str.upper().replace(" ", "")
+
     # Using a simpler and safer regex pattern
     pattern = re.compile(r"^(\d*\.?\d+)\s*([A-Z]+)$")
     matches = pattern.match(size_str)
+
     if not matches:
         raise ValueError("Invalid size format")
+
     size, unit = matches.groups()
     if unit in units_binary:
-        return int(float(size) * units_policy_binary[unit])
+        return int(float(size) * units_binary[unit])
     elif unit in units_decimal:
-        return int(float(size) * units_policy_decimal[unit])
+        return int(float(size) * units_decimal[unit])
     else:
         raise ValueError("Unknown size unit")
 
