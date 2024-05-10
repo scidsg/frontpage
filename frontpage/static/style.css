@@ -1534,6 +1534,10 @@ button.search-input-button {
 	right: 1.25rem;
 }
 
+.close:hover {
+	text-decoration: underline;
+}
+
 .search-modal .search-content input {
 	margin: 0;
 	width: calc(100% - 66px);

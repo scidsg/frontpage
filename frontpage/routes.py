@@ -1094,9 +1094,14 @@ def generate_articles_json():
         return jsonify({"message": "JSON file created successfully", "data": articles_data})
 
     except Exception as e:
-        error_msg = f"Failed to generate JSON: {str(e)}"
-        print(error_msg)  # Console output for debugging
-        return jsonify({"error": "Failed to generate JSON", "details": error_msg}), 500
+        # Log the error server-side instead of exposing it to the client
+        current_app.logger.error(f"Failed to generate JSON: {str(e)}")
+
+        # Return a generic error message to the client
+        return (
+            jsonify({"error": "An error occurred while generating JSON. Please try again later."}),
+            500,
+        )
 
 
 @app.route("/search", methods=["GET"])
