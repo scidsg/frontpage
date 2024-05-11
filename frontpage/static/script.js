@@ -11,8 +11,11 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeUserPageLogic();
     displayRandomQuote();
     toggleAdminTools();
-    initializeSearch();
+    setupUIInteractions();
 
+});
+
+function setupUIInteractions() {
     const searchButton = document.getElementById('searchButton');
     const searchModal = document.getElementById('searchModal');
     const closeModalButton = document.getElementsByClassName('close')[0];
@@ -33,46 +36,6 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     } else {
         console.error('Search modal elements are missing.');
-    }
-});
-
-function initializeSearch() {
-    let articles = [];
-
-    // Load articles data from the generated JSON file
-    fetch('/static/articles.json')
-        .then(response => response.json())
-        .then(data => {
-            articles = data;
-            console.log('Articles data loaded successfully');
-        })
-        .catch(error => console.error('Error loading articles:', error));
-
-    const searchInput = document.getElementById('searchInput'); // Make sure this ID matches your HTML
-    const searchResultsContainer = document.getElementById('searchResults'); // Ensure this container exists in your HTML
-
-    // Listen for user input on the search field
-    if (searchInput) { // Adding a check to prevent errors if the element is missing
-        searchInput.addEventListener('input', function() {
-            const query = searchInput.value.toLowerCase();
-            const filteredArticles = articles.filter(article =>
-                article.title.toLowerCase().includes(query) ||
-                article.content.toLowerCase().includes(query) ||
-                JSON.stringify(article.metadata).toLowerCase().includes(query)
-            );
-
-            // Display the search results
-            searchResultsContainer.innerHTML = filteredArticles.map(article => `
-                <div class="search-result">
-                    <h3>${article.title}</h3>
-                    <p>${article.content.slice(0, 100)}...</p>
-                    <p><em>Author: ${article.metadata.author}</em></p>
-                    <a href="/articles/${article.metadata.slug}">Read More</a>
-                </div>
-            `).join('');
-        });
-    } else {
-        console.error('Search input not found');
     }
 }
 

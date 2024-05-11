@@ -1065,87 +1065,22 @@ def submit():
     return render_template("submit.html", title="Submit")
 
 
-@app.route("/generate_articles_json")
-def generate_articles_json():
-    print("Generating articles JSON...")  # Console output for debugging
-    try:
-        articles = Article.query.all()
-        articles_data = [
-            {
-                "title": article.title,
-                "content": article.content,
-                "metadata": {
-                    "author": article.author,
-                    "publish_date": article.publish_date.strftime("%Y-%m-%d %H:%M"),
-                    "slug": article.slug,
-                },
-            }
-            for article in articles
-        ]
-
-        # Define the full file path using the Flask app's static directory
-        json_file_path = os.path.join(current_app.static_folder, "articles.json")
-
-        # Write the JSON data to the file
-        with open(json_file_path, "w") as f:
-            json.dump(articles_data, f, indent=4)
-
-        print("JSON file created successfully.")  # Console output for debugging
-        return jsonify({"message": "JSON file created successfully", "data": articles_data})
-
-    except Exception as e:
-        # Log the error server-side instead of exposing it to the client
-        current_app.logger.error(f"Failed to generate JSON: {str(e)}")
-
-        # Return a generic error message to the client
-        return (
-            jsonify({"error": "An error occurred while generating JSON. Please try again later."}),
-            500,
-        )
-
-
 @app.route("/search", methods=["GET"])
 def search():
     query = request.args.get("query", "").strip()
     if query:
-        # Load the JSON data
-        json_file_path = os.path.join(current_app.static_folder, "articles.json")
-        try:
-            with open(json_file_path, "r") as f:
-                articles_data = json.load(f)
-
-            # Filter articles based on query and highlight matches
-            filtered_articles = [
-                {
-                    "title": highlight_match(article["title"], query),
-                    "content": highlight_match(article["content"], query),
-                    "metadata": article["metadata"],
-                }
-                for article in articles_data
-                if query.lower() in article["title"].lower()
-                or query.lower() in article["content"].lower()
-            ]
-            article_count = len(filtered_articles)
-        except FileNotFoundError:
-            filtered_articles = []
-            article_count = 0
-            print("Failed to load articles JSON file.")
+        articles = Article.query.filter(
+            Article.title.ilike(f"%{query}%") | Article.content.ilike(f"%{query}%")
+        ).all()
+        article_count = len(articles)
     else:
-        filtered_articles = []
+        articles = []
         article_count = 0
 
     return render_template(
         "search_results.html",
         title=f"Search Results for '{query}'",
-        articles=filtered_articles,
+        articles=articles,
         article_count=article_count,
         query=query,
     )
-
-
-def highlight_match(text, search_query):
-    """Highlights all occurrences of search_query in text by wrapping them in HTML <mark> tags."""
-    highlighted = re.sub(
-        f"({re.escape(search_query)})", r"<mark>\1</mark>", text, flags=re.IGNORECASE
-    )
-    return Markup(highlighted)
