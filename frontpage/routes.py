@@ -7,7 +7,16 @@ import re
 
 import markdown
 import pycountry
-from flask import Flask, jsonify, flash, redirect, render_template, request, url_for, current_app
+from flask import (
+    Flask,
+    jsonify,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+    current_app,
+)
 from flask_login import current_user, login_required, login_user, logout_user
 from slugify import slugify
 from sqlalchemy.exc import IntegrityError
@@ -1065,6 +1074,14 @@ def submit():
     return render_template("submit.html", title="Submit")
 
 
+def highlight_match(text, query):
+    """Highlight all occurrences of query in text."""
+    highlighted_text = re.sub(
+        "({})".format(re.escape(query)), r"<mark>\1</mark>", text, flags=re.IGNORECASE
+    )
+    return Markup(highlighted_text)
+
+
 @app.route("/search", methods=["GET"])
 def search():
     query = request.args.get("query", "").strip()
@@ -1072,15 +1089,20 @@ def search():
         articles = Article.query.filter(
             Article.title.ilike(f"%{query}%") | Article.content.ilike(f"%{query}%")
         ).all()
-        article_count = len(articles)
+        highlighted_articles = []
+        for article in articles:
+            article.title = highlight_match(article.title, query)
+            article.content = highlight_match(article.content, query)
+            highlighted_articles.append(article)
+        article_count = len(highlighted_articles)
     else:
-        articles = []
+        highlighted_articles = []
         article_count = 0
 
     return render_template(
         "search_results.html",
         title=f"Search Results for '{query}'",
-        articles=articles,
+        articles=highlighted_articles,
         article_count=article_count,
         query=query,
     )
