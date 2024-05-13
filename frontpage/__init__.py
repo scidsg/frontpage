@@ -75,19 +75,19 @@ def parse_size(size_str):
     if len(size_str) > 100:
         raise ValueError("Size string too long")
 
-    units_binary = {"B": 1, "KIB": 1024, "MIB": 1024**2, "GIB": 1024**3, "TIB": 1024**4}
-    units_decimal = {"KB": 1000, "MB": 1000**2, "GB": 1000**3, "TB": 1000**4}
-
-    size_str = size_str.upper().replace(" ", "")
-
-    # Using a simpler and safer regex pattern
-    pattern = re.compile(r"^(\d*\.?\d+)\s*([A-Z]+)$")
-    matches = pattern.match(size_str)
+    # Improved regex pattern
+    pattern = re.compile(r"^\d{1,3}(?:\.\d{1,2})?\s*([A-Z]{2,3})$")
+    matches = pattern.match(size_str.upper().replace(" ", ""))
 
     if not matches:
         raise ValueError("Invalid size format")
 
     size, unit = matches.groups()
+
+    # Define units
+    units_binary = {"B": 1, "KIB": 1024, "MIB": 1024**2, "GIB": 1024**3, "TIB": 1024**4}
+    units_decimal = {"KB": 1000, "MB": 1000**2, "GB": 1000**3, "TB": 1000**4}
+
     if unit in units_binary:
         return int(float(size) * units_binary[unit])
     elif unit in units_decimal:
