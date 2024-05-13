@@ -1085,24 +1085,19 @@ def highlight_match(text, query):
 @app.route("/search", methods=["GET"])
 def search():
     query = request.args.get("query", "").strip()
+    highlighted_articles = []
     if query:
         articles = Article.query.filter(
             Article.title.ilike(f"%{query}%") | Article.content.ilike(f"%{query}%")
         ).all()
-        highlighted_articles = []
         for article in articles:
             article.title = highlight_match(article.title, query)
             article.content = highlight_match(article.content, query)
             highlighted_articles.append(article)
-        article_count = len(highlighted_articles)
-    else:
-        highlighted_articles = []
-        article_count = 0
 
     return render_template(
         "search_results.html",
         title=f"Search Results for '{query}'",
         articles=highlighted_articles,
-        article_count=article_count,
         query=query,
     )
