@@ -14,3 +14,4 @@ blog.db
 /frontpage/static/uploads
 frontpage.db
 docs/dev.md
+frontpage/static/articles.json

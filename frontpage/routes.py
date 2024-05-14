@@ -2,15 +2,27 @@ import os
 from collections import Counter
 from datetime import datetime
 from itertools import groupby
+import json
+import re
 
 import markdown
 import pycountry
-from flask import flash, redirect, render_template, request, url_for
+from flask import (
+    Flask,
+    jsonify,
+    flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+    current_app,
+)
 from flask_login import current_user, login_required, login_user, logout_user
 from slugify import slugify
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 from PIL import Image
+from markupsafe import Markup
 
 from . import app, format_size, inject_scopes, parse_size
 from .db import db
@@ -1060,3 +1072,32 @@ def impact():
 @app.route("/submit")
 def submit():
     return render_template("submit.html", title="Submit")
+
+
+def highlight_match(text, query):
+    """Highlight all occurrences of query in text."""
+    highlighted_text = re.sub(
+        "({})".format(re.escape(query)), r"<mark>\1</mark>", text, flags=re.IGNORECASE
+    )
+    return Markup(highlighted_text)
+
+
+@app.route("/search", methods=["GET"])
+def search():
+    query = request.args.get("query", "").strip()
+    highlighted_articles = []
+    if query:
+        articles = Article.query.filter(
+            Article.title.ilike(f"%{query}%") | Article.content.ilike(f"%{query}%")
+        ).all()
+        for article in articles:
+            article.title = highlight_match(article.title, query)
+            article.content = highlight_match(article.content, query)
+            highlighted_articles.append(article)
+
+    return render_template(
+        "search_results.html",
+        title=f"Search Results for '{query}'",
+        articles=highlighted_articles,
+        query=query,
+    )

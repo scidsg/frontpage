@@ -1,12 +1,12 @@
 import logging
 import os
 import re
+import sys
 from collections import Counter
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-import click
-import sys
 
+import click
 from dotenv import load_dotenv
 from flask import Flask, flash, redirect, request, url_for
 from flask_login import LoginManager, current_user
@@ -70,15 +70,24 @@ def initialize_article_types():
                 db.session.commit()
 
 
-# Utility function to convert size strings to bytes
 def parse_size(size_str):
-    units_binary = {"B": 1, "KIB": 1024, "MIB": 1024**2, "GIB": 1024**3, "TIB": 1024**4}
-    units_decimal = {"KB": 1000, "MB": 1000**2, "GB": 1000**3, "TB": 1000**4}
-    size_str = size_str.upper().replace(" ", "")
-    matches = re.match(r"([0-9]*\.?[0-9]+)\s*([A-Z]+)", size_str)
+    # Limit the maximum length of size_str to prevent abuse
+    if len(size_str) > 100:
+        raise ValueError("Size string too long")
+
+    # Improved regex pattern
+    pattern = re.compile(r"^\d{1,3}(?:\.\d{1,2})?\s*([A-Z]{2,3})$")
+    matches = pattern.match(size_str.upper().replace(" ", ""))
+
     if not matches:
         raise ValueError("Invalid size format")
+
     size, unit = matches.groups()
+
+    # Define units
+    units_binary = {"B": 1, "KIB": 1024, "MIB": 1024**2, "GIB": 1024**3, "TIB": 1024**4}
+    units_decimal = {"KB": 1000, "MB": 1000**2, "GB": 1000**3, "TB": 1000**4}
+
     if unit in units_binary:
         return int(float(size) * units_binary[unit])
     elif unit in units_decimal:

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="content list-view">
+        <h1>{{ title }}</h1>
+        <p class="meta">Total Results: {{ articles|length }}</p>
+        {% for article in articles %}
+            <div class="article">
+                <h2><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title|safe }}</a></h2>
+                <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date }}</p>
+                <p>{{ article.content[:200]|safe }}{% if article.content|length > 200 %}...{% endif %}</p>
+                <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
+            </div>
+        {% else %}
+            <p>No articles found matching your query.</p>
+        {% endfor %}
+    </div>
+{% endblock %}
