@@ -89,7 +89,6 @@ def logout():
     logout_user()
     return redirect(url_for("home"))
 
-
 @app.route("/")
 def home():
     max_articles = 10
@@ -102,6 +101,10 @@ def home():
         .all()
     )
 
+    # Convert markdown to HTML for each article
+    for article in main_articles:
+        article.content = markdown.markdown(article.content)
+
     main_articles_total = Article.query.count()
 
     recently_edited_articles = (
@@ -110,6 +113,11 @@ def home():
         .limit(max_articles)
         .all()
     )
+
+    # Convert markdown to HTML for each recently edited article
+    for article in recently_edited_articles:
+        article.content = markdown.markdown(article.content)
+
     recently_edited_articles_total = Article.query.filter(Article.last_edited.isnot(None)).count()
 
     external_collaboration_articles = (
@@ -119,6 +127,11 @@ def home():
         .limit(max_articles)
         .all()
     )
+
+    # Convert markdown to HTML for each external collaboration article
+    for article in external_collaboration_articles:
+        article.content = markdown.markdown(article.content)
+
     external_collaboration_articles_total = (
         Article.query.filter(Article.external_collaboration.isnot(None))
         .filter(Article.external_collaboration != "")

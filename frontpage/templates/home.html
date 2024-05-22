@@ -2,8 +2,8 @@
 {% block content %}
     {% if not current_user.is_authenticated %}
         <div class="content promo promo-home" id="promo">
-            <h2>We need your help!</h2>
-            <p>We are the most important and most active public library of hacked and leaked datasets in the world today, but we're completely out of money. If we don't raise $150,000 by January 31, 2024, we might be forced to suspend operations.</p>
+            <h2>Welcome to Distributed Denial of Secrets</h2>
+            <p>We're a 501(c)(3) non-profit in the US that archives and publishes hacked and leaked documents in the public interest. Browse our releases, download data, or <a href="" target="_blank" rel="noopener noreferrer">donate to support our mission!</a></p>
             <div class="btn-container">
                 <a class="btn btn-primary" href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer"><span class="btn-emoji">❤️</span> Donate Now</a>
                 <a href="#" id="close_promo">Close</a>
@@ -18,7 +18,7 @@
                 <div class="article">
                     <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
                     <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                    <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
+                    <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
                     <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
                 </div>
             {% endfor %}
@@ -37,7 +37,7 @@
                     {% else %}
                         <p class="meta">Edited date not available</p>
                     {% endif %}
-                    <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
+                    <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
                     <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
                 </div>
         {% endfor %}
@@ -53,7 +53,7 @@
                 <div class="article">
                     <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
                     <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                    <p>{{ article.content[:200] }}{% if article.content|length > 200 %}...{% endif %}</p>
+                    <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
                     <p><a class="drill-in" href="{{ article.external_collaboration }}">Read more</a><span class="emoji-meta">↗️</span></p>
                 </div>
         {% endfor %}
