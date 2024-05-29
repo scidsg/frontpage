@@ -570,6 +570,11 @@ def edit_article(slug):
 @app.route("/source/<source>")
 def articles_by_source(source):
     articles = Article.query.filter_by(source=source).all()
+
+    # Convert markdown to HTML for each article
+    for article in articles:
+        article.content = markdown.markdown(article.content)
+
     article_count = len(articles)  # Get the count of articles
 
     # Use inject_scopes function to get the top scopes
@@ -596,6 +601,11 @@ def articles_by_source(source):
 @app.route("/country/<country>")
 def articles_by_country(country):
     articles = Article.query.filter(Article.country.like(f"%{country}%")).all()
+
+    # Convert markdown to HTML for each article
+    for article in articles:
+        article.content = markdown.markdown(article.content)
+
     article_count = len(articles)  # Get the count of articles
 
     # Use inject_scopes function to get the top scopes
@@ -622,6 +632,11 @@ def articles_by_country(country):
 @app.route("/author/<author>")
 def articles_by_author(author):
     articles = Article.query.filter_by(author=author).all()
+
+    # Convert markdown to HTML for each article
+    for article in articles:
+        article.content = markdown.markdown(article.content)
+
     article_count = len(articles)  # Get the count of articles
 
     # Use inject_scopes function to get the top scopes
@@ -661,6 +676,10 @@ def articles_by_type(article_type):
                 .all()
             )
         title = f"Articles of Type: {article_type}"  # Dynamic title for specific type
+
+    # Convert markdown to HTML for each article
+    for article in articles:
+        article.content = markdown.markdown(article.content)
 
     article_count = len(articles)
 
@@ -867,6 +886,10 @@ def all_articles(category):
         )
         title = "All External Collaboration Articles"
 
+    # Convert markdown to HTML for each article
+    for article in articles:
+        article.content = markdown.markdown(article.content)
+
     article_count = len(articles)
 
     # Use inject_scopes function to get the top scopes
@@ -1014,6 +1037,11 @@ def delete_citation(citation_id):
 def all_articles_alphabetized():
     # Fetch all articles that do not require approval and sort by title
     articles = Article.query.filter_by(pending_approval=False).order_by(Article.title).all()
+
+    # Convert markdown to HTML for each article
+    for article in articles:
+        article.content = markdown.markdown(article.content)
+
     article_count = len(articles)  # Get the count of articles
 
     # Render the template with the filtered articles
@@ -1104,6 +1132,9 @@ def search():
             Article.title.ilike(f"%{query}%") | Article.content.ilike(f"%{query}%")
         ).all()
         for article in articles:
+            # Convert markdown to HTML
+            article.content = markdown.markdown(article.content)
+            # Apply highlighting
             article.title = highlight_match(article.title, query)
             article.content = highlight_match(article.content, query)
             highlighted_articles.append(article)

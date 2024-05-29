@@ -1173,8 +1173,23 @@ blockquote p {
 	margin-top: 1rem;
 }
 
+.team-group {
+	display: flex;
+	gap: 1rem;
+	box-sizing: border-box;
+	align-content: stretch;
+	flex-wrap: wrap;
+	width: 100%;
+}
+
 .team-member {
-	margin: 2rem 0
+	border: 1px solid rgba(0,0,0,0.15);
+	border-radius: 4px;
+	padding: 2rem;
+	box-sizing: border-box;
+	flex: 1 1 49%;
+	min-width: 0;
+	max-width: 49%;
 }
 
 .logout {
@@ -1575,7 +1590,7 @@ mark {
 	body {
 		padding-top: 7.5rem;
 	}
-	
+
 	.btnIcon {
 		font-size: .875rem;
 		font-family: 'Atkinson Bold',sans-serif;
@@ -1586,7 +1601,7 @@ mark {
 		display: flex;
 		z-index: 999999;
 	}
-	
+
 	header {
 		padding-top: .75rem;
 		padding-bottom: .75rem;
@@ -1596,11 +1611,11 @@ mark {
 		margin: 0;
 		min-width: 100%;
 	}
-	
+
 	.categories-list {
 		top: 2.5rem;
 	}
-	
+
 	header h1 {
 		font-size: 1.125rem
 	}
@@ -1628,20 +1643,20 @@ mark {
     .related-articles .article-row {
 			flex-direction: column;
 		}
-	
+
 	.related-articles .article {
 		max-width: 100%;
 	}
-	
+
 	.related-articles-group {
 		padding-left: 0;
 		padding-right: 0;
 	}
-	
+
 	.content {
 		padding: 1.5rem;
 	}
-	
+
 	.related-articles-group.content {
 		padding-right: 0;
 		padding-left: 0;
@@ -1664,11 +1679,14 @@ mark {
 	.mobileNav {
 		margin-right: .25rem;
 	}
-	
+
 }
 
-@media (max-width: 960px) {
-
+@media (max-width: 881px) {
+	.team-member {
+		flex: 1;
+		min-width: 100%;
+	}
 }
 
 @media (max-width: 860px) {
