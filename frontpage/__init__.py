@@ -72,7 +72,7 @@ def initialize_article_types():
 
 def parse_size(size_str):
     size_str = size_str.strip().upper()
-    match = re.match(r"(\d+(\.\d+)?)\s*(B|KB|MB|GB|TB)", size_str)
+    match = re.match(r"(\d{1,10}(\.\d{1,2})?)\s*(B|KB|MB|GB|TB)", size_str)
 
     if match is None:
         raise ValueError("Invalid size format")
