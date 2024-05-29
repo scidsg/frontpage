@@ -71,29 +71,26 @@ def initialize_article_types():
 
 
 def parse_size(size_str):
-    # Limit the maximum length of size_str to prevent abuse
-    if len(size_str) > 100:
-        raise ValueError("Size string too long")
+    size_str = size_str.strip().upper()
+    match = re.match(r"(\d{1,10}(\.\d{1,2})?)\s*(B|KB|MB|GB|TB)", size_str)
 
-    # Improved regex pattern
-    pattern = re.compile(r"^\d{1,3}(?:\.\d{1,2})?\s*([A-Z]{2,3})$")
-    matches = pattern.match(size_str.upper().replace(" ", ""))
-
-    if not matches:
+    if match is None:
         raise ValueError("Invalid size format")
 
-    size, unit = matches.groups()
+    size, _, unit = match.groups()
+    size = float(size)
+    unit = unit.upper()
 
-    # Define units
-    units_binary = {"B": 1, "KIB": 1024, "MIB": 1024**2, "GIB": 1024**3, "TIB": 1024**4}
-    units_decimal = {"KB": 1000, "MB": 1000**2, "GB": 1000**3, "TB": 1000**4}
-
-    if unit in units_binary:
-        return int(float(size) * units_binary[unit])
-    elif unit in units_decimal:
-        return int(float(size) * units_decimal[unit])
-    else:
-        raise ValueError("Unknown size unit")
+    if unit == 'KB':
+        return int(size * 1024)
+    elif unit == 'MB':
+        return int(size * 1024**2)
+    elif unit == 'GB':
+        return int(size * 1024**3)
+    elif unit == 'TB':
+        return int(size * 1024**4)
+    else:  # unit == 'B'
+        return int(size)
 
 
 # Convert bytes to human-readable format using decimal units

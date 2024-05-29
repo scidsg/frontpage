@@ -18,21 +18,23 @@
                 <p class="mission">Distributed Denial of Secrets is a 501(c)(3) non-profit that archives and publishes hacked and leaked documents serving the public interest.</p>
             </div>
             {% for user in users %}
-            <div class="team-member">
-                {% if user.avatar %}
-                    <img class="avatar" src="{{ url_for('static', filename='uploads/' + user.avatar) }}" alt="Avatar of {{ user.display_name or user.username }}">
-                {% else %}
-                    <img class="avatar" src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="Default Avatar">
-                {% endif %}
-                <h2>{{ user.display_name or user.username }}</h2>
-                {% if user.bio %}
-                    <p>{{ user.bio }}</p>
-                {% else %}
-                    <p>No bio available.</p>
-                {% endif %}
-                {% if user.custom_url %}
-                    <p class="meta"><a href="{{ user.custom_url }}" target="_blank">Personal Website</a></p>
-                {% endif %}
+            <div class="team-group">
+                <div class="team-member">
+                    {% if user.avatar %}
+                        <img class="avatar" src="{{ url_for('static', filename='uploads/' + user.avatar) }}" alt="Avatar of {{ user.display_name or user.username }}">
+                    {% else %}
+                        <img class="avatar" src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="Default Avatar">
+                    {% endif %}
+                    <h2>{{ user.display_name or user.username }}</h2>
+                    {% if user.bio %}
+                        <p>{{ user.bio }}</p>
+                    {% else %}
+                        <p>No bio available.</p>
+                    {% endif %}
+                    {% if user.custom_url %}
+                        <p class="meta"><a href="{{ user.custom_url }}" target="_blank">Personal Website</a></p>
+                    {% endif %}
+                </div>
             </div>
             {% endfor %}
         </div>
