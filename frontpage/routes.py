@@ -1145,3 +1145,7 @@ def search():
         articles=highlighted_articles,
         query=query,
     )
+
+@app.route("/health.json")
+def health():
+    return {"status": "ok"}
