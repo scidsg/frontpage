@@ -95,7 +95,7 @@ class Article(db.Model):
     content = db.Column(db.Text, nullable=False)
     author = db.Column(db.String(50), nullable=False)
     publish_date = db.Column(db.DateTime, nullable=False)
-    country = db.Column(db.String(50))
+    country = db.Column(db.String(200))
     download_link = db.Column(db.String(255))
     download_link2 = db.Column(db.String(255))
     download_link3 = db.Column(db.String(255))
