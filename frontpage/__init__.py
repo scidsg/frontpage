@@ -20,9 +20,18 @@ from .models import Article, ArticleType, User
 load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
+
+# Set up database URI
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "SQLALCHEMY_DATABASE_URI", f"sqlite:///{os.getcwd()}/blog.db"
 )
+# If it's a Postgres URI, replace the scheme with `postgresql+psycopg` because we're using the psycopg driver
+if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgresql://"):
+    app.config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"].replace(
+        "postgresql://", "postgresql+psycopg://", 1
+    )
+
+# Flask secret key
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
 
 # Setup the upload directory within the project directory
