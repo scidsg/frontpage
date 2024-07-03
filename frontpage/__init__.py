@@ -34,12 +34,24 @@ if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgresql://"):
 # Flask secret key
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
 
+# S3 bucket config
+app.config["USE_S3"] = os.environ.get("USE_S3", False)
+app.config["S3_ENDPOINT"] = os.environ.get(
+    "S3_BUCKET_NAME", "https://nyc3.digitaloceanspaces.com"
+)
+app.config["S3_BUCKET"] = os.environ.get("S3_BUCKET", "default-bucket-name")
+app.config["S3_ACCESS_KEY"] = os.environ.get("S3_ACCESS_KEY", "default-access-key")
+app.config["S3_SECRET_KEY"] = os.environ.get("S3_SECRET_KEY", "default-secret")
+
 # Setup the upload directory within the project directory
-project_dir = os.path.dirname(
-    os.path.abspath(__file__)
-)  # Directory where this file exists
-app.config["UPLOAD_FOLDER"] = os.path.join(project_dir, "static", "uploads")
-os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)  # Ensure the directory exists
+if not app.config["USE_S3"]:
+    project_dir = os.path.dirname(
+        os.path.abspath(__file__)
+    )  # Directory where this file exists
+    app.config["UPLOAD_FOLDER"] = os.path.join(project_dir, "static", "uploads")
+    os.makedirs(
+        app.config["UPLOAD_FOLDER"], exist_ok=True
+    )  # Ensure the directory exists
 
 db.init_app(app)
 migrate = Migrate(app, db)

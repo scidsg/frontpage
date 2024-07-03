@@ -4,6 +4,8 @@ from datetime import datetime
 from itertools import groupby
 import json
 import re
+import boto3
+import tempfile
 
 import markdown
 import pycountry
@@ -48,6 +50,50 @@ from .models import (
     Citation,
     Redirect,
 )
+
+
+def upload_file(flask_file, folder=""):
+    filename = secure_filename(flask_file.filename)
+
+    if app.config["USE_S3"]:
+        s3_client = boto3.client(
+            "s3",
+            endpoint_url=app.config["S3_ENDPOINT"],
+            aws_access_key_id=app.config["S3_ACCESS_KEY"],
+            aws_secret_access_key=app.config["S3_SECRET_KEY"],
+        )
+
+        # Create a temporary file to store the uploaded file
+        temp_file = tempfile.NamedTemporaryFile()
+        flask_file.save(temp_file.name)
+
+        # Upload the file
+        if folder == "":
+            file_path = f"{filename}"
+        else:
+            file_path = f"{folder}/{filename}"
+
+        s3_client.upload_file(
+            temp_file.name,
+            app.config["S3_BUCKET"],
+            file_path,
+        )
+
+        return (
+            f"https://{app.config['S3_BUCKET']}.{app.config['S3_ENDPOINT']}/{file_path}"
+        )
+    else:
+        if folder == "":
+            relative_path = os.path.join("uploads", filename)
+        else:
+            relative_path = os.path.join("uploads", folder, filename)
+
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], relative_path)
+        if not os.path.exists(os.path.dirname(file_path)):
+            os.makedirs(os.path.dirname(file_path))
+
+        flask_file.save(file_path)
+        return relative_path
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -833,9 +879,8 @@ def user_settings():
         file = avatar_form.avatar.data
         filename = secure_filename(file.filename)
         if filename != "":
-            file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-            file.save(file_path)
-            current_user.avatar = filename
+            avatar_filename = upload_file(file, "avatars")
+            current_user.avatar = avatar_filename
             db.session.commit()
             flash("Your avatar has been updated.", "success")
         else:
@@ -957,14 +1002,11 @@ def about():
         if "logo_submit" in request.form and current_user.is_admin:
             if logo_form.validate_on_submit():
                 file = logo_form.file.data
-                filename = secure_filename(file.filename)
-                filepath = os.path.join(app.config["UPLOAD_FOLDER"], "logos", filename)
+                logo_filename = upload_file(file, "logos")
 
-                if not os.path.exists(os.path.dirname(filepath)):
-                    os.makedirs(os.path.dirname(filepath))
-
-                file.save(filepath)
-                new_logo = Logo(file=filename, description=logo_form.description.data)
+                new_logo = Logo(
+                    file=logo_filename, description=logo_form.description.data
+                )
                 db.session.add(new_logo)
                 db.session.commit()
                 flash("Logo added successfully.", "success")
@@ -982,11 +1024,11 @@ def about():
             else:
                 flash("Failed to add citation. Please check the form data.", "danger")
 
-    # Reading dimensions for logos
-    for logo in logos:
-        image_path = os.path.join(app.config["UPLOAD_FOLDER"], "logos", logo.file)
-        with Image.open(image_path) as img:
-            logo.width, logo.height = img.size  # Store dimensions
+    # # Reading dimensions for logos
+    # for logo in logos:
+    #     image_path = os.path.join(app.config["UPLOAD_FOLDER"], "logos", logo.file)
+    #     with Image.open(image_path) as img:
+    #         logo.width, logo.height = img.size  # Store dimensions
 
     # Render the template with all necessary forms and objects
     return render_template(
@@ -997,6 +1039,7 @@ def about():
         logo_form=logo_form,
         citation_form=citation_form,
         title="About Us",
+        use_s3=app.config["USE_S3"],
     )
 
 
@@ -1010,14 +1053,9 @@ def add_logo():
     logo_form = LogoForm()  # No need to pass request.form
     if logo_form.validate_on_submit():
         file = logo_form.file.data
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config["UPLOAD_FOLDER"], "logos", filename)
+        logo_filename = upload_file(file, "logos")
 
-        if not os.path.exists(os.path.dirname(filepath)):
-            os.makedirs(os.path.dirname(filepath))
-
-        file.save(filepath)
-        new_logo = Logo(file=filename, description=logo_form.description.data)
+        new_logo = Logo(file=logo_filename, description=logo_form.description.data)
         db.session.add(new_logo)
         db.session.commit()
         flash("Logo added successfully.", "success")
