@@ -38,7 +38,16 @@ from .forms import (
     CitationForm,
 )
 
-from .models import Article, ArticleType, Category, InvitationCode, User, Logo, Citation
+from .models import (
+    Article,
+    ArticleType,
+    Category,
+    InvitationCode,
+    User,
+    Logo,
+    Citation,
+    Redirect,
+)
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -93,7 +102,7 @@ def logout():
 
 
 @app.route("/")
-def home():
+def home(status_code=200):
     max_articles = 10
 
     # Only fetch articles that are not pending approval
@@ -159,7 +168,7 @@ def home():
         external_collaboration_articles_more=external_collaboration_articles_total
         > max_articles,
         show_team_link=show_team_link,
-    )
+    ), status_code
 
 
 # Protect the publish route
@@ -1181,3 +1190,19 @@ def search():
 @app.route("/health.json")
 def health():
     return {"status": "ok"}
+
+
+# Handle redirects
+@app.route("/<path:any_path>", defaults={"any_path": ""})
+@app.route("/<path:any_path>")
+def catch_all(any_path):
+    # See if the path matches a redirect
+    source_path = f"/{any_path}"
+    row = Redirect.query.filter_by(source=source_path).first()
+    if row:
+        app.logger.info(f"Redirecting {source_path} to {row.destination}")
+        return redirect(row.destination, code=301)
+
+    # Otherwise return 404
+    flash("⛔️ That page doesn't exist", "warning")
+    return home(status_code=404)

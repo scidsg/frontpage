@@ -31,7 +31,9 @@ class User(UserMixin, db.Model):
     display_name = db.Column(db.String(100))
     custom_url = db.Column(db.String(255))
     avatar = db.Column(db.String(255))
-    requires_approval = db.Column(db.Boolean, server_default=text("FALSE"), nullable=False)
+    requires_approval = db.Column(
+        db.Boolean, server_default=text("FALSE"), nullable=False
+    )
     is_admin = db.Column(db.Boolean, server_default=text("FALSE"), nullable=False)
 
     def set_password(self, password):
@@ -82,7 +84,9 @@ class Category(db.Model):
 article_categories = db.Table(
     "article_categories",
     db.Column("article_id", db.Integer, db.ForeignKey("articles.id"), primary_key=True),
-    db.Column("category_id", db.Integer, db.ForeignKey("categories.id"), primary_key=True),
+    db.Column(
+        "category_id", db.Integer, db.ForeignKey("categories.id"), primary_key=True
+    ),
     sqlite_with_rowid=False,
 )
 
@@ -115,7 +119,9 @@ class Article(db.Model):
     source = db.Column(db.String(255))
     last_edited = db.Column(db.DateTime)
     slug = db.Column(db.String(255), unique=True, nullable=False)
-    pending_approval = db.Column(db.Boolean, server_default=text("FALSE"), nullable=False)
+    pending_approval = db.Column(
+        db.Boolean, server_default=text("FALSE"), nullable=False
+    )
     categories = db.relationship(
         "Category",
         secondary=article_categories,
@@ -157,3 +163,14 @@ class InvitationCode(db.Model):
 
     def __repr__(self):
         return f"<InvitationCode {self.code}>"
+
+
+class Redirect(db.Model):
+    __tablename__ = "redirects"
+
+    id = db.Column(db.Integer, primary_key=True)
+    source = db.Column(db.String(255), nullable=False, unique=True)
+    destination = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f"<Redirect {self.source} to {self.destination}>"
