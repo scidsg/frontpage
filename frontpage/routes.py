@@ -58,7 +58,7 @@ def upload_file(flask_file, folder=""):
     if app.config["USE_S3"]:
         s3_client = boto3.client(
             "s3",
-            endpoint_url=app.config["S3_ENDPOINT"],
+            endpoint_url=f"https://{app.config['S3_ENDPOINT']}",
             aws_access_key_id=app.config["S3_ACCESS_KEY"],
             aws_secret_access_key=app.config["S3_SECRET_KEY"],
         )
@@ -77,11 +77,10 @@ def upload_file(flask_file, folder=""):
             temp_file.name,
             app.config["S3_BUCKET"],
             file_path,
+            ExtraArgs={"ACL": "public-read"},
         )
 
-        return (
-            f"https://{app.config['S3_BUCKET']}.{app.config['S3_ENDPOINT']}/{file_path}"
-        )
+        return f"https://{app.config['S3_CDN_ENDPOINT']}/{file_path}"
     else:
         if folder == "":
             relative_path = os.path.join("uploads", filename)

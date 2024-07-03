@@ -36,12 +36,13 @@ app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-ke
 
 # S3 bucket config
 app.config["USE_S3"] = os.environ.get("USE_S3", False)
-app.config["S3_ENDPOINT"] = os.environ.get(
-    "S3_BUCKET_NAME", "https://nyc3.digitaloceanspaces.com"
-)
+app.config["S3_ENDPOINT"] = os.environ.get("S3_ENDPOINT", "default-s3-endpoint")
 app.config["S3_BUCKET"] = os.environ.get("S3_BUCKET", "default-bucket-name")
 app.config["S3_ACCESS_KEY"] = os.environ.get("S3_ACCESS_KEY", "default-access-key")
 app.config["S3_SECRET_KEY"] = os.environ.get("S3_SECRET_KEY", "default-secret")
+app.config["S3_CDN_ENDPOINT"] = os.environ.get(
+    "S3_CDN_ENDPOINT", "default-cdn-endpoint"
+)
 
 # Setup the upload directory within the project directory
 if not app.config["USE_S3"]:
