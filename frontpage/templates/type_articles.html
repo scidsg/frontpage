@@ -6,7 +6,7 @@
         {% for article in articles %}
             <div class="article">
                 <h2><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h2>
-                <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p class="meta">Published on {{ article.publish_date.strftime('%Y-%m-%d') }}</p>
                 <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
                 <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
             </div>
