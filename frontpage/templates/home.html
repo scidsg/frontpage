@@ -4,10 +4,10 @@
 <div class="content promo promo-home" id="promo">
     <h2>Welcome to Distributed Denial of Secrets</h2>
     <p>We're a 501(c)(3) non-profit in the US that archives and publishes hacked and leaked documents in the public
-        interest. Browse our releases, download data, or <a href="https://ddosecrets.charity" target="_blank"
+        interest. Browse our releases, download data, or <a href="https://opencollective.com/ddosecrets" target="_blank"
             rel="noopener noreferrer">donate to support our mission!</a></p>
     <div class="btn-container">
-        <a class="btn btn-primary" href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer"><span
+        <a class="btn btn-primary" href="https://opencollective.com/ddosecrets" target="_blank" rel="noopener noreferrer"><span
                 class="btn-emoji">❤️</span> Donate Now</a>
         <a href="#" id="close_promo">Close</a>
     </div>
@@ -20,8 +20,7 @@
         {% for article in main_articles %}
         <div class="article">
             <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
-            <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{
-                    article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p class="meta">Published on {{ article.publish_date.strftime('%Y-%m-%d') }}</p>
             <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
             <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
         </div>
@@ -37,7 +36,7 @@
         <div class="article">
             <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
             {% if article.last_edited %}
-            <p class="meta">Edited on {{ article.last_edited.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p class="meta">Edited on {{ article.last_edited.strftime('%Y-%m-%d') }}</p>
             {% else %}
             <p class="meta">Edited date not available</p>
             {% endif %}
@@ -56,8 +55,7 @@
         {% for article in external_collaboration_articles %}
         <div class="article">
             <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
-            <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{
-                    article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p class="meta">Published on {{ article.publish_date.strftime('%Y-%m-%d') }}</p>
             <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
             <p><a class="drill-in" href="{{ article.external_collaboration }}">Read more</a><span
                     class="emoji-meta">↗️</span></p>
@@ -72,8 +70,8 @@
 
 {% block footer %}
 <footer class="content">
-    <p>Distributed Denial of Secrets is a 501(c)(3) non-profit. <a href="https://ddosecrets.charity" target="_blank"
-            rel="noopener noreferrer">Support our mission!</a></p>
+    <p>Distributed Denial of Secrets is a 501(c)(3) non-profit. <a href="https://opencollective.com/ddosecrets" target="_blank"
+            rel="noopener noreferrer">Support our mission!</a><meta name="fediverse:creator" content="@DDoSecrets@kolektiva.social" /></p>
     <p><a href="https://github.com/scidsg/frontpage">Powered by 📰 Frontpage</a>, a free and open-source product by <a
             href="https://scidsg.org" target="_blank" rel="noopener noreferrer">Science & Design, Inc.</a></p>
 </footer>
