@@ -3,7 +3,7 @@
 {% block content %}
 <div class="content submit-instructions">
     <h1>Data Submission</h1>
-    <p>We are always open to accept data by any party. We take no measures to attempt to identify our sources, and do not discuss our source of data even between members of the collective. Where appropriate and with well clarified authorization from the source, we do provide credit for the source of the information if we can be confident this will not harm the objectives of the collective or lead to the identification of people at risk.</p>
+    <p>We are always open to accept data by any party. We take measures to protect the identity of our sources, even between members of the collective. Where appropriate and with well clarified authorization from the source, we may provide credit for the source of the information if we can be confident this lead to the identification of people at risk.</p>
 
    <p><strong>Do not contact us about potential or in-progress data breaches</strong>, as it puts you at risk and makes it difficult or impossible to determine any potential public interest while also legally preventing us from publishing any resulting leak. </p>
 
@@ -16,18 +16,17 @@
 
    <p>Once contact has been established, communications may be moved to another secure platform, such as Cwtch.</p>
     
-    <h2>Submission Guidelines</h2>
+    <h2>Guidelines for Potential Sources</h2>
     <ul>
-        <li>Be honest with yourself and with us about your level of OPSEC - it's the best way we can help. If you don't know, ask. See Tools of the Trade below for more.</li>
-        <li>Bullshit never helps. If you can't tell the truth about something, don't say anything. Impressive stories are pointless. False trails are harder to pull off and less helpful than you'd think - not to mention easily unethical, depending on the circumstances.</li>
-        <li>It's better to be safe than clever. Cleverness is unique, like a signature. Silence is ubiquitous. Jokes and references can be as identifying as a name. Persona aliases can be as revealing as true names.</li>
+        <li>Be honest with yourself and with us about your level of OPSEC. If you don't know, ask. See Tools of the Trade below for more.</li>
+        <li>If you can't tell the truth about something, don't say anything. False trails are harder to pull off and less helpful than you'd think - not to mention potentially unethical.</li>
+        <li>It's better to be safe than clever. Silence is ubiquitous. Jokes, references, and even persona aliases can be as revealing as true names.</li>
         <li>Don't talk about it, even "in private." If you do, assume that whatever you say might leak and know that it could be read in a courtroom.</li>
         <li>Don't save logs. If you must save records for legal defense reasons, give your only copies to your lawyer for that explicit purpose. Don't destroy evidence - just don't have evidence to preserve or destroy.</li>
         <li>Don't keep a copy of whatever you leaked, or anything else you don't need anymore. Even PGP and other encryption keys can be incriminating.</li>
-        <li>No, you almost definitely don't need to be able to prove it was you.</li>
+        <li>You almost definitely don't need to be able to prove it was you.</li>
         <li>Be patient.</li>
         <li>Assume your adversaries are smarter than you are.</li>
-        <li>Seriously, don't save logs.</li>
         <li>When in doubt, talk to a lawyer.</li>
     </ul>
 
@@ -35,11 +34,11 @@
     <ul>
         <li>Tor Browser - Anonymous web browsing</li>
         <li>OnionShare - Anonymous one-off file sharing</li>
-        <li>Cwtch - A decentralized, anonymous and encrypted chat service</li>
         <li>Pidgin & OTR - Live IRC/XMPP chat with Off the Record encryption [EFF Guide]</li>
         <li>Tails - An anonymous, non-persistent Operating System</li>
         <li>Riseup - A privacy-friendly email and VPN provider</li>
         <li>EFF Surveillance Self-Defense Guides - A fantastic collection of guides to resist surveillance</li>
+        <li>The Intercept Surveillance Self-Defense Checklist - Steps journalists, activists, and everyone else can take to improve their security</li>
     </ul>
 
     <h3>Browsers and Plug-ins</h3>
@@ -49,12 +48,10 @@
         <li>Privacy Badger - A browser extension that automatically learns to block invisible trackers</li>
         <li>Tor Browser - Anonymous web browsing</li>
         <li>uBlock Origin - A wide-spectrum content blocker with CPU and memory efficiency as a primary feature</li>
-
     </ul>
 
     <h3>Communication</h3>
     <ul>
-        <li>Cwtch - A decentralized, anonymous and encrypted chat service</li>
         <li>DKIM Verifier - A Thunderbird plug-in which verifies the DKIM Signature of emails</li>
         <li>Pidgin & OTR - Live IRC/XMPP chat with Off the Record encryption [EFF Guide]</li>
         <li>Riseup - A privacy-friendly email and VPN provider</li>
@@ -67,15 +64,6 @@
         <li>KeePass - An open-source, encrypted password manager with ports for many operating systems</li>
         <li>OpenPGP - The most widely used email encryption standard</li>
         <li>VeraCrypt - Free open source disk encryption software</li>
-    </ul>
-
-    <h3>Guides and Resources</h3>
-
-    <ul>
-        <li>Big Ass Data Broker Opt-Out List - A list of data brokers that may be making your home address and other personal details publicly available</li>
-        <li>Consumer Reports Security Planner - A guide to tools to improve online safety</li>
-        <li>EFF Surveillance Self-Defense Guides - A fantastic collection of guides to resist surveillance</li>
-        <li>The Intercept Surveillance Self-Defense Checklist - Steps journalists, activists, and everyone else can take to improve their security</li>
     </ul>
 
     <h3>Handling Data</h3>
@@ -120,10 +108,10 @@
 
     <p>Our replies to Hotmail, Outlook, MSN and other Microsoft-based email addresses often bounce. Using other email services is recommended.</p>
 
-    <p>Your request will probably be rejected if:</p>
+    <p>Your request will be rejected if:</p>
 
     <ul>
-        <li>You don't provide a way to verify your request or identity. Official email addresses are best.</li>
+        <li>You don't provide a way to verify your request or identity.</li>
         <li>You're just curious.</li>
         <li>You're a hacktivist that wants to exploit the data.</li>
         <li>You're a researcher without a clear journalist or academic project.</li>
@@ -159,116 +147,6 @@
 
     <h3>PGP Keys</h3>
 
-    <p>If you want to encrypt your communications to info@ddosecrets.com, you can use the following PGP key.</p>
+    <p>If you want to encrypt your communications to info@ddosecrets.com, you can use the PGP key found with Fingerprint: <a href="http://pgp.mit.edu/pks/lookup?op=get&search=0x9EBBA5E1892093A0">F9E6 FB72 DF79 3BCC 998E A465 9EBB A5E1 8920 93A0</a>.</p>
 
-    <p class="mono block pgp">-----BEGIN PGP PUBLIC KEY BLOCK-----
-
-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
-<br>/G59Kj1+KGU=
-<br>=Iqjz
-<br>
------END PGP PUBLIC KEY BLOCK-----</p>
-
-    <p>If you want to encrypt your communications to submissions@ddosecrets.com, you can use the following PGP key.</p>
-
-    <p class="mono block pgp">-----BEGIN PGP PUBLIC KEY BLOCK-----
-
-mQINBGAjJh4BEADVeaszrvuqsEelYFYKjmglKVTS8M7wbdYvJsYjd5LsDbhx2Pv1
-FtCR5nvcVuj990eCMS2kdW2wRoHl8MwY30k4VhhsewoTR7uLXxw21D8oVvh7ZBtN
-ISthaRb5F5ycZ8O5AZjbAyZkBEiItPTEsTtzap7fE3nKBVDMYB0NBqZWu7absM6W
-WfNAc9rImUliSO/xDKHLxn+eETCP2f0Z9dpDDLViZJMT1iiYEsE7lWYxHA8qaKhZ
-3reipWUyKlhec0aHxMxybg9BpV0DJkEpa5WtX08zS3CcWxs4LUowx+19Lwd5ublt
-d95vLY5iD8EDt66HUBAmxqKTafZIII3VEFCSVe6DM3B/vf52xopLbEs49iiygCFY
-Xc4J6HhWYIEGrakj4wKod0kFiRibOy0jiV8LljMqer9fK6EeeNFMjJ7WbDQzW9LL
-ylAY+HaJS/azBkX8dDpQ1Q4iHQz2nVAxfc8SaNHbX2OdYav07liYzhYcsPBPdm9c
-QwaTmWVdej53rIBtDoljSXxw72/bUYfBd0VFKAA3GbaB8Xh73ZS+KlYzF33BStaD
-hRmTIfZ+HgLwoFubDSFOu/lyvFaY67Hw0WLpG0VOavKI+VnSDkt1USPZtcyF9m8O
-+aNIrR+faWmdSIPwMSu0zWhm3qWlJoiQwaq+NhZzL/QpkZG3aiqbcyBUEQARAQAB
-tDNERG9TZWNyZXRzIFN1Ym1pc3Npb25zIDxzdWJtaXNzaW9uc0BkZG9zZWNyZXRz
-LmNvbT6JAlQEEwEIAD4WIQQ5ZOwcoYTxixwtAmHQFKKFzYjrDwUCYCMmHgIbAwUJ
-B5s3XAULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAKCRDQFKKFzYjrD5EsEACckB+6
-U/JNJcaSl6GUbqf5isQJUsRZuknBK+rlauop3hzbYv85hvPonDP7tHni0nhRL7XA
-/zt+D3w4KdIG2egWK1i3fo7tqMyZKPo1bnolrbB9wMMUZ7dxKL3hwSZr+5ARwAC1
-NKCRRyfuqRY1UaSoiY69Xt9tExCPjdFSn2t0Lr0KXMc8nTZ6vhe/+BAD6GefzNh2
-IcBpxcvHXSG0dFy18TTrhhA5+V6kXU9RmpkZqxkmNtdm/Od+I57CJwT5OvXonvGI
-FKH0C76UlKN5TBL3bj4uZjzM28q0wr91inBX/H2bnSWA0IlNf/24W7qkfQa9mTDB
-3guhhF7Gzgb9ocbFFcHRHTfbDLIZBMY/1owH9A0oj7Th67Nz8n3x62mRWHFZJPEZ
-Fj29u69PAkPE7pUzohni+769woZRCQEML2l4Y8vUOUywVJULmXVnSOQxZ+a6/l+a
-f1CZrWGp8JXYBhLjxywGSo/FFsmvTzTwpMNk4t41W+a76Ir3iZgJ6/Tc2va82mPo
-VugMY6QPk+PnqkgEc4QNXm3IAbvw3s3Rpy8j/dYeUWswk08tAp3goa1n+Xi2ZRZw
-<br>s1o/LOMHuvVZn3/qN32vsmwFlzPfQaVLGeKVHOVX5dAsSEST4t4EMLR8RtmUy3Dn
-WPBPmKY5i4O69MOZz4M4lSpb2VtRYVx3aAA97bkCDQRgIyYeARAAugN4yIVs6SrQ
-P1CWcAKvsNgJc47RjjDlf3QuZq+1WvEy4M81hmbDx/llNgKPCZ8YTagKMq42gQi2
-ajI4f3NK+liX1izhm1N0LXDwjZKA84SZuGLS3ieT3EUHp78cAAipTcnQe3o0FJDi
-XDoLYujGlg36YQixmeH7Pf7f0/WzzhrRoC57YC1fDI68Obskbzii4Gkec8Z2vWcE
-ROryZKkZ4rdCs/VwnnlcSl6hRXk3ylggDRQLaIqpREKJ9H66l4mqbhbsvxe9IKay
-ofG0QtVz075ONMuBokhWswyMklIUcJe/rizPzbjFhLqMhyNuID/KAUX4jV8hZFQe
-Y8dqWiQn+zJZY1boaL93yffuVCrituN4X2ZoEXGbb+qaeXxO669dVjn2qv2mLBcY
-uC9nKDgoUEYqwUvG5p8C+wUgUsN3WW5abdE1g7YiIAaWZJnXyv+KgdAfsn/FUxUo
-wKrmAn78arwsWNp6UglB6ZO0eNqTRISxL0Ny+WisK4Nj6I5zUyXBBaPKJFpwHikm
-MHUw5UYqOQCvv2QzQ+FqmS5TJiJ99sNpOO0RINr0FQNe4UeqYPDZ/aGMPb0Nh4bw
-4astqQEoU0F5MKPGJono/Q3eV3KQ5qlgSf2HD0M0O82Brlapbb8oma8+P9qjAyxy
-sqWuyAUbyW7otlwmYvJxopEFRhuSBkkAEQEAAYkCPAQYAQgAJhYhBDlk7ByhhPGL
-HC0CYdAUooXNiOsPBQJgIyYeAhsMBQkHmzdcAAoJENAUooXNiOsP96QQAL4ZpCy4
-o0kVxU6HqhsKY+URvg8766pRq5ys5palVbLGXpM7HgSYRH4XfivFMd2Yi9Srvqke
-GMrH/BEGCXoaGUHKePeoOQ6KuZ9yhYiShs6ZVSVRoeGpWLjALA22PgvQO39Ygz11
-AnQfVQy49WRDt3A58jE/SxCfLYqv5lHKfwx3mPwEIkLOR+Rza0721ijVHtTiRYVd
-g96ARIutPUYge7FL2e39Pzd8DYOAjAY6dCc9GBeaEClj1HpRnKPK2SpAYQ+/z+QD
-oSLQPi9sv2ySzuJPN6gKatdqtiKFT6EMdo4IfHv2XGshc2sj8QhqS4nLkMwIed6C
-x1FQo4SLhpKpp9nkkXI3ja0FnxK1+xBSD/4eBUpIqn1VhC6nSvJgQYJN4GgsVVp7
-rKiXRPrp5eHfg4EoHHw2fow6Y3gjInY5ZwR/dVJ1Op1GYTsl3eGmq1DBWKIGEVbh
-X0q1LTonb/qMVl8jqfcmm8R3PrcNUWS0qPf5xv0TUu7rbgrgySkIztl2ZHmAwCmW
-pLjGUF4uby5A1C+g7+U9HTmridDTICqkDu3tJf/OGOAX4IvPQfblw4lCVH2kLNNE
-pjd9KPfXoH6UuHU0VYmqgPr2KkM6EU8kDf0jC11FitkPKBBShec8Bn9OgH8MnVYL
-eTahI0nxm12jsPdq0nM3qLiBVz0DLensDpld
-=C9oS
-<br>
------END PGP PUBLIC KEY BLOCK-----
-</p>
-{% endblock %}
+    <p>If you want to encrypt your communications to submissions@ddosecrets.com, you can use the PGP key found with Fingerprint:<a href=http://pgp.mit.edu/pks/lookup?op=get&search=0xD014A285CD88EB0F"">3964 EC1C A184 F18B 1C2D 0261 D014 A285 CD88 EB0F</a></p>

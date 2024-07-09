@@ -4,6 +4,8 @@ from datetime import datetime
 from itertools import groupby
 import json
 import re
+import boto3
+import tempfile
 
 import markdown
 import pycountry
@@ -38,7 +40,59 @@ from .forms import (
     CitationForm,
 )
 
-from .models import Article, ArticleType, Category, InvitationCode, User, Logo, Citation
+from .models import (
+    Article,
+    ArticleType,
+    Category,
+    InvitationCode,
+    User,
+    Logo,
+    Citation,
+    Redirect,
+)
+
+
+def upload_file(flask_file, folder=""):
+    filename = secure_filename(flask_file.filename)
+
+    if app.config["USE_S3"]:
+        s3_client = boto3.client(
+            "s3",
+            endpoint_url=f"https://{app.config['S3_ENDPOINT']}",
+            aws_access_key_id=app.config["S3_ACCESS_KEY"],
+            aws_secret_access_key=app.config["S3_SECRET_KEY"],
+        )
+
+        # Create a temporary file to store the uploaded file
+        temp_file = tempfile.NamedTemporaryFile()
+        flask_file.save(temp_file.name)
+
+        # Upload the file
+        if folder == "":
+            file_path = f"{filename}"
+        else:
+            file_path = f"{folder}/{filename}"
+
+        s3_client.upload_file(
+            temp_file.name,
+            app.config["S3_BUCKET"],
+            file_path,
+            ExtraArgs={"ACL": "public-read"},
+        )
+
+        return f"https://{app.config['S3_CDN_ENDPOINT']}/{file_path}"
+    else:
+        if folder == "":
+            relative_path = os.path.join("uploads", filename)
+        else:
+            relative_path = os.path.join("uploads", folder, filename)
+
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], relative_path)
+        if not os.path.exists(os.path.dirname(file_path)):
+            os.makedirs(os.path.dirname(file_path))
+
+        flask_file.save(file_path)
+        return relative_path
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -48,7 +102,9 @@ def register():
 
     form = RegistrationForm()
     if form.validate_on_submit():
-        invite_code = InvitationCode.query.filter_by(code=form.invite_code.data, used=False).first()
+        invite_code = InvitationCode.query.filter_by(
+            code=form.invite_code.data, used=False
+        ).first()
         if not invite_code:
             flash("⛔️ Invalid or expired invite code.", "danger")
             return render_template("register.html", title="Register", form=form)
@@ -89,8 +145,9 @@ def logout():
     logout_user()
     return redirect(url_for("home"))
 
+
 @app.route("/")
-def home():
+def home(status_code=200):
     max_articles = 10
 
     # Only fetch articles that are not pending approval
@@ -118,7 +175,9 @@ def home():
     for article in recently_edited_articles:
         article.content = markdown.markdown(article.content)
 
-    recently_edited_articles_total = Article.query.filter(Article.last_edited.isnot(None)).count()
+    recently_edited_articles_total = Article.query.filter(
+        Article.last_edited.isnot(None)
+    ).count()
 
     external_collaboration_articles = (
         Article.query.filter(Article.external_collaboration.isnot(None))
@@ -151,9 +210,10 @@ def home():
         recently_edited_articles_more=recently_edited_articles_total > max_articles,
         external_collaboration_articles=external_collaboration_articles,
         external_collaboration_articles_total=external_collaboration_articles_total,
-        external_collaboration_articles_more=external_collaboration_articles_total > max_articles,
+        external_collaboration_articles_more=external_collaboration_articles_total
+        > max_articles,
         show_team_link=show_team_link,
-    )
+    ), status_code
 
 
 # Protect the publish route
@@ -169,7 +229,9 @@ def publish():
 
         # TODO this form handling is bad UX because it will not save the user's current work
         # Only attempt conversion if a size is provided
-        if article_download_size := request.form.get("article_download_size", "").strip():
+        if article_download_size := request.form.get(
+            "article_download_size", ""
+        ).strip():
             try:
                 article_download_size_bytes = parse_size(article_download_size)
             except ValueError:
@@ -188,7 +250,9 @@ def publish():
             download_link2=request.form["download_link2"],
             download_link3=request.form["download_link3"],
             article_types=ArticleType.query.filter(
-                ArticleType.id.in_(request.form.getlist("article_types"))
+                ArticleType.id.in_(
+                    [int(id) for id in request.form.getlist("article_types")]
+                )
             ).all(),
             magnet_link=request.form["magnet_link"],
             magnet_link2=request.form["magnet_link2"],
@@ -209,7 +273,9 @@ def publish():
 
         # Extract and handle the publication date
         if publish_date_str := request.form.get("publish_date"):
-            new_article.publish_date = datetime.strptime(publish_date_str, "%Y-%m-%dT%H:%M")
+            new_article.publish_date = datetime.strptime(
+                publish_date_str, "%Y-%m-%dT%H:%M"
+            )
         else:
             new_article.publish_date = datetime.utcnow()  # default to current time
 
@@ -223,7 +289,7 @@ def publish():
 
         # Handle article categories
         new_article.categories = Category.query.filter(
-            Category.id.in_(request.form.getlist("categories"))
+            Category.id.in_([int(id) for id in request.form.getlist("categories")])
         ).all()
 
         try:
@@ -236,14 +302,14 @@ def publish():
                 else "👍 Article published successfully."
             )
             flash(flash_message, "success")
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
             flash(
                 "An error occurred: The article slug must be unique. Please try a different title.",
                 "danger",
             )
             app.logger.error(
-                "IntegrityError: Duplicate slug found while trying to publish an article."
+                f"IntegrityError: Duplicate slug found while trying to publish an article: {e}"
             )
             return redirect(url_for("publish"))
 
@@ -267,7 +333,9 @@ def approve_articles():
 
     # Fetch only articles that are pending approval
     articles_to_approve = Article.query.filter_by(pending_approval=True).all()
-    article_count = len(articles_to_approve)  # Get the count of articles pending approval
+    article_count = len(
+        articles_to_approve
+    )  # Get the count of articles pending approval
 
     return render_template(
         "approve_articles.html",
@@ -326,7 +394,9 @@ def users():
 
     all_users = User.query.all()
     user_count = len(all_users)
-    return render_template("users.html", title="Users", users=all_users, user_count=user_count)
+    return render_template(
+        "users.html", title="Users", users=all_users, user_count=user_count
+    )
 
 
 @app.route("/article/<slug>")
@@ -467,7 +537,9 @@ def edit_article(slug):
             article.country = ", ".join(request.form.getlist("countries"))
 
             # Handle article types
-            selected_article_type_ids = request.form.getlist("article_types")
+            selected_article_type_ids = [
+                int(id) for id in request.form.getlist("article_types")
+            ]
             selected_article_types = ArticleType.query.filter(
                 ArticleType.id.in_(selected_article_type_ids)
             ).all()
@@ -495,8 +567,12 @@ def edit_article(slug):
 
             # Update external collaboration links
             article.external_collaboration = request.form.get("external_collaboration")
-            article.external_collaboration2 = request.form.get("external_collaboration2")
-            article.external_collaboration3 = request.form.get("external_collaboration3")
+            article.external_collaboration2 = request.form.get(
+                "external_collaboration2"
+            )
+            article.external_collaboration3 = request.form.get(
+                "external_collaboration3"
+            )
 
             # Convert download size
             article_download_size = request.form["download_size"]
@@ -514,11 +590,15 @@ def edit_article(slug):
             # Extract and handle the publication and last edited dates
             publish_date_str = request.form.get("publish_date")
             if publish_date_str:
-                article.publish_date = datetime.strptime(publish_date_str, "%Y-%m-%dT%H:%M")
+                article.publish_date = datetime.strptime(
+                    publish_date_str, "%Y-%m-%dT%H:%M"
+                )
 
             last_edited_str = request.form.get("last_edited")
             if last_edited_str:
-                article.last_edited = datetime.strptime(last_edited_str, "%Y-%m-%dT%H:%M")
+                article.last_edited = datetime.strptime(
+                    last_edited_str, "%Y-%m-%dT%H:%M"
+                )
 
             if original_title != article.title:
                 article.slug = slugify(article.title)
@@ -532,7 +612,9 @@ def edit_article(slug):
                     count += 1
 
             # Handle categories
-            selected_category_ids = request.form.getlist("categories")
+            selected_category_ids = [
+                int(id) for id in request.form.getlist("categories")
+            ]
             selected_categories = Category.query.filter(
                 Category.id.in_(selected_category_ids)
             ).all()
@@ -705,7 +787,9 @@ def articles_by_type(article_type):
 def all_categories():
     # Fetch all article types that have at least one article
     article_types = (
-        ArticleType.query.filter(ArticleType.articles.any()).order_by(ArticleType.name).all()
+        ArticleType.query.filter(ArticleType.articles.any())
+        .order_by(ArticleType.name)
+        .all()
     )
 
     # Fetch countries and sources from articles
@@ -784,7 +868,9 @@ def user_settings():
         db.session.commit()
         flash("Team page settings updated", "success")
 
-    elif "submit_display_name" in request.form and display_name_form.validate_on_submit():
+    elif (
+        "submit_display_name" in request.form and display_name_form.validate_on_submit()
+    ):
         current_user.display_name = display_name_form.display_name.data
         db.session.commit()
         flash("Your display name has been updated.", "success")
@@ -798,9 +884,8 @@ def user_settings():
         file = avatar_form.avatar.data
         filename = secure_filename(file.filename)
         if filename != "":
-            file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-            file.save(file_path)
-            current_user.avatar = filename
+            avatar_filename = upload_file(file, "avatars")
+            current_user.avatar = avatar_filename
             db.session.commit()
             flash("Your avatar has been updated.", "success")
         else:
@@ -922,14 +1007,11 @@ def about():
         if "logo_submit" in request.form and current_user.is_admin:
             if logo_form.validate_on_submit():
                 file = logo_form.file.data
-                filename = secure_filename(file.filename)
-                filepath = os.path.join(app.config["UPLOAD_FOLDER"], "logos", filename)
+                logo_filename = upload_file(file, "logos")
 
-                if not os.path.exists(os.path.dirname(filepath)):
-                    os.makedirs(os.path.dirname(filepath))
-
-                file.save(filepath)
-                new_logo = Logo(file=filename, description=logo_form.description.data)
+                new_logo = Logo(
+                    file=logo_filename, description=logo_form.description.data
+                )
                 db.session.add(new_logo)
                 db.session.commit()
                 flash("Logo added successfully.", "success")
@@ -947,11 +1029,11 @@ def about():
             else:
                 flash("Failed to add citation. Please check the form data.", "danger")
 
-    # Reading dimensions for logos
-    for logo in logos:
-        image_path = os.path.join(app.config["UPLOAD_FOLDER"], "logos", logo.file)
-        with Image.open(image_path) as img:
-            logo.width, logo.height = img.size  # Store dimensions
+    # # Reading dimensions for logos
+    # for logo in logos:
+    #     image_path = os.path.join(app.config["UPLOAD_FOLDER"], "logos", logo.file)
+    #     with Image.open(image_path) as img:
+    #         logo.width, logo.height = img.size  # Store dimensions
 
     # Render the template with all necessary forms and objects
     return render_template(
@@ -961,6 +1043,8 @@ def about():
         citations=citations,
         logo_form=logo_form,
         citation_form=citation_form,
+        title="About Us",
+        use_s3=app.config["USE_S3"],
     )
 
 
@@ -974,14 +1058,9 @@ def add_logo():
     logo_form = LogoForm()  # No need to pass request.form
     if logo_form.validate_on_submit():
         file = logo_form.file.data
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config["UPLOAD_FOLDER"], "logos", filename)
+        logo_filename = upload_file(file, "logos")
 
-        if not os.path.exists(os.path.dirname(filepath)):
-            os.makedirs(os.path.dirname(filepath))
-
-        file.save(filepath)
-        new_logo = Logo(file=filename, description=logo_form.description.data)
+        new_logo = Logo(file=logo_filename, description=logo_form.description.data)
         db.session.add(new_logo)
         db.session.commit()
         flash("Logo added successfully.", "success")
@@ -998,7 +1077,9 @@ def add_logo():
 def add_citation():
     citation_form = CitationForm()
     if citation_form.validate_on_submit():
-        new_citation = Citation(article=citation_form.article.data, link=citation_form.link.data)
+        new_citation = Citation(
+            article=citation_form.article.data, link=citation_form.link.data
+        )
         db.session.add(new_citation)
         db.session.commit()
         flash("Citation added successfully.", "success")
@@ -1036,7 +1117,9 @@ def delete_citation(citation_id):
 @app.route("/all_articles/a-z")
 def all_articles_alphabetized():
     # Fetch all articles that do not require approval and sort by title
-    articles = Article.query.filter_by(pending_approval=False).order_by(Article.title).all()
+    articles = (
+        Article.query.filter_by(pending_approval=False).order_by(Article.title).all()
+    )
 
     # Convert markdown to HTML for each article
     for article in articles:
@@ -1145,3 +1228,24 @@ def search():
         articles=highlighted_articles,
         query=query,
     )
+
+
+@app.route("/health.json")
+def health():
+    return {"status": "ok"}
+
+
+# Handle redirects
+@app.route("/<path:any_path>", defaults={"any_path": ""})
+@app.route("/<path:any_path>")
+def catch_all(any_path):
+    # See if the path matches a redirect
+    source_path = f"/{any_path}"
+    row = Redirect.query.filter_by(source=source_path).first()
+    if row:
+        app.logger.info(f"Redirecting {source_path} to {row.destination}")
+        return redirect(row.destination, code=301)
+
+    # Otherwise return 404
+    flash("⛔️ That page doesn't exist", "warning")
+    return home(status_code=404)

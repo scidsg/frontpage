@@ -20,15 +20,39 @@ from .models import Article, ArticleType, User
 load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
+
+# Set up database URI
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "SQLALCHEMY_DATABASE_URI", f"sqlite:///{os.getcwd()}/blog.db"
 )
+# If it's a Postgres URI, replace the scheme with `postgresql+psycopg` because we're using the psycopg driver
+if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgresql://"):
+    app.config["SQLALCHEMY_DATABASE_URI"] = app.config[
+        "SQLALCHEMY_DATABASE_URI"
+    ].replace("postgresql://", "postgresql+psycopg://", 1)
+
+# Flask secret key
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "default-secret-key")
 
+# S3 bucket config
+app.config["USE_S3"] = os.environ.get("USE_S3", False)
+app.config["S3_ENDPOINT"] = os.environ.get("S3_ENDPOINT", "default-s3-endpoint")
+app.config["S3_BUCKET"] = os.environ.get("S3_BUCKET", "default-bucket-name")
+app.config["S3_ACCESS_KEY"] = os.environ.get("S3_ACCESS_KEY", "default-access-key")
+app.config["S3_SECRET_KEY"] = os.environ.get("S3_SECRET_KEY", "default-secret")
+app.config["S3_CDN_ENDPOINT"] = os.environ.get(
+    "S3_CDN_ENDPOINT", "default-cdn-endpoint"
+)
+
 # Setup the upload directory within the project directory
-project_dir = os.path.dirname(os.path.abspath(__file__))  # Directory where this file exists
-app.config["UPLOAD_FOLDER"] = os.path.join(project_dir, "static", "uploads")
-os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)  # Ensure the directory exists
+if not app.config["USE_S3"]:
+    project_dir = os.path.dirname(
+        os.path.abspath(__file__)
+    )  # Directory where this file exists
+    app.config["UPLOAD_FOLDER"] = os.path.join(project_dir, "static", "uploads")
+    os.makedirs(
+        app.config["UPLOAD_FOLDER"], exist_ok=True
+    )  # Ensure the directory exists
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -51,6 +75,7 @@ def initialize_article_types():
                     "Extractivist Leaks",
                     "Fascist",
                     "Fuerzas Represivas",
+                    "Greenhouse Project",
                     "Hack",
                     "Leak",
                     "Leak Markets",
@@ -81,13 +106,13 @@ def parse_size(size_str):
     size = float(size)
     unit = unit.upper()
 
-    if unit == 'KB':
+    if unit == "KB":
         return int(size * 1024)
-    elif unit == 'MB':
+    elif unit == "MB":
         return int(size * 1024**2)
-    elif unit == 'GB':
+    elif unit == "GB":
         return int(size * 1024**3)
-    elif unit == 'TB':
+    elif unit == "TB":
         return int(size * 1024**4)
     else:  # unit == 'B'
         return int(size)
@@ -105,14 +130,6 @@ def format_size(size_in_bytes):
         return f"{size_in_bytes / 1000**3:.2f} GB"
     else:
         return f"{size_in_bytes / 1000**4:.2f} TB"
-
-
-@app.errorhandler(404)
-def page_not_found(e):
-    if request.path.startswith("/static/"):
-        return e
-    flash("⛔️ That page doesn't exist", "warning")
-    return redirect(url_for("home"))
 
 
 @login_manager.user_loader
@@ -139,7 +156,11 @@ def inject_scopes():
         if article.source:
             counter[("source", article.source)] += 1
     top_scopes = counter.most_common(5)
-    return {"all_scopes": [{"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes]}
+    return {
+        "all_scopes": [
+            {"type": scope[0][0], "name": scope[0][1]} for scope in top_scopes
+        ]
+    }
 
 
 @app.context_processor
@@ -199,9 +220,13 @@ def add_type(type_name):
 
 # Initialize logging
 if not app.debug:
-    file_handler = RotatingFileHandler("app.log", maxBytes=1024 * 1024 * 100, backupCount=20)
+    file_handler = RotatingFileHandler(
+        "app.log", maxBytes=1024 * 1024 * 100, backupCount=20
+    )
     file_handler.setFormatter(
-        logging.Formatter("%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]")
+        logging.Formatter(
+            "%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]"
+        )
     )
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)

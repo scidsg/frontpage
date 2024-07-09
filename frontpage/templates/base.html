@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#333333">
     <title>{{ title|default('Default Title') }} - Distributed Denial of Secrets</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}" sizes="32x32">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}" sizes="16x16">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/android-chrome-192x192.png') }}" sizes="192x192">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}" sizes="512x512">
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}"
+        sizes="32x32">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}"
+        sizes="16x16">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/android-chrome-192x192.png') }}"
+        sizes="192x192">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/android-chrome-512x512.png') }}"
+        sizes="512x512">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
@@ -21,6 +27,7 @@
     <meta property="og:url" content="{{ request.url }}">
     <meta name="twitter:card" content="summary_large_image">
 </head>
+
 <body>
 
     <div id="searchModal" class="search-modal">
@@ -36,37 +43,37 @@
         <h1><a href="{{ url_for('home') }}">Distributed Denial of Secrets</a></h1>
         <form class="search-form" action="{{ url_for('search') }}" method="get">
             <input type="search" id="headerSearchInput" name="query" placeholder="Search articles..." required>
-            <button class="search-input-button"  type="submit"></button>
+            <button class="search-input-button" type="submit"></button>
         </form>
         <nav class="{% if current_user.is_authenticated %}user-logged-in{% else %}user-logged-out{% endif %}">
             <button id="searchButton" class="search-button search-input-button search-trigger"></button>
             <a class="mobileNav btnIcon" aria-label="Navigation menu"><span class="menu-tag">Menu</span></a>
             <ul>
                 {% if show_team_link %}
-                    <li><a href="{{ url_for('about') }}">About Us</a></li>
+                <li><a href="{{ url_for('about') }}">About Us</a></li>
                 {% endif %}
                 {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('impact') }}">Impact</a></li>
-                    <li><a href="{{ url_for('user_settings') }}">Settings</a></li>
-                    {% if current_user.is_admin %}
-                        <li><a href="{{ url_for('approve_articles') }}">
-                            Approvals
-                            {% if approval_count > 0 %}
-                                <span class="approval-count">{{ approval_count }}</span>
-                            {% endif %}
-                            </a>
-                        </li>
-                        <li><a href="{{ url_for('users') }}">Users</a></li>
-                    {% endif %}
-                </ul>
-                <a class="btn btn-primary" href="{{ url_for('publish') }}">New Article</a>
-                {% else %}
-                    <li><a href="https://shop.scidsg.org/collections/ddos">Shop</a></li>
-                    <li><a href="{{ url_for('login') }}">Login</a></li>
-                    <li><a class="btn" href="/submit">Submit Data</a></li>
-                </ul>
-                <a class="btn btn-primary" href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer"><span class="btn-emoji">❤️</span> Donate</a>
+                <li><a href="{{ url_for('impact') }}">Impact</a></li>
+                <li><a href="{{ url_for('user_settings') }}">Settings</a></li>
+                {% if current_user.is_admin %}
+                <li><a href="{{ url_for('approve_articles') }}">
+                        Approvals
+                        {% if approval_count > 0 %}
+                        <span class="approval-count">{{ approval_count }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+                <li><a href="{{ url_for('users') }}">Users</a></li>
                 {% endif %}
+            </ul>
+            <a class="btn btn-primary" href="{{ url_for('publish') }}">New Article</a>
+            {% else %}
+            <li><a href="https://shop.scidsg.org/collections/ddos">Shop</a></li>
+            <li><a class="btn" href="/submit">Submit Data</a></li>
+            </ul>
+            <a class="btn btn-primary" href="https://opencollective.com/ddosecrets" target="_blank" rel="noopener noreferrer"><span
+                    class="btn-emoji">❤️</span> Donate</a>
+            {% endif %}
             </ul>
         </nav>
     </header>
@@ -74,31 +81,32 @@
     <main>
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <ul class="flashes">
-                    {% for category, message in messages %}
-                        <li class="{{ category }}">{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+        {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
         {% endwith %}
-        
+
         <!-- Categories List -->
-        {% if request.endpoint not in ['login', 'register', 'publish', 'edit_article', 'user_settings', 'team', 'approve_articles', 'users'] %}
-            <ul class="categories-list">
-                {% for scope in all_scopes %}
-                    <li>
-                        {% if scope.type == 'type' %}
-                            <a href="{{ url_for('articles_by_type', article_type=scope.name) }}">{{ scope.name }}</a>
-                        {% elif scope.type == 'country' %}
-                            <a href="{{ url_for('articles_by_country', country=scope.name) }}">{{ scope.name }}</a>
-                        {% elif scope.type == 'source' %}
-                            <a href="{{ url_for('articles_by_source', source=scope.name) }}">{{ scope.name }}</a>
-                        {% endif %}
-                    </li>
-                {% endfor %}
-                <li><a href="{{ url_for('all_categories') }}">All</a></li>
-            </ul>
+        {% if request.endpoint not in ['login', 'register', 'publish', 'edit_article', 'user_settings', 'team',
+        'approve_articles', 'users'] %}
+        <ul class="categories-list">
+            {% for scope in all_scopes %}
+            <li>
+                {% if scope.type == 'type' %}
+                <a href="{{ url_for('articles_by_type', article_type=scope.name) }}">{{ scope.name }}</a>
+                {% elif scope.type == 'country' %}
+                <a href="{{ url_for('articles_by_country', country=scope.name) }}">{{ scope.name }}</a>
+                {% elif scope.type == 'source' %}
+                <a href="{{ url_for('articles_by_source', source=scope.name) }}">{{ scope.name }}</a>
+                {% endif %}
+            </li>
+            {% endfor %}
+            <li><a href="{{ url_for('all_categories') }}">All</a></li>
+        </ul>
         {% endif %}
 
         {% block content %}
@@ -106,10 +114,11 @@
     </main>
 
     {% block footer %}
-        <!-- Footer can be customized or kept empty if not needed -->
+    <!-- Footer can be customized or kept empty if not needed -->
     {% endblock %}
 
     <!-- Add your JavaScript files here -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>

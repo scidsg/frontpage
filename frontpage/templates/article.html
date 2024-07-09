@@ -1,206 +1,219 @@
 {% extends "base.html" %}
 {% block content %}
-    {% if not current_user.is_authenticated %}
-        <div class="content promo promo-article" id="promo">
-            <h2>We need your help!</h2>
-            <p>We are the most important and most active public library of hacked and leaked datasets in the world today, but we're completely out of money. If we don't raise $150,000 by January 31, 2024, we might be forced to suspend operations.</p>
-            <div class="btn-container">
-                <a class="btn btn-primary" href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer">❤️ Donate Now</a>
-                <a href="#" id="close_promo">Close</a>
-            </div>
-        </div>
+{% if not current_user.is_authenticated %}
+<div class="content promo promo-article" id="promo">
+    <h2>We need your help!</h2>
+    <p>We are the most important and most active public library of hacked and leaked datasets in the world today, but we
+        operate on a shoestring budget.</p>
+    <div class="btn-container">
+        <a class="btn btn-primary" href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer">❤️ Donate
+            Now</a>
+        <a href="#" id="close_promo">Close</a>
+    </div>
+</div>
+{% endif %}
+
+<div class="content">
+    <h1>{{ article.title }}</h1>
+
+    <!-- ARTICLE AUTHOR  -->
+
+    {% if article.pending_approval %}
+    <p class="meta">Submitted by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author
+            }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+    {% else %}
+    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author
+            }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
     {% endif %}
 
-    <div class="content">
-        <h1>{{ article.title }}</h1>
+    <!-- ARTICLE ACTIONS -->
+    {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
+    <div class="article-actions">
+        <!-- Check if the article is pending approval and if the current user is an admin -->
+        {% if article.pending_approval and current_user.is_admin %}
+        <form action="{{ url_for('approve_article', slug=article.slug) }}" method="post">
+            <button type="submit" class="btn btn-primary">Approve</button>
+        </form>
+        {% endif %}
+        <a href="{{ url_for('edit_article', slug=article.slug) }}">Edit Article</a>
+        <form action="{{ url_for('delete_article', article_id=article.id) }}" method="post">
+            <button type="submit" class="destruct delete-article-button">Delete Article</button>
+        </form>
+    </div>
+    {% endif %}
 
-        <!-- ARTICLE AUTHOR  -->
 
-        {% if article.pending_approval %}
-            <p class="meta">Submitted by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-        {% else %}
-            <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+    <!-- ARTICLE SOURCE  -->
+
+    <div class="metadata">
+        <h2>Article Details</h2>
+        {% if article.source %}
+        <p><span class="label">Source:</span> <a href="{{ url_for('articles_by_source', source=article.source) }}">{{
+                article.source }}</a></p>
         {% endif %}
 
-        <!-- ARTICLE ACTIONS -->
-        {% if current_user.is_authenticated and (current_user.username == article.author or current_user.is_admin) %}
-            <div class="article-actions">
-                <!-- Check if the article is pending approval and if the current user is an admin -->
-                {% if article.pending_approval and current_user.is_admin %}
-                    <form action="{{ url_for('approve_article', slug=article.slug) }}" method="post">
-                        <button type="submit" class="btn btn-primary">Approve</button>
-                    </form>
-                {% endif %}
-                <a href="{{ url_for('edit_article', slug=article.slug) }}">Edit Article</a>
-                <form action="{{ url_for('delete_article', article_id=article.id) }}" method="post">
-                    <button type="submit" class="destruct delete-article-button">Delete Article</button>
-                </form>
+        <!-- COUNTRY SELECTION -->
+
+        {% if article.country %}
+        <p><span class="label">Country:</span>
+            {% set countries = article.country.split(", ") %}
+            {% for country in countries %}
+            <a href="{{ url_for('articles_by_country', country=country) }}">{{ country }}</a>{% if not loop.last %}, {%
+            endif %}
+            {% endfor %}
+        </p>
+        {% endif %}
+
+        {% if article.article_types %}
+        <p><span class="label">Type:</span>
+            {% for atype in article.article_types %}
+            <a href="{{ url_for('articles_by_type', article_type=atype.name) }}">{{ atype.name }}</a>{% if not loop.last
+            %}, {% endif %}
+            {% endfor %}
+        </p>
+        {% endif %}
+
+        {% if download_size_formatted %}
+        <p><span class="label">Download Size:</span> {{ download_size_formatted }}</p>
+        {% endif %}
+
+
+        <!-- DOWNLOAD LINKS -->
+
+        {% if article.download_link %}
+        <p><span class="label">Download:</span> <a href="{{ article.download_link }}" target="_blank">Link</a></p>
+        {% endif %}
+        {% if article.download_link2 %}
+        <p><span class="label">Download 2:</span> <a href="{{ article.download_link2 }}" target="_blank">Link</a></p>
+        {% endif %}
+        {% if article.download_link3 %}
+        <p><span class="label">Download 3:</span> <a href="{{ article.download_link3 }}" target="_blank">Link</a></p>
+        {% endif %}
+
+        <!-- MAGNET LINKS -->
+
+        {% if article.magnet_link %}
+        <p><span class="label">Magnet:</span> <a href="{{ article.magnet_link }}" target="_blank">Link</a></p>
+        {% endif %}
+        {% if article.magnet_link2 %}
+        <p><span class="label">Magnet 2:</span> <a href="{{ article.magnet_link2 }}" target="_blank">Link</a></p>
+        {% endif %}
+        {% if article.magnet_link3 %}
+        <p><span class="label">Magnet 3:</span> <a href="{{ article.magnet_link3 }}" target="_blank">Link</a></p>
+        {% endif %}
+
+        <!-- TORRENT LINKS -->
+
+        {% if article.torrent_link %}
+        <p><span class="label">Torrent:</span> <a href="{{ article.torrent_link }}" target="_blank">Link</a></p>
+        {% endif %}
+        {% if article.torrent_link2 %}
+        <p><span class="label">Torrent 2:</span> <a href="{{ article.torrent_link2 }}" target="_blank">Link</a></p>
+        {% endif %}
+        {% if article.torrent_link3 %}
+        <p><span class="label">Torrent 3:</span> <a href="{{ article.torrent_link3 }}" target="_blank">Link</a></p>
+        {% endif %}
+
+        <!-- IPFS LINKS -->
+        {% if article.ipfs_link %}
+        <p><span class="label">IPFS Link:</span> {{ article.ipfs_link }}</p>
+        {% endif %}
+        {% if article.ipfs_link2 %}
+        <p><span class="label">IPFS Link 2:</span> {{ article.ipfs_link2 }}</p>
+        {% endif %}
+        {% if article.ipfs_link3 %}
+        <p><span class="label">IPFS Link 3:</span> {{ article.ipfs_link3 }}</p>
+        {% endif %}
+
+        <!-- EXTERNAL COLLAB LINK -->
+
+        {% if article.external_collaboration %}
+        <p><span class="label">External Collaboration Link:</span> <a href="{{ article.external_collaboration }}"
+                target="_blank">Link</a></p>
+        {% endif %}
+        {% if article.external_collaboration2 %}
+        <p><span class="label">External Collaboration Link 2:</span> <a href="{{ article.external_collaboration2 }}"
+                target="_blank">Link</a></p>
+        {% endif %}
+        {% if article.external_collaboration3 %}
+        <p><span class="label">External Collaboration Link 3:</span> <a href="{{ article.external_collaboration3 }}"
+                target="_blank">Link</a></p>
+        {% endif %}
+    </div>
+
+    <!-- ARTICLE CONTENT -->
+
+    <div class="article-content">
+        {{ content_html | safe }}
+    </div>
+</div>
+
+<div class="related-articles-group content">
+    <!-- Related Articles by Type -->
+    {% if related_by_type_grouped %}
+    <h2>Related Articles</h2>
+    {% for type, articles in related_by_type_grouped.items() %}
+    {% if articles %}
+    <div class="related-articles">
+        <h3><a href="{{ url_for('articles_by_type', article_type=type) }}">{{ type }}</a></h3>
+        <div class="article-row">
+            {% for article in articles[:3] %}
+            <div class="article">
+                <h4><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h4>
+                <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{
+                        article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p>{{ article.content[:200] | safe }}{% if article.content|length > 200 %}...{% endif %}</p>
+                <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
             </div>
-        {% endif %}
-
-
-        <!-- ARTICLE SOURCE  -->
-
-        <div class="metadata">
-            <h2>Article Details</h2>
-            {% if article.source %}
-                <p><span class="label">Source:</span> <a href="{{ url_for('articles_by_source', source=article.source) }}">{{ article.source }}</a></p>
-            {% endif %}
-
-            <!-- COUNTRY SELECTION -->
-
-            {% if article.country %}
-                <p><span class="label">Country:</span>
-                {% set countries = article.country.split(", ") %}
-                {% for country in countries %}
-                    <a href="{{ url_for('articles_by_country', country=country) }}">{{ country }}</a>{% if not loop.last %}, {% endif %}
-                {% endfor %}
-                </p>
-            {% endif %}
-
-            {% if article.article_types %}
-                <p><span class="label">Type:</span>
-                {% for atype in article.article_types %}
-                    <a href="{{ url_for('articles_by_type', article_type=atype.name) }}">{{ atype.name }}</a>{% if not loop.last %}, {% endif %}
-                {% endfor %}
-                </p>
-            {% endif %}
-
-            {% if download_size_formatted %}
-                <p><span class="label">Download Size:</span> {{ download_size_formatted }}</p>
-            {% endif %}
-
-            
-            <!-- DOWNLOAD LINKS -->
-
-            {% if article.download_link %}
-                <p><span class="label">Download:</span> <a href="{{ article.download_link }}" target="_blank">Link</a></p>
-            {% endif %}
-            {% if article.download_link2 %}
-                <p><span class="label">Download 2:</span> <a href="{{ article.download_link2 }}" target="_blank">Link</a></p>
-            {% endif %}
-            {% if article.download_link3 %}
-                <p><span class="label">Download 3:</span> <a href="{{ article.download_link3 }}" target="_blank">Link</a></p>
-            {% endif %}
-
-            <!-- MAGNET LINKS -->
-
-            {% if article.magnet_link %}
-                <p><span class="label">Magnet:</span> <a href="{{ article.magnet_link }}" target="_blank">Link</a></p>
-            {% endif %}
-            {% if article.magnet_link2 %}
-                <p><span class="label">Magnet 2:</span> <a href="{{ article.magnet_link2 }}" target="_blank">Link</a></p>
-            {% endif %}
-            {% if article.magnet_link3 %}
-                <p><span class="label">Magnet 3:</span> <a href="{{ article.magnet_link3 }}" target="_blank">Link</a></p>
-            {% endif %}
-
-            <!-- TORRENT LINKS -->
-
-            {% if article.torrent_link %}
-                <p><span class="label">Torrent:</span> <a href="{{ article.torrent_link }}" target="_blank">Link</a></p>
-            {% endif %}
-            {% if article.torrent_link2 %}
-                <p><span class="label">Torrent 2:</span> <a href="{{ article.torrent_link2 }}" target="_blank">Link</a></p>
-            {% endif %}
-            {% if article.torrent_link3 %}
-                <p><span class="label">Torrent 3:</span> <a href="{{ article.torrent_link3 }}" target="_blank">Link</a></p>
-            {% endif %}
-
-            <!-- IPFS LINKS -->
-            {% if article.ipfs_link %}
-                <p><span class="label">IPFS Link:</span> {{ article.ipfs_link }}</p>
-            {% endif %}
-            {% if article.ipfs_link2 %}
-                <p><span class="label">IPFS Link 2:</span> {{ article.ipfs_link2 }}</p>
-            {% endif %}
-            {% if article.ipfs_link3 %}
-                <p><span class="label">IPFS Link 3:</span> {{ article.ipfs_link3 }}</p>
-            {% endif %}
-
-            <!-- EXTERNAL COLLAB LINK -->
-
-            {% if article.external_collaboration %}
-                <p><span class="label">External Collaboration Link:</span> <a href="{{ article.external_collaboration }}" target="_blank">Link</a></p>
-            {% endif %}
-            {% if article.external_collaboration2 %}
-                <p><span class="label">External Collaboration Link 2:</span> <a href="{{ article.external_collaboration2 }}" target="_blank">Link</a></p>
-            {% endif %}
-            {% if article.external_collaboration3 %}
-                <p><span class="label">External Collaboration Link 3:</span> <a href="{{ article.external_collaboration3 }}" target="_blank">Link</a></p>
-            {% endif %}
-        </div>
-
-        <!-- ARTICLE CONTENT -->
-
-        <div class="article-content">
-            {{ content_html | safe }}
+            {% endfor %}
         </div>
     </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
 
-    <div class="related-articles-group content">
-        <!-- Related Articles by Type -->
-        {% if related_by_type_grouped %}
-            <h2>Related Articles</h2>
-            {% for type, articles in related_by_type_grouped.items() %}
-                {% if articles %}
-                    <div class="related-articles">
-                        <h3><a href="{{ url_for('articles_by_type', article_type=type) }}">{{ type }}</a></h3>
-                        <div class="article-row">
-                            {% for article in articles[:3] %}
-                                <div class="article">
-                                    <h4><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h4>
-                                    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                                   <p>{{ article.content[:200] | safe }}{% if article.content|length > 200 %}...{% endif %}</p>
-                                    <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
+    <!-- Related Articles by Source -->
+    {% if related_by_source_grouped %}
+    {% for source, articles in related_by_source_grouped.items() %}
+    {% if articles and source %}
+    <div class="related-articles">
+        <h3><a href="{{ url_for('articles_by_source', source=source) }}">{{ source }}</a></h3>
+        <div class="article-row">
+            {% for article in articles[:3] %}
+            <div class="article">
+                <h4><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h4>
+                <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{
+                        article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H%M') }}</p>
+                <p>{{ article.content[:200] | safe }}{% if article.content|length > 200 %}...{% endif %}</p>
+                <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
+            </div>
             {% endfor %}
-        {% endif %}
-
-        <!-- Related Articles by Source -->
-        {% if related_by_source_grouped %}
-            {% for source, articles in related_by_source_grouped.items() %}
-                {% if articles and source %}
-                    <div class="related-articles">
-                        <h3><a href="{{ url_for('articles_by_source', source=source) }}">{{ source }}</a></h3>
-                        <div class="article-row">
-                            {% for article in articles[:3] %}
-                                <div class="article">
-                                    <h4><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h4>
-                                    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H%M') }}</p>
-                                    <p>{{ article.content[:200] | safe }}{% if article.content|length > 200 %}...{% endif %}</p>
-                                    <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-
-        <!-- Related Articles by Country -->
-        {% if related_by_country_grouped %}
-            {% for country, articles in related_by_country_grouped.items() %}
-                {% if articles %}
-                    <div class="related-articles">
-                        <h3><a href="{{ url_for('articles_by_country', country=country) }}">{{ country }}</a></h3>
-                        <div class="article-row">
-                            {% for article in articles[:3] %}
-                                <div class="article">
-                                    <h4><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h4>
-                                    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                                    <p>{{ article.content[:200] | safe }}{% if article.content|length > 200 %}...{% endif %}</p>
-                                    <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+        </div>
     </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    <!-- Related Articles by Country -->
+    {% if related_by_country_grouped %}
+    {% for country, articles in related_by_country_grouped.items() %}
+    {% if articles %}
+    <div class="related-articles">
+        <h3><a href="{{ url_for('articles_by_country', country=country) }}">{{ country }}</a></h3>
+        <div class="article-row">
+            {% for article in articles[:3] %}
+            <div class="article">
+                <h4><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h4>
+                <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{
+                        article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p>{{ article.content[:200] | safe }}{% if article.content|length > 200 %}...{% endif %}</p>
+                <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+</div>
 {% endblock %}

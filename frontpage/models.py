@@ -31,7 +31,9 @@ class User(UserMixin, db.Model):
     display_name = db.Column(db.String(100))
     custom_url = db.Column(db.String(255))
     avatar = db.Column(db.String(255))
-    requires_approval = db.Column(db.Boolean, server_default=text("FALSE"), nullable=False)
+    requires_approval = db.Column(
+        db.Boolean, server_default=text("FALSE"), nullable=False
+    )
     is_admin = db.Column(db.Boolean, server_default=text("FALSE"), nullable=False)
 
     def set_password(self, password):
@@ -82,7 +84,9 @@ class Category(db.Model):
 article_categories = db.Table(
     "article_categories",
     db.Column("article_id", db.Integer, db.ForeignKey("articles.id"), primary_key=True),
-    db.Column("category_id", db.Integer, db.ForeignKey("categories.id"), primary_key=True),
+    db.Column(
+        "category_id", db.Integer, db.ForeignKey("categories.id"), primary_key=True
+    ),
     sqlite_with_rowid=False,
 )
 
@@ -95,19 +99,19 @@ class Article(db.Model):
     content = db.Column(db.Text, nullable=False)
     author = db.Column(db.String(50), nullable=False)
     publish_date = db.Column(db.DateTime, nullable=False)
-    country = db.Column(db.String(50))
-    download_link = db.Column(db.String(255))
-    download_link2 = db.Column(db.String(255))
-    download_link3 = db.Column(db.String(255))
-    magnet_link = db.Column(db.String(255))
-    magnet_link2 = db.Column(db.String(255))
-    magnet_link3 = db.Column(db.String(255))
-    torrent_link = db.Column(db.String(255))
-    torrent_link2 = db.Column(db.String(255))
-    torrent_link3 = db.Column(db.String(255))
-    ipfs_link = db.Column(db.String(255))
-    ipfs_link2 = db.Column(db.String(255))
-    ipfs_link3 = db.Column(db.String(255))
+    country = db.Column(db.Text)
+    download_link = db.Column(db.Text)
+    download_link2 = db.Column(db.Text)
+    download_link3 = db.Column(db.Text)
+    magnet_link = db.Column(db.Text)
+    magnet_link2 = db.Column(db.Text)
+    magnet_link3 = db.Column(db.Text)
+    torrent_link = db.Column(db.Text)
+    torrent_link2 = db.Column(db.Text)
+    torrent_link3 = db.Column(db.Text)
+    ipfs_link = db.Column(db.Text)
+    ipfs_link2 = db.Column(db.Text)
+    ipfs_link3 = db.Column(db.Text)
     download_size = db.Column(db.String(255))
     external_collaboration = db.Column(db.String(255))
     external_collaboration2 = db.Column(db.String(255))
@@ -115,7 +119,9 @@ class Article(db.Model):
     source = db.Column(db.String(255))
     last_edited = db.Column(db.DateTime)
     slug = db.Column(db.String(255), unique=True, nullable=False)
-    pending_approval = db.Column(db.Boolean, server_default=text("FALSE"), nullable=False)
+    pending_approval = db.Column(
+        db.Boolean, server_default=text("FALSE"), nullable=False
+    )
     categories = db.relationship(
         "Category",
         secondary=article_categories,
@@ -157,3 +163,14 @@ class InvitationCode(db.Model):
 
     def __repr__(self):
         return f"<InvitationCode {self.code}>"
+
+
+class Redirect(db.Model):
+    __tablename__ = "redirects"
+
+    id = db.Column(db.Integer, primary_key=True)
+    source = db.Column(db.String(255), nullable=False, unique=True)
+    destination = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self):
+        return f"<Redirect {self.source} to {self.destination}>"

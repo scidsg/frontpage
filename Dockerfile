@@ -1,4 +1,4 @@
-FROM python:3.12.3-slim-bookworm AS builder
+FROM python:3.12-slim-bookworm AS builder
 
 WORKDIR /src
 RUN pip install poetry
@@ -20,10 +20,6 @@ RUN apt-get update && \
 
 COPY ./frontpage ./frontpage
 COPY ./migrations ./migrations
+COPY ./migrate-and-run.sh .
 
-ENV FLASK_APP='frontpage:app'
-
-CMD gunicorn --bind 0.0.0.0:8080 -w 2 \
-        --capture-output --access-logformat '%(r)s %(s)s' \
-        --forwarded-allow-ips '0.0.0.0' \
-        'frontpage:app'
+CMD ["./migrate-and-run.sh"]

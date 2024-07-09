@@ -1,72 +1,78 @@
 {% extends "base.html" %}
 {% block content %}
-    {% if not current_user.is_authenticated %}
-        <div class="content promo promo-home" id="promo">
-            <h2>Welcome to Distributed Denial of Secrets</h2>
-            <p>We're a 501(c)(3) non-profit in the US that archives and publishes hacked and leaked documents in the public interest. Browse our releases, download data, or <a href="" target="_blank" rel="noopener noreferrer">donate to support our mission!</a></p>
-            <div class="btn-container">
-                <a class="btn btn-primary" href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer"><span class="btn-emoji">❤️</span> Donate Now</a>
-                <a href="#" id="close_promo">Close</a>
-            </div>
+{% if not current_user.is_authenticated %}
+<div class="content promo promo-home" id="promo">
+    <h2>Welcome to Distributed Denial of Secrets</h2>
+    <p>We're a 501(c)(3) non-profit in the US that archives and publishes hacked and leaked documents in the public
+        interest. Browse our releases, download data, or <a href="https://opencollective.com/ddosecrets" target="_blank"
+            rel="noopener noreferrer">donate to support our mission!</a></p>
+    <div class="btn-container">
+        <a class="btn btn-primary" href="https://opencollective.com/ddosecrets" target="_blank" rel="noopener noreferrer"><span
+                class="btn-emoji">❤️</span> Donate Now</a>
+        <a href="#" id="close_promo">Close</a>
+    </div>
+</div>
+{% endif %}
+<div class="content home">
+    <!-- Column 1: Recent Articles -->
+    <div class="column recent-articles">
+        <h2>Recently Published</h2>
+        {% for article in main_articles %}
+        <div class="article">
+            <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
+            <p class="meta">Published on {{ article.publish_date.strftime('%Y-%m-%d') }}</p>
+            <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
+            <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
         </div>
-    {% endif %}
-    <div class="content home">
-        <!-- Column 1: Recent Articles -->
-        <div class="column recent-articles">
-            <h2>Recently Published</h2>
-            {% for article in main_articles %}
-                <div class="article">
-                    <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
-                    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                    <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
-                    <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
-                </div>
-            {% endfor %}
-            {% if main_articles_more %}
-                <a class="btn" href="{{ url_for('all_articles', category='recent') }}">View All</a>
+        {% endfor %}
+        {% if main_articles_more %}
+        <a class="btn" href="{{ url_for('all_articles', category='recent') }}">View All</a>
+        {% endif %}
+    </div>
+    <!-- Column 2: Recently Edited Articles -->
+    <div class="column recently-edited-articles">
+        <h2>Recently Edited</h2>
+        {% for article in recently_edited_articles %}
+        <div class="article">
+            <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
+            {% if article.last_edited %}
+            <p class="meta">Edited on {{ article.last_edited.strftime('%Y-%m-%d') }}</p>
+            {% else %}
+            <p class="meta">Edited date not available</p>
             {% endif %}
+            <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
+            <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
         </div>
-        <!-- Column 2: Recently Edited Articles -->
-        <div class="column recently-edited-articles">
-            <h2>Recently Edited</h2>
-            {% for article in recently_edited_articles %}
-                <div class="article">
-                    <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
-                    {% if article.last_edited %}
-                        <p class="meta">Edited on {{ article.last_edited.strftime('%Y-%m-%d %H:%M') }}</p>
-                    {% else %}
-                        <p class="meta">Edited date not available</p>
-                    {% endif %}
-                    <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
-                    <a class="drill-in" href="{{ url_for('article', slug=article.slug) }}">Read more</a>
-                </div>
         {% endfor %}
         {% if recently_edited_articles_more %}
-                <a class="btn" href="{{ url_for('all_articles', category='edited') }}">View All</a>
-            {% endif %}
-        </div>
+        <a class="btn" href="{{ url_for('all_articles', category='edited') }}">View All</a>
+        {% endif %}
+    </div>
 
-        <!-- Column 3: Articles with External Collaboration -->
-        <div class="column external-collaboration-articles">
-            <h2>Collaborations</h2>
-            {% for article in external_collaboration_articles %}
-                <div class="article">
-                    <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
-                    <p class="meta">Published by <a href="{{ url_for('articles_by_author', author=article.author) }}">{{ article.author }}</a> on {{ article.publish_date.strftime('%Y-%m-%d %H:%M') }}</p>
-                    <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
-                    <p><a class="drill-in" href="{{ article.external_collaboration }}">Read more</a><span class="emoji-meta">↗️</span></p>
-                </div>
+    <!-- Column 3: Articles with External Collaboration -->
+    <div class="column external-collaboration-articles">
+        <h2>Collaborations</h2>
+        {% for article in external_collaboration_articles %}
+        <div class="article">
+            <h3><a href="{{ url_for('article', slug=article.slug) }}">{{ article.title }}</a></h3>
+            <p class="meta">Published on {{ article.publish_date.strftime('%Y-%m-%d') }}</p>
+            <p>{{ article.content | safe | striptags | truncate(200, True) }}</p>
+            <p><a class="drill-in" href="{{ article.external_collaboration }}">Read more</a><span
+                    class="emoji-meta">↗️</span></p>
+        </div>
         {% endfor %}
         {% if external_collaboration_articles_more %}
-                <a class="btn" href="{{ url_for('all_articles', category='external') }}">View All</a>
-            {% endif %}
-        </div>
+        <a class="btn" href="{{ url_for('all_articles', category='external') }}">View All</a>
+        {% endif %}
     </div>
+</div>
 {% endblock %}
 
 {% block footer %}
 <footer class="content">
-    <p>Distributed Denial of Secrets is a 501(c)(3) non-profit. <a href="https://ddosecrets.charity" target="_blank" rel="noopener noreferrer">Support our mission!</a></p>
-    <p><a href="https://github.com/scidsg/frontpage">Powered by 📰 Frontpage</a>, a free and open-source product by <a href="https://scidsg.org" target="_blank" rel="noopener noreferrer">Science & Design, Inc.</a></p>
+    <p>Distributed Denial of Secrets is a 501(c)(3) non-profit. <a href="https://opencollective.com/ddosecrets" target="_blank"
+            rel="noopener noreferrer">Support our mission!</a><meta name="fediverse:creator" content="@DDoSecrets@kolektiva.social" /></p>
+    <p><a href="https://github.com/scidsg/frontpage">Powered by 📰 Frontpage</a>, a free and open-source product by <a
+            href="https://scidsg.org" target="_blank" rel="noopener noreferrer">Science & Design, Inc.</a></p>
 </footer>
 {% endblock %}

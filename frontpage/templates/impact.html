@@ -1,28 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="content metrics">
+<div class="impact">
     <h1>Our Impact</h1>
-    <div class="metric-row">
-        <p class="number metric"><span class="label">Total Number of Articles</span> {{ total_articles_count }}</p>
-        <p class="number metric"><span class="label">Limited Distribution %</span> {{ limited_dist_percentage|round(2) }}%</p>
+    <div class="impact">
+        <p class="impact metric"><span class="label"></span></p>
+        <ul><li><a rel="nofollow" class="external text" href="https://www.icij.org/investigations/cyprus-confidential/cyprus-and-u-s-to-form-partnership-to-combat-financial-crime/">Cyprus and U.S. to form partnership to combat financial crime</a></li>
+        <li><a rel="nofollow" class="external text" href="https://www.icij.org/investigations/cyprus-confidential/cypriot-president-pledges-government-probe-into-cyprus-confidential-revelations/">Cypriot president pledges government probe into Cyprus Confidential revelations</a></li>
+        <li><a rel="nofollow" class="external text" href="https://www.icij.org/investigations/cyprus-confidential/lawmakers-call-for-eu-crackdown-after-icijs-cyprus-confidential-revelations/">Lawmakers call for EU crackdown after Cyprus Confidential revelations</a></li>
+        <li><a rel="nofollow" class="external text" href="https://www.icij.org/investigations/deforestation-inc/new-justice-department-led-task-force-pledges-global-crackdown-on-illegal-timber-trade/">New Justice Department-led task force pledges global crackdown on illegal timber trade</a></li>
+        <li><a rel="nofollow" class="external text" href="https://www.icij.org/investigations/deforestation-inc/eu-bans-import-of-deforestation-linked-goods/">EU bans import of deforestation-linked goods</a></li>
+        <li><a rel="nofollow" class="external text" href="https://www.justiceformyanmar.org/stories/what-has-been-done-to-stop-the-myanmar-militarys-atrocity-crimes">One year later: What has been done to stop the Myanmar military's atrocity crimes?</a></li>
+        <li><a rel="nofollow" class="external text" href="https://theintercept.com/2021/04/21/maine-defund-police-fusion-centers-mass-surveillance/">The Defund Police Movement Takes Aim at Fusion Centers and Mass Surveillance</a></li>
+        <li><a rel="nofollow" class="external text" href="https://www.thetimes.co.uk/article/formations-house-leaks-show-need-for-reforms-on-creating-companies-says-anti-corruption-chief-3jq6lbk22">Formations House leak shows need for reforms on creating companies, anti-corruption chief says</a></li></ul>
+
+        <p class="impact metric"><span class="label"></span></p>
     </div>
-    <div class="metric-row">
-        <!-- Top Categories -->
-        <div class="top-categories metric">
-            <div class="category">
-                <h3>Top Source</h3>
-                <p>{{ top_source[0] }}<br><span class="meta">{{ top_source[1] }} Articles</span></p>
-            </div>
-            <div class="category">
-                <h3>Top Country</h3>
-                <p>{{ top_country[0] }}<br><span class="meta">{{ top_country[1] }} Articles</span></p>
-            </div>
-            <div class="category">
-                <h3>Top Type</h3>
-                <p>{{ top_type[0] }}<br><span class="meta">{{ top_type[1] }} Articles</span></p>
-            </div>
+    <div class="metric-row">>
+        <div class="category">
+            <h3>Total Number</h3>
+            <p>{{ total_articles_count }}<br><span class="meta"> of Leaks</span></p>
+        </div>
+        <div class="category">
+            <h3>More than</h3>
+            <p>135 million<br><span class="meta">Files Published</span></p>
+        </div>
+        <div class="category">
+            <h3>More than</h3>
+            <p>86<br><span class="meta">Terabytes Released</span></p>
         </div>
     </div>
+</div>
 
     <!-- RANDOM QUOTE ON EVERY PAGE LOAD -->
 
