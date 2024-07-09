@@ -75,6 +75,7 @@ def initialize_article_types():
                     "Extractivist Leaks",
                     "Fascist",
                     "Fuerzas Represivas",
+                    "Greenhouse Project",
                     "Hack",
                     "Leak",
                     "Leak Markets",
