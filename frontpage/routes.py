@@ -250,7 +250,9 @@ def publish():
             download_link2=request.form["download_link2"],
             download_link3=request.form["download_link3"],
             article_types=ArticleType.query.filter(
-                ArticleType.id.in_(request.form.getlist("article_types"))
+                ArticleType.id.in_(
+                    [int(id) for id in request.form.getlist("article_types")]
+                )
             ).all(),
             magnet_link=request.form["magnet_link"],
             magnet_link2=request.form["magnet_link2"],
@@ -287,7 +289,7 @@ def publish():
 
         # Handle article categories
         new_article.categories = Category.query.filter(
-            Category.id.in_(request.form.getlist("categories"))
+            Category.id.in_([int(id) for id in request.form.getlist("categories")])
         ).all()
 
         try:
@@ -535,7 +537,9 @@ def edit_article(slug):
             article.country = ", ".join(request.form.getlist("countries"))
 
             # Handle article types
-            selected_article_type_ids = request.form.getlist("article_types")
+            selected_article_type_ids = [
+                int(id) for id in request.form.getlist("article_types")
+            ]
             selected_article_types = ArticleType.query.filter(
                 ArticleType.id.in_(selected_article_type_ids)
             ).all()
@@ -608,7 +612,9 @@ def edit_article(slug):
                     count += 1
 
             # Handle categories
-            selected_category_ids = request.form.getlist("categories")
+            selected_category_ids = [
+                int(id) for id in request.form.getlist("categories")
+            ]
             selected_categories = Category.query.filter(
                 Category.id.in_(selected_category_ids)
             ).all()
