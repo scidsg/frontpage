@@ -302,14 +302,14 @@ def publish():
                 else "👍 Article published successfully."
             )
             flash(flash_message, "success")
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
             flash(
                 "An error occurred: The article slug must be unique. Please try a different title.",
                 "danger",
             )
             app.logger.error(
-                "IntegrityError: Duplicate slug found while trying to publish an article."
+                f"IntegrityError: Duplicate slug found while trying to publish an article: {e}"
             )
             return redirect(url_for("publish"))
 
